@@ -1,6 +1,6 @@
 SelectScript is intended to serve as a general querying language for any kind of discrete simulation.
 
---- .YT yt:ArHQjQyIS70 &youtube
+yt:ArHQjQyIS70 &youtube
 
 YT("ArHQjQyIS70", print = TRUE)
 
