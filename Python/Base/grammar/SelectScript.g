@@ -64,9 +64,6 @@ def _sel(self, s, f, w, g, h, o, a) :
 def _this(self, name='') :
 	return [self.types['this'], name]
 	
-def _as(self, name, params=[]) :
-	return [name, params]
-	
 def _phrase(self, name) :
 	return [self.types['phrase'], name]
 	
@@ -236,7 +233,7 @@ statement returns [stmt]:
 ;
 
 statement_select returns [selection] 
-@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=self._as(self.asTypes['dict']); }
+@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'], []]; }
 @after{ selection = self._sel(s, f, w, g, h, o, a); } 
 :
 	^(STMT_SELECT s=select_ f=from_ ( w=where_ )? ( g=group_ (h=having_)?)? ( o=order_ )? ( a=as_ )? )
@@ -260,10 +257,10 @@ from_ returns [env]
 
 as_ returns [rep] 
 @init{ p=[]; }:
-	^(AS AS_DICT)				{ rep= self._as(self.asTypes['dict']);  }
-	| ^(AS AS_LIST)				{ rep= self._as(self.asTypes['list']);  }
-	| ^(AS AS_VALUE)			{ rep= self._as(self.asTypes['value']); } 
-	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= self._as(v.getText(), p); } 
+	^(AS AS_DICT)				{ rep= [ self.asTypes['dict'],  []]; }
+	| ^(AS AS_LIST)				{ rep= [ self.asTypes['list'],  []]; }
+	| ^(AS AS_VALUE)			{ rep= [ self.asTypes['value'], []]; } 
+	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= [ v.getText(),           p ]; } 
 ;
 
 where_ returns [stack] :
