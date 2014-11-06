@@ -42,7 +42,7 @@ simplify_ops = {'or':  operator.or_,	'xor':operator.xor,
 types = {'fct' :0, 'var' :1,
          'list':2, 'val' :3,
          'sel' :4, 'this':5,
-         'as'  :6, 'phrase':7 }
+         'phrase':6 }
          
 asTypes = {'dict' :'d', 'list' :'l', 'value':'v'}
 			
@@ -65,7 +65,7 @@ def _this(self, name='') :
 	return [self.types['this'], name]
 	
 def _as(self, name, params=[]) :
-	return [self.types['as'], name, params]
+	return [name, params]
 	
 def _phrase(self, name) :
 	return [self.types['phrase'], name]
@@ -105,7 +105,7 @@ def Simplify(self, prog) :
 		H = [self.Simplify(expr) for expr in H]
 		if O != []:
 			O = [[self.Simplify(expr[0]), expr[1]] for expr in O]
-		A[2] = [self.Simplify(expr) for expr in A[2]]
+		A[1] = [self.Simplify(expr) for expr in A[1]]
 		prog = self._sel(S, F, W, G, H, O, A)
 	
 	return prog
@@ -137,7 +137,7 @@ def prettyPrint(self, prog, depth=0):
 
 	if isinstance(prog[0], list):
 		for stmt in prog:
-			print "["
+			print treE, "["
 			self.prettyPrint( stmt, depth+1 )
 			print treE, "]"
 	
@@ -160,7 +160,7 @@ def prettyPrint(self, prog, depth=0):
 		
 	elif prog[0] == self.types['list']:
 		print treE, "[ list, ["
-		self.prettyPrint( prog[2], depth+1 )
+		self.prettyPrint( prog[1], depth+1 )
 		print treE, "]"
 		
 	elif prog[0] == self.types['phrase']:
@@ -189,8 +189,8 @@ def prettyPrint(self, prog, depth=0):
 			self.prettyPrint( prog[6], depth+2 )
 			
 		if prog[7] != []:
-			print treE, "[ as,", prog[7][1], "]"
-			#self.prettyPrint( prog[7][2], depth+2 )
+			print treE, "[ as,", prog[7][0], # "]"
+			self.prettyPrint( prog[7][1], depth+2 )
 	else:
 		print ""
 }	
@@ -263,7 +263,7 @@ as_ returns [rep]
 	^(AS AS_DICT)				{ rep= self._as(self.asTypes['dict']);  }
 	| ^(AS AS_LIST)				{ rep= self._as(self.asTypes['list']);  }
 	| ^(AS AS_VALUE)			{ rep= self._as(self.asTypes['value']); } 
-	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= self._as(v.getText(), p)  } 
+	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= self._as(v.getText(), p); } 
 ;
 
 where_ returns [stack] :
@@ -273,8 +273,7 @@ where_ returns [stack] :
 group_ returns [by]
 @init{by = []} :
 	^(GROUP 
-		( //type=PHRASE { by.append( self._fct (type.getText(),  [self._this()] )); }
-		  type=PHRASE { by.append( self._phrase ( type.getText() ) ); }
+		( type=PHRASE { by.append( self._phrase ( type.getText() ) ); }
 		| f= function { by.append( f ); }
 		)+
 	)

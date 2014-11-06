@@ -10,3 +10,7 @@ antlr: grammar/SelectExpr.g grammar/SelectScript.g
 
 clean:
 	cd SelectScript; rm SelectExprLexer.py  SelectExprParser.py  SelectExpr.tokens SelectScript.tokens SelectScript.py
+	
+install:
+	python setup.py install
+	python setup.py install

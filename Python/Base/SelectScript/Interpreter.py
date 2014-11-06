@@ -124,7 +124,8 @@ class Interpreter():
             elif self.var_ages.has_key(prog[1]):
                 return self.callVariable(prog[1])
             else:
-                return self.evalFct([prog[1],[[SelectScript.types['this'], '']]], this, ids)
+                #return self.evalFct([prog[1],[[SelectScript.types['this'], '']]], this, ids)
+                return self.callFunction( prog[1], [ this[0] ] )
         
         elif prog[0] == SelectScript.types['val']:
             return prog[1]
@@ -136,9 +137,6 @@ class Interpreter():
             if prog[1] == '':
                 return this[0]
             return this[ids[prog[1]]]
-        
-        elif prog[0] == SelectScript.types['as']:
-            return [prog[1], [ self.eval(elem, this, ids) for elem in prog[2] ]]
         
         elif prog[0] == SelectScript.types['list']:
             return [ self.eval(elem, this, ids) for elem in prog[1]]
@@ -173,7 +171,8 @@ class Interpreter():
         #    results = self.evalGroup(GROUP, FROM_n, results)
                     
         #########################################################################################
-        AS      = self.eval(prog[6])
+        AS      = [prog[6][0], [ self.eval(elem, this, ids) for elem in prog[6][1] ]]
+        
         #########################################################################################
         # get trough all groups
         if isinstance(results, dict):
