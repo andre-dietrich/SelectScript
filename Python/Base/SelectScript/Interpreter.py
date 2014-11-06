@@ -116,7 +116,7 @@ class Interpreter():
             return res
                 
         elif prog[0] == SelectScript.types['fct']:
-            return self.evalFct(prog[1:], this, ids)
+            return self.callFunction( prog[1], [ self.eval(elem, this, ids) for elem in prog[2] ] ) 
         
         elif prog[0] == SelectScript.types['phrase']:
             if type(this[0]) == dict and this[0].has_key(prog[1]):
@@ -124,7 +124,6 @@ class Interpreter():
             elif self.var_ages.has_key(prog[1]):
                 return self.callVariable(prog[1])
             else:
-                #return self.evalFct([prog[1],[[SelectScript.types['this'], '']]], this, ids)
                 return self.callFunction( prog[1], [ this[0] ] )
         
         elif prog[0] == SelectScript.types['val']:
@@ -134,8 +133,6 @@ class Interpreter():
             return self.callVariable(prog[1], self.eval(prog[2], this, ids))
             
         elif prog[0] == SelectScript.types['this']:
-            if prog[1] == '':
-                return this[0]
             return this[ids[prog[1]]]
         
         elif prog[0] == SelectScript.types['list']:
@@ -146,9 +143,6 @@ class Interpreter():
             
         else:
             return prog
-    ####################################################################################################################
-    def evalFct(self, prog, this=None, ids=None):
-        return self.callFunction( prog[0], [ self.eval(elem, this, ids) for elem in prog[1] ] )
     ####################################################################################################################
     def evalSelect(self, prog, this=None, ids=None):
         SELECT  = prog[0]
@@ -184,7 +178,7 @@ class Interpreter():
     ####################################################################################################################
     def evalFrom(self, prog, this, ids):
         FROM   = []
-        FROM_n = {}
+        FROM_n = {'':0}
         for n, p in enumerate(prog):
             FROM.append( self.getListFrom(self.eval( p, this, ids )) )
             # Variable
