@@ -196,11 +196,6 @@ class Interpreter():
         return [ elem for elem in FROM if self.eval(WHERE, elem, FROM_n) ]
     ####################################################################################################################
     def evalGroup(self, GROUP, FROM_n, RESULTS):
-        #matrix = [ [ self.eval(g, elem, FROM_n) for g in GROUP , elem] for elem in RESULTS ]
-        #for i in range(len(GROUP)-1, -1, -1):
-        #    matrix.sort(key=itemgetter(i))
-        #return { key: map(lambda e: e[-1], val) for key, val in groupby( matrix, lambda g: str(g[:-1])[1:-1]) }
-      
         matrix = map( lambda elem:  list(chain( map(lambda g: self.eval(g, elem, FROM_n), GROUP), [elem])), RESULTS )  
         for i in range(len(GROUP)-1, -1, -1):
             matrix = sorted(matrix, key=itemgetter(i))        
