@@ -11,7 +11,6 @@ class Interpreter():
         self = self
         self.fct_list = {}
         self.var_list = {}
-        self.var_ages = {}
         
         self.fct_desc = {}
         
@@ -49,51 +48,42 @@ class Interpreter():
     ####################################################################################################################
     def addVariable(self, name, value, age=0):
         # first instantiation
-        if not self.var_ages.has_key(name):
-            self.var_ages[name] = age
-            self.var_list[name] = {}
-        
-        if self.var_ages[name] == 0:
-            self.var_list[name] = value
-
+        if not self.var_list.has_key(name):
+            self.var_list[name] = [[], age]
+        # add value to not timed variable
+        if self.var_list[name][1] == 0:
+            self.var_list[name][0] = value
+        # add value to timed variable
         else:
-            self.var_list[name][self.getTime()] = value
+            self.var_list[name][0].append([self.getTime(), value])
             # remove the oldest ones ...
-            if self.var_ages[name] > 0:
-                timestamps = self.var_list[name].keys()
-                timestamps.sort()
-                max_age = self.getTime() - self.var_ages[name]
-                for t in timestamps:
-                    if t < max_age:
-                        self.var_list[name].pop(t)
-                    else:
-                        break
+            if self.var_list[name] > 0:
+                max_age = self.getTime() - self.var_list[name][1]
+                self.var_list[name][0] = filter(lambda t: t[0] >= max_age, self.var_list[name][0])
         
         return value
     ####################################################################################################################
     def callVariable(self, name, age=0):
-        if self.var_ages[name] == 0:
-            return self.var_list[name]
-        elif age > 0:
-            return self.var_list[name][age]
-        elif age < 0:
-            t_min = self.getTime()+age
-            
-            values = []
-            for timestamp in self.var_list[name].keys():
-                if timestamp >= t_min:
-                    values.append(self.var_list[name][timestamp])
-            return values
-        elif age == None:
-            return self.var_list[name]
-        
-        else :
-            timestamp = max(self.var_list[name].keys())
-            return self.var_list[name][timestamp]
+        if self.var_list[name][1] == 0:
+            return self.var_list[name][0]
+        elif age > 0: # a certain point in time
+            for result in self.var_list[name][0]:
+                if result[0] == age:
+                    return result[1]
+            return []
+        elif age < 0: # a time period from now on
+            t_min = self.getTime() + age
+            return [res[1] for res in filter(lambda t: t[0]>=t_min, self.var_list[name][0])]
+        elif age == None: # all values
+            return map(lambda e: e[1], self.var_list[name][0])        
+        else:
+            print self.var_list[name][0]
+            #return self.var_list[name][0][-1]#[1]
     ####################################################################################################################
     def debugVariable(self, name):
-        print "age: ", self.var_ages[name]
-        print "val: ", self.var_list[name]
+        print self.var_list[name][1]
+        #print "age: ", self.var_list[name][1]
+        #print "val: ", self.var_list[name][0]
     ####################################################################################################################
     def addFunction(self, name, ptr, description="", internal=False):
         self.fct_list[name] = ptr
@@ -121,7 +111,7 @@ class Interpreter():
         elif prog[0] == SelectScript.types['phrase']:
             if type(this[0]) == dict and this[0].has_key(prog[1]):
                 return this[0][prog[1]]
-            elif self.var_ages.has_key(prog[1]):
+            elif self.var_list.has_key(prog[1]):
                 return self.callVariable(prog[1])
             else:
                 return self.callFunction( prog[1], [ this[0] ] )
@@ -187,7 +177,6 @@ class Interpreter():
             # Assignement
             elif p[0] == SelectScript.types['fct']:
                 FROM_n[self.eval(p[2][0])] = n
-            FROM_n[''] = n
         return (product(*FROM), FROM_n)
     ####################################################################################################################
     def evalWhere(self, FROM, FROM_n, WHERE):
