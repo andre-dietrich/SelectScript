@@ -77,13 +77,11 @@ class Interpreter():
         elif age == None: # all values
             return map(lambda e: e[1], self.var_list[name][0])        
         else:
-            print self.var_list[name][0]
-            #return self.var_list[name][0][-1]#[1]
+            return self.var_list[name][0][-1][1]
     ####################################################################################################################
     def debugVariable(self, name):
-        print self.var_list[name][1]
-        #print "age: ", self.var_list[name][1]
-        #print "val: ", self.var_list[name][0]
+        print "age: ", self.var_list[name][1]
+        print "val: ", self.var_list[name][0]
     ####################################################################################################################
     def addFunction(self, name, ptr, description="", internal=False):
         self.fct_list[name] = ptr
