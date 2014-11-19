@@ -42,7 +42,7 @@ simplify_ops = {'or':  operator.or_,	'xor':operator.xor,
 types = {'fct' :0, 'var' :1,
          'list':2, 'val' :3,
          'sel' :4, 'this':5,
-         'phrase':6 }
+         'phrase':6, 'eval': 7 }
          
 asTypes = {'dict' :'d', 'list' :'l', 'value':'v'}
 			
@@ -58,14 +58,17 @@ def _val(self, value) :
 def _list(self, l) :
 	return [self.types['list'], l]
 	
-def _sel(self, s, f, w, g, h, o, a) :
-	return [self.types['sel'], s, f, w, g, h, o, a]
+def _sel(self, s, f, w, g, h, o, a, rec) :
+	return [self.types['sel'], s, f, w, g, h, o, a, rec]
 	
 def _this(self, name='') :
 	return [self.types['this'], name]
 	
 def _phrase(self, name) :
 	return [self.types['phrase'], name]
+	
+def _eval(self, string):
+	return [self.types['eval'], string]
 	
 def Simplify(self, prog) :
 	
@@ -93,7 +96,7 @@ def Simplify(self, prog) :
 			prog[1][i] = self.Simplify(prog[1][i])
 	# select
 	elif prog[0] == self.types['sel']:
-		S, F, W, G, H, O, A = prog[1:]
+		S, F, W, G, H, O, A, R = prog[1:]
 		
 		S = [self.Simplify(expr) for expr in S]
 		F = [self.Simplify(expr) for expr in F]
@@ -103,6 +106,11 @@ def Simplify(self, prog) :
 		if O != []:
 			O = [[self.Simplify(expr[0]), expr[1]] for expr in O]
 		A[1] = [self.Simplify(expr) for expr in A[1]]
+		
+		R[0] = [self.Simplify(expr) for expr in R[0]]
+		R[1] = [self.Simplify(expr) for expr in R[1]]
+		R[2] = [self.Simplify(expr) for expr in R[2]]
+		
 		prog = self._sel(S, F, W, G, H, O, A)
 	
 	return prog
@@ -188,6 +196,14 @@ def prettyPrint(self, prog, depth=0):
 		if prog[7] != []:
 			print treE, "[ as,", prog[7][0], # "]"
 			self.prettyPrint( prog[7][1], depth+2 )
+			
+		if prog[8] != [[],[],[]]:
+			print treE, "[ start with,",
+			self.prettyPrint( prog[8][0], depth+2 )
+			print treE, "[ connect by,",
+			self.prettyPrint( prog[8][1], depth+2 )
+			print treE, "[ stop with,",
+			self.prettyPrint( prog[8][2], depth+2 )
 	else:
 		print ""
 }	
@@ -209,6 +225,7 @@ def main(argv, otherArg=None):
 			continue
 		else:
 			code = scene.compile(expr, simplify)
+			print code
 			scene.prettyPrint(code)
 			expr = ""
 }
@@ -233,10 +250,10 @@ statement returns [stmt]:
 ;
 
 statement_select returns [selection] 
-@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'], []]; }
-@after{ selection = self._sel(s, f, w, g, h, o, a); } 
+@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'],[]]; rec_start=[]; rec_connect=[]; rec_stop=[]; }
+@after{ selection = self._sel(s, f, w, g, h, o, a, [rec_start, rec_connect, rec_stop]); } 
 :
-	^(STMT_SELECT s=select_ f=from_ ( w=where_ )? ( g=group_ (h=having_)?)? ( o=order_ )? ( a=as_ )? )
+	^(STMT_SELECT s=select_ f=from_ ( w=where_ )? ( g=group_ (h=having_)?)? ( o=order_ )? ( a=as_ )? ((rec_start=start_)? rec_connect=connect_ rec_stop=stop_ )? )
 ;
 
 select_ returns [types]
@@ -265,6 +282,21 @@ as_ returns [rep]
 
 where_ returns [stack] :
 	^(WHERE e=expr) { stack=e } 
+;
+
+start_ returns[with_]
+@init{with_ = []} :
+	^(START (e=expr { with_.append(e); })+ )
+;
+
+connect_ returns[by]
+@init{by = []} :
+	^(CONNECT (e=expr { by.append(e); })+ )
+;
+
+stop_ returns[with_]
+@init{with_ = []} :
+	^(STOP (e=expr { with_ = e; }) )
 ;
 
 group_ returns [by]
@@ -378,7 +410,7 @@ variable returns [var]
 
 function returns [stack] :
 	^(FCT PHRASE params=parameter?)
-	{ stack = self._fct( $PHRASE.getText(), params); }
+	{ stack = self._fct( $PHRASE.getText(), params) if $PHRASE.getText()!= "eval" else self._eval(params[0]) ; }
 ;
 
 parameter returns [stack]

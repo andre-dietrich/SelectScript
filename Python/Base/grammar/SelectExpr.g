@@ -9,6 +9,7 @@ options {
 
 tokens {
 	FCT;
+
 	VAR;
 	VAL;
 	LIST;
@@ -76,15 +77,22 @@ GROUP  : G R O U P ;
 HAVING : H A V I N G ;
 BY     : B Y ;
 AS     : A S ;
+
 THIS   : T H I S ;
 TIME   : T I M E ;
 
-ASC    : A S C (E N D I N G)?;
-DESC   : D E S C (E N D I N G)?;
+CONNECT: C O N N E C T ;
+START  : S T A R T ;
+STOP   : S T O P ;
+WITH   : W I T H ;
 
-AS_LIST : L (I S T)? ;
-AS_VALUE: V (A L (U E)?)? ;
-AS_DICT	: D (I C T (I O N A R Y)?)? ;
+
+ASC    : A S C (E N D I N G)? ;
+DESC   : D E S C (E N D I N G)? ;
+
+AS_LIST : L I S T ;
+AS_VALUE: V A L (U E)? ;
+AS_DICT	: D I C T (I O N A R Y)? ;
 
 NEWLINE	: ('\r'? '\n') {self.skip()};
 WS	: (' '|'\t'|'\n'|'\r')+ {self.skip()} ;
@@ -95,8 +103,8 @@ LINE_COMMENT : '#' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;} ;
 STRING 	: DQ (~(DQ))* DQ | SQ (~(SQ))* SQ ;
 INTEGER : DIGIT+ ;
 FLOAT 	: DIGIT* DOT DIGIT* ;
-TRUE 	: ('T'|'t') (('R'|'r') ('U'|'u') ('E'|'e'))?;
-FALSE 	: ('F'|'f') (('A'|'a') ('L'|'l') ('S'|'s') ('E'|'e'))?;
+TRUE 	: ('T'|'t') ('R'|'r') ('U'|'u') ('E'|'e');
+FALSE 	: ('F'|'f') ('A'|'a') ('L'|'l') ('S'|'s') ('E'|'e');
 
 PHRASE : (CHARACTER | SPECIAL) (DIGIT | CHARACTER | SPECIAL)* ;
 
@@ -134,7 +142,7 @@ statement : statement_select END!
 ;
 
 statement_select :
-	select_ from_ (where_)? (group_ (having_)?)? (order_)? (as_)? ->  ^(STMT_SELECT select_ from_ (where_)? (group_ (having_)?)? (order_)? (as_)?) 
+	select_ from_ (where_)? ((start_)? connect_ stop_)? (group_ (having_)?)? (order_)? (as_)? ->  ^(STMT_SELECT select_ from_ (where_)? (group_ (having_)?)? (order_)? (as_)? ((start_)? connect_ stop_)?) 
 ;
 
 select_	: SELECT^ (MUL! | ((PHRASE | function | this_) (SEP! (PHRASE | function | this_) )* ))
@@ -144,6 +152,15 @@ from_ : FROM^ expr (SEP! expr)*
 ;
 
 where_ : WHERE^ expr
+;
+
+start_ : START^ WITH! expr (SEP! expr)*
+;
+
+connect_ : CONNECT^ BY! expr (SEP! expr)*
+;
+
+stop_ : STOP^ WITH! expr
 ;
 
 group_ : GROUP^ BY! ( PHRASE | function ) (SEP! ( PHRASE | function ) )*
