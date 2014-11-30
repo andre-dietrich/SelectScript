@@ -39,10 +39,12 @@ simplify_ops = {'or':  operator.or_,	'xor':operator.xor,
 		'add': operator.add, 	'pow': operator.pow,
 		'neg': operator.neg, 	'pos': operator.pos}
 
-types = {'fct' :0, 'var' :1,
-         'list':2, 'val' :3,
-         'sel' :4, 'this':5,
-         'phrase':6, 'eval': 7 }
+types = {'fct' :   0, 'var' : 1,
+         'list':   2, 'val' : 3,
+         'sel' :   4, 'this': 5,
+         'phrase': 6, 'eval': 7,
+         'elem':   8, 'id':   9,
+         'if'  : 10 }
          
 asTypes = {'dict' :'d', 'list' :'l', 'value':'v'}
 			
@@ -69,6 +71,13 @@ def _phrase(self, name) :
 	
 def _eval(self, string):
 	return [self.types['eval'], string]
+	
+def _elem(self, atom, params):
+	return [self.types['elem'], atom, params]
+	
+def _if(self, expr, params1, params2):
+    print expr, "---",params1, "---" ,params2
+    return [self.types['if'], expr, params1, params2]
 	
 def Simplify(self, prog) :
 	
@@ -250,8 +259,8 @@ statement returns [stmt]:
 ;
 
 statement_select returns [selection] 
-@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'],[]]; rec_start=[]; rec_connect=[]; rec_stop=[]; }
-@after{ selection = self._sel(s, f, w, g, h, o, a, [rec_start, rec_connect, rec_stop]); } 
+@init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'],[]]; rec_start=[]; rec_connect=[[],[0,0]]; rec_stop=[]; }
+@after{ selection = self._sel(s, f, w, g, h, o, a, [rec_start, rec_connect[0], rec_stop, rec_connect[1]]); } 
 :
 	^(STMT_SELECT s=select_ f=from_ ( w=where_ )? ( g=group_ (h=having_)?)? ( o=order_ )? ( a=as_ )? ((rec_start=start_)? rec_connect=connect_ rec_stop=stop_ )? )
 ;
@@ -290,8 +299,14 @@ start_ returns[with_]
 ;
 
 connect_ returns[by]
-@init{by = []} :
-	^(CONNECT (e=expr { by.append(e); })+ )
+@init{by = [[],[0,0,0,None]]} :
+	^(CONNECT
+	      (CYCLE            { by[1][0] = 1;                       }    )?
+	      (UNIQUE           { by[1][1] = 1;                       }    )?
+	      (MEMORIZE I1=INTEGER { by[1][2] = int(I1.getText()); }    )? 
+	      (MAXIMUM  I2=INTEGER { by[1][3] = int(I2.getText()); }    )?
+	      (e=expr           { by[0].append(e);                    }    )+
+	 )
 ;
 
 stop_ returns[with_]
@@ -330,17 +345,24 @@ direction_ returns [dir]
 ;
 
 expr returns [val] :
-	a = assign_expr		{val = a;} 
-	| l= logic_expr		{val = l;}
-	| c= compare_expr	{val = c;}
-	| a= arithmetic_expr	{val = a;}
-	| a= atom		{val = a;}
+	a = assign_expr		  {val = a;} 
+	| l= logic_expr		  {val = l;}
+	| c= compare_expr	  {val = c;}
+	| a= arithmetic_expr  {val = a;}
+	| i= if_statement     {val = i;}
+	| a= atom		      {val = a;}
 ;
 
 age returns [a] 
 @init{ a=self._val(0); }:
 	^(AGE (t=expr { a=t; })?) 
 ;
+
+if_statement returns [e]
+@init{ if_=self._val( True ); th=self._val( True ); el=self._val( False ); }:
+    ^(IF if_=expr (^(THEN th=parameter (^(ELSE el=parameter))?))?) { e = self._if(if_, th, el); } 
+;
+
 
 assign_expr returns [stack]
 @init{ a = self._val(0); }:
@@ -373,6 +395,7 @@ arithmetic_expr returns [stack]:
 	|^(POW e1=expr e2=expr)	{ stack = self._fct('pow', [e1, e2]); }
 	|^(NEG e=expr)		{ stack = self._fct('neg', [e]); }
 	|^(POS e=expr)		{ stack = self._fct('pos', [e]); }
+	|^(ELEMENT a=atom p=parameter) {stack = self._elem(a, p); }
 ;
 
 atom returns [stack] :
@@ -389,7 +412,7 @@ value returns [val] :
 	| ^(VAL FLOAT	)	{val= self._val( float($FLOAT.getText()) ); }
 	| ^(VAL TRUE	)	{val= self._val( True  ); }
 	| ^(VAL FALSE	)	{val= self._val( False ); }
-	| t=this_		{val=t; }
+	| t=this_		{val= t; }
 	| l=list_		{val= self._list(l ) ; }
 ;
 

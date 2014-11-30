@@ -13,13 +13,17 @@ tokens {
 	VAR;
 	VAL;
 	LIST;
-    
+	ELEMENT;
+	
 	POS;
 	NEG;
     
 	AGE;
     
 	STMT_SELECT;
+	
+	THEN;
+	ELSE;
 }
 
 
@@ -60,6 +64,8 @@ DIV 	: '/' ;
 MOD 	: '%' ;
 POW 	: '^' ;
 
+IF      : I F ;
+
 SQ 	: '\'';
 DQ 	: '\"';
 
@@ -86,6 +92,11 @@ START  : S T A R T ;
 STOP   : S T O P ;
 WITH   : W I T H ;
 
+NO      : N O ;
+CYCLE   : C Y C L E ;
+UNIQUE  : U N I Q U E ;
+MEMORIZE: M E M O R I Z E ;
+MAXIMUM : M A X I M U M ;
 
 ASC    : A S C (E N D I N G)? ;
 DESC   : D E S C (E N D I N G)? ;
@@ -157,7 +168,7 @@ where_ : WHERE^ expr
 start_ : START^ WITH! expr (SEP! expr)*
 ;
 
-connect_ : CONNECT^ BY! expr (SEP! expr)*
+connect_ : CONNECT^ BY! (NO! CYCLE)? (UNIQUE)? (MEMORIZE INTEGER)? (MAXIMUM INTEGER)? expr (SEP! expr)*  
 ;
 
 stop_ : STOP^ WITH! expr
@@ -180,6 +191,9 @@ as_ : AS^ ( AS_LIST | AS_VALUE | AS_DICT | PHRASE ('('! parameter? ')'!)? )
 
 expr : assign_expr 
 	| logic_expr
+;
+
+if_statement : IF '(' expr (END parameter (END parameter)?)? ')' -> ^(IF expr ( ^(THEN parameter (^(ELSE parameter))? ))? )
 ;
 
 assign_expr : PHRASE (age)? ASSIGN expr -> ^(ASSIGN PHRASE expr (age)?);
@@ -206,12 +220,14 @@ arithmetic_pow : arithmetic_unary (POW^ arithmetic_unary)* ;
 arithmetic_unary :
 	SUB atom -> ^(NEG atom)
 	|  ADD atom -> ^(POS atom)
+	|  atom LIST_BEGIN parameter LIST_END -> ^(ELEMENT atom parameter)
 	|  atom
 ;
 
 atom 
 	: value
 	| variable
+	| if_statement
 	| function
 	| '('! expr ')'!
 	| statement_select
