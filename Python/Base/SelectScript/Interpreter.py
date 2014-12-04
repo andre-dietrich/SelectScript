@@ -179,27 +179,27 @@ class Interpreter():
         if RECURSION[0:3] != [[],[],[]]:
             #self.max_results = RECURSION[3][3]
             if RECURSION[3][2] > 0:
-                self.tree = []
+                self.tree = {}
                 self.evalRecursion2(prog, FROM_n, list(FROM), RECURSION[3][2], set() if RECURSION[3][0] else None)
                 
                 def reconstructResults(tree, first=True, level=None):
                     result = []
                     if first == True:
-                        for elem in tree:
-                            if elem[2]:
-                                for seq in reconstructResults(tree, elem[0], elem[3]):
-                                    seq.append(elem[1])
-                                    result.append(seq)
-                    else:
-                        for elem in tree:
-                            if elem[1] == first:
-                                if elem[0] == None:
-                                    result.append([elem[1]])
-                                elif elem[3]>level:
-                                    for seq in reconstructResults(tree, elem[0], elem[3]):
-                                        seq.append(elem[1])
+                        for key in tree.keys():
+                            if tree[key][1]:
+                                for (source, l) in tree[key][2]:
+                                    for seq in reconstructResults(tree, source, l):
+                                        seq.append(tree[key][0])
                                         result.append(seq)
-                    return result    
+                    else:
+                        for (source, l) in tree[first][2]:
+                            if source == None:
+                                result.append( tree[first][0])
+                            elif l>level:
+                                for seq in reconstructResults(tree, source, l):
+                                    seq.append(tree[first][0])
+                                    result.append(seq)
+                    return result   
                 
                 return reconstructResults(self.tree)
             
@@ -259,10 +259,9 @@ class Interpreter():
                 
         return (product(*FROM), FROM_n)
     ####################################################################################################################
-    def evalRecursion2(self, prog, FROM_n, FROM, level, cycle=None, source=None):
+    def evalRecursion2(self, prog, FROM_n, FROM, level, cycle=None, source=None, ss=None):
         if level == 0:
             return
-        #print "Start recursion"
         start_with = deepcopy(prog[7][0])
         connect_by = deepcopy(prog[7][1])
         stop_with  = deepcopy(prog[7][2])
@@ -279,57 +278,58 @@ class Interpreter():
         
         rec_elem = []
         for elem in FROM:
-            #if self.max_results == 0:
-            #    break
+            self.var_list = deepcopy(initial_var_list)
+            sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
+            hashID = str(hash(str(sub)))
             
             if self.eval(stop_with, elem, FROM_n):
-                self.var_list = deepcopy(initial_var_list)
-                sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
-                if self.evalWhere([elem], FROM_n, prog[2]) != []:
-                    self.tree.append([source, sub, True, level])
-                    #if self.max_results != None:
-                    #    self.max_results -= 1
-                else:
-                    self.tree.append([source, sub, False, level])
+                
+                final = False
+                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
+                    final = True
+                try:
+                    self.tree[hashID][2].add((source,level))
+                except:
+                        self.tree[hashID] = [sub, final, set([(source, level)])]
+                    
             else:
                 self.var_list = deepcopy(initial_var_list)
-                sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
-                    
-                rec = True
-                
                 if cycle != None:
-                    if hash(str(sub)) in cycle:
+                    if hashID in cycle:
                         self.var_list = deepcopy(initial_var_list)
                         continue
-                    
-                for e in self.tree:
-                    if e[0:2] == [source, sub] and e[3] > level:
-                        rec = False
-                        break
+                
+                rec = True
+                try:
+                    for s,l in self.tree[hashID][2]:
+                        if s==source and l >= level:
+                            rec = False
+                            break
+                except:
+                    pass
                         
                 if rec:
-                    rec_elem.append([elem, sub])
-                        
-                    if self.evalWhere([elem], FROM_n, prog[2]) != []:
-                        self.tree.append([source, sub, True, level])
-                        #if self.max_results != None:
-                        #    self.max_results -= 1
-                    else:
-                        self.tree.append([source, sub, False, level])
-            
-                self.var_list = deepcopy(initial_var_list)
-        
-        #if self.max_results == None or self.max_results>0:
-        for [elem, sub] in rec_elem:
+                    rec_elem.append([elem, sub, hashID])
+                    
+                    final = False
+                    if self.evalWhere([elem], FROM_n, prog[2])!=[]:
+                        final = True
+                    try:
+                        self.tree[hashID][2].add((source,level))
+                    except:
+                        self.tree[hashID] =[sub, final, set([(source, level)])]
+
+        for [elem, sub, hashID] in rec_elem:
             self.var_list = deepcopy(initial_var_list)
             for e in connect_by:
                 self.eval(e, elem, FROM_n)
+            
             if cycle != None:
                 cycle2=deepcopy(cycle)
-                cycle2.add(hash(str(sub)))
-                self.evalRecursion2(prog, FROM_n, FROM, level-1, cycle2, sub)
+                cycle2.add(hashID)
+                self.evalRecursion2(prog, FROM_n, FROM, level-1, cycle2, hashID, sub)
             else:
-                self.evalRecursion2(prog, FROM_n, FROM, level-1, None, sub)
+                self.evalRecursion2(prog, FROM_n, FROM, level-1, None, hashID, sub)
             
 
     def evalRecursion(self, prog, FROM_n, FROM, cycle=None):

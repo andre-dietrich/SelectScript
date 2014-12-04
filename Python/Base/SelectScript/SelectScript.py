@@ -1,4 +1,4 @@
-# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2014-11-30 15:17:45
+# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2014-12-04 17:45:36
 
 import sys
 from antlr3 import *
@@ -1138,10 +1138,10 @@ class SelectScript(TreeParser):
         e = None
 
 
-        by = [[],[0,0,0,-1]]
+        by = [[],[0,0,0,None]]
         try:
             try:
-                # SelectScript.g:302:29: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
+                # SelectScript.g:302:31: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
                 # SelectScript.g:303:2: ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ )
                 pass 
                 self.match(self.input, CONNECT, self.FOLLOW_CONNECT_in_connect_469)

@@ -13,4 +13,6 @@ clean:
 	
 install:
 	python setup.py install
-	python setup.py install
+
+uninstall:
+	python setup.py uninstall
