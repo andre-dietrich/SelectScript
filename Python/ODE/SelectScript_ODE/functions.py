@@ -1,5 +1,6 @@
-from ode import Body, GeomObject, GeomBox, GeomPlane, GeomCapsule, GeomCCylinder, GeomCylinder, \
-                GeomRay, GeomSphere, GeomTransform, GeomTriMesh, collide
+from ode import Body, GeomObject, GeomBox, GeomPlane, GeomCapsule, \
+                GeomCCylinder, GeomCylinder, GeomRay, GeomSphere, \
+                GeomTransform, GeomTriMesh, collide
 
 def Sode_position(geom, b=0, e=3):
     if isinstance(geom, GeomPlane):

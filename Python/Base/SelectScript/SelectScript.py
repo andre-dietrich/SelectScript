@@ -1,4 +1,4 @@
-# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2014-12-04 17:45:36
+# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2015-06-04 17:55:53
 
 import sys
 from antlr3 import *
@@ -248,7 +248,7 @@ class SelectScript(TreeParser):
     	return [self.types['elem'], atom, params]
     	
     def _if(self, expr, params1, params2):
-        print expr, "---",params1, "---" ,params2
+        #print expr, "---",params1, "---" ,params2
         return [self.types['if'], expr, params1, params2]
     	
     def Simplify(self, prog) :
@@ -1138,10 +1138,10 @@ class SelectScript(TreeParser):
         e = None
 
 
-        by = [[],[0,0,0,None]]
+        by = [[],[0,0,0,0]]
         try:
             try:
-                # SelectScript.g:302:31: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
+                # SelectScript.g:302:28: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
                 # SelectScript.g:303:2: ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ )
                 pass 
                 self.match(self.input, CONNECT, self.FOLLOW_CONNECT_in_connect_469)

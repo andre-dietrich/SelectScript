@@ -178,150 +178,26 @@ class Interpreter():
         #########################################################################################
         RECURSION = prog[7]
         if RECURSION[0:3] != [[],[],[]]:
-            #self.max_results = RECURSION[3][3]
-            if RECURSION[3][2] > 0:
-                def search(graph, max_iter, start=None, end=None, max_results=0, infinit=True):
-                    result = []
-                    
-                    if start == None:
-                        start_nodes = []
-                        end_nodes   = []
-                
-                        for key in graph.keys():
-                            if None in graph[key][2]:
-                                start_nodes.append(key)
-                            if graph[key][0]:
-                                end_nodes.append(key)
-                                
-                        for s in start_nodes:
-                            for e in end_nodes:
-                                result += search(graph, max_iter, [s], [e], max_results - len(result), infinit)
-                        
-                        if result != []:
-                            result_sub = []
-                            for hashIDs in result:
-                                sub = []
-                                print " array",len(result_sub)
-                                for key in hashIDs:
-                                    sub.append(graph[key][1])
-                                if not sub in result_sub: 
-                                    result_sub.append(sub)
-                            return result_sub
-                                
-                    elif start[-1] == end[0]:
-                        result.append(start + end[1:])
-                        print "found1", len(result[-1]), max_results
-                        max_results -= 1
-                    
-                    elif len(start) + len(end) > max_iter:
-                        pass
-                    
-                    elif max_results <= 0 and not infinit:
-                        pass
-                    
-                    elif graph[start[-1]][3] > graph[end[0]][3]:
-                        pass
-                    
-                    else:
-                        #E = list(graph[end[0]][2])
-                        #shuffle(E)
-                        for e in graph[end[0]][2]:
-                            if e == None:
-                                continue
-                            
-                            elif max_results <= 0 and not infinit:
-                                break
-                            
-                            if graph[end[0]][3] < graph[e][3]:
-                                continue
-                            
-                            if e == start[-1]:
-                                result.append(start + [e] + end)
-                                print "found2", len(result[-1]), max_results
-                                max_results -=1
-                                # print "found1", max_results
-                                
-                            elif not e in end:
-                                #S = list(graph.keys())
-                                #shuffle(S)
-                                for s in graph.keys():
-                                    if max_results <= 0 and not infinit:
-                                        break
-                                    if (start[-1] in graph[s][2]) and not (s in start):
-                                        if graph[start[-1]][3] < graph[s][3]:
-                                            #print "ddd"
-                                            r = search(graph, max_iter, start+[s], [e]+end, max_results, infinit)
-                                            result += r
-                                            max_results -= len(r)                       
-                    return result
-
-                #def reconstructResults4(tree, max_level, cycle=True, source=[None]):
-                #    result = []
-                #                    
-                #    if len(source) <= max_level:
-                #        for key in tree.keys():
-                #            print " "*(len(source)*2), len(source)
-                #            if cycle and (key in source):
-                #                continue
-                #                            
-                #            if source[-1] in tree[key][2]:
-                #                if tree[key][1]:
-                #                    result.append([tree[key][0]])
-                #                    print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                #                            
-                #                for seq in reconstructResults4(tree, max_level, cycle, source+[key]):
-                #                    if seq != []:
-                #                        seq.insert(0, tree[key][0])
-                #                        result.append(seq)           
-                #    return result
-                
-                self.tree = {}
-                #print "start ...",
-                #self.evalRecursion4(prog, FROM_n, list(FROM), 220)
-                #print "stop"
-                #return self.tree
-                #return reconstructResults4(self.tree, RECURSION[3][2])
-                
-                self.evalRecursionDeep(prog, FROM_n, list(FROM), RECURSION[3][2])
-                return search(self.tree,  RECURSION[3][2])
-                
-                self.tree = {}
-                self.__counter = -1
-                self.evalRecursion2(prog, FROM_n, list(FROM), RECURSION[3][2], set() if RECURSION[3][0] else None)
-                
-                def reconstructResults(tree, first=True, level=None):
-                    result = []
-                    if first == True:
-                        for key in tree.keys():
-                            if tree[key][1]:
-                                for (source, l) in tree[key][2]:
-                                    for seq in reconstructResults(tree, source, l):
-                                        seq.append(tree[key][0])
-                                        result.append(seq)
-                        result2 = []
-                        for r in result:
-                            if not r in result2:
-                                result2.append(r)
-                        return result2
-                    else:
-                        for (source, l) in tree[first][2]:
-                            if source == None:
-                                result.append( [tree[first][0]] )
-                            elif l>level:
-                                #results2 = []
-                                for seq in reconstructResults(tree, source, l):
-                                    seq.append(tree[first][0])
-                                    result.append(seq)
-                    return result   
-                
-                #return self.tree
-                return reconstructResults(self.tree)
             
+            ## graph == MEMORIZE
+            if RECURSION[3][2] > 0:
+                self.tree = {}
+                self.evalRecursionDeep(prog, FROM_n, list(FROM), RECURSION[3][2])
+                
+                return self.reconsturctDeep(graph = self.tree,
+                                            max_iter = RECURSION[3][2],
+                                            max_results=RECURSION[3][3],
+                                            infinit=eq(RECURSION[3][3],0))
+                
             if RECURSION[3][1]:
                 self.unique = set()
             else :
                 self.unique = None
-            return self.evalRecursion(prog, FROM_n, list(FROM), set() if RECURSION[3][0] else None)
+            
+            if RECURSION[3][3] > 0:
+                return self.evalRecursion(prog, FROM_n, list(FROM), set() if RECURSION[3][0] else None)[0:RECURSION[3][3]]
+            else:
+                return self.evalRecursion(prog, FROM_n, list(FROM), set() if RECURSION[3][0] else None)
         #########################################################################################
         else:
             WHERE   = prog[2]
@@ -372,9 +248,61 @@ class Interpreter():
                 FROM_n[self.eval(p[2][0])] = n+start
                 
         return (product(*FROM), FROM_n)
+
+    def evalWhere(self, FROM, FROM_n, WHERE):
+        if WHERE == []:
+            return FROM
+        return [ elem for elem in FROM if self.eval(WHERE, elem, FROM_n) ]
+    ####################################################################################################################
+    def evalGroup(self, GROUP, FROM_n, RESULTS):
+        matrix = map( lambda elem:  list(chain( map(lambda g: self.eval(g, elem, FROM_n), GROUP), [elem])), RESULTS )  
+        for i in range(len(GROUP)-1, -1, -1):
+            matrix = sorted(matrix, key=itemgetter(i))        
+        return { key: map(lambda e: e[-1], val) for key, val in groupby( matrix, lambda g: str(g[:-1])[1:-1]) }
+    ####################################################################################################################
+    def evalOrder(self, ORDER, FROM_n, RESULTS):        
+        matrix = map( lambda elem:  list(chain( map(lambda o: self.eval(o[0], elem, FROM_n), ORDER), [elem])), RESULTS )        
+        for i in range(len(ORDER)-1, -1, -1):
+            matrix.sort(key=itemgetter(i), reverse = ORDER[i][1])
+        return map(lambda x: x[-1], matrix)        
+    ####################################################################################################################
+    def evalAs(self, AS, PARAMS, SELECT, FROM_n, RESULTS):
+        if AS == SelectScript.asTypes['list']:
+            return self.evalAS_list(PARAMS, SELECT, FROM_n, RESULTS)
+        elif AS == SelectScript.asTypes['dict']:
+            return self.evalAS_dict(PARAMS, SELECT, FROM_n, RESULTS)
+        elif AS == SelectScript.asTypes['value']:
+            return self.evalAS_value(PARAMS, SELECT, FROM_n, RESULTS)
+        return None
+    ####################################################################################################################
+    def evalAS_value(self, PARAMS, SELECT, FROM_n, RESULTS):
+        if RESULTS != []:
+            return self.eval( SELECT[0] , RESULTS[0], FROM_n )
+        return []
+    ####################################################################################################################
+    def evalAS_list(self, PARAMS, SELECT, FROM_n, RESULTS):
+        return [ self.eval(fct, elem, FROM_n) for elem in RESULTS for fct in SELECT]
+    ####################################################################################################################
+    def evalAS_dict(self, PARAMS, SELECT, FROM_n, RESULTS):
+        return [ { self.eval(f[2][1], elem, FROM_n) if f[1] == "to" else f[1] :
+                       self.eval(f, elem, FROM_n)
+                    for f in SELECT }
+                   for elem in RESULTS  ]
+    ####################################################################################################################
+    def getListFrom(self, obj):
+        return obj if isinstance(obj, list) else [obj]
+    def pprint(self, obj):
+        pass
+    
+    
+    def EVALrecursion(self, prog, FROM_n, FROM, level, ):
+        pass
+    
     ####################################################################################################################
     def evalRecursionDeep(self, prog, FROM_n, FROM, level):
-        
+        """
+        Generates a graph, instead of recursively iterating a function
+        """
         start_with = deepcopy(prog[7][0])
         connect_by = deepcopy(prog[7][1])
         stop_with  = deepcopy(prog[7][2])
@@ -455,153 +383,82 @@ class Interpreter():
                                     self.tree[hashID][2].add(source)
                             
         self.var_list = deepcopy(initial_var_list)
-    
-
-    def evalRecursion2(self, prog, FROM_n, FROM, level, cycle=None, source=None):        
-        if self.__counter == -1:
-            self.__b=len(FROM)
-            self.__counter = self.__b**level
-            
         
-        if level == 0:
-            return
-        start_with = deepcopy(prog[7][0])
-        connect_by = deepcopy(prog[7][1])
-        stop_with  = deepcopy(prog[7][2])
-        
-        prog[7][0] = []                 # remove start with
-        
-        sub_prog = deepcopy(prog)
-        sub_prog[7] = [[],[],[]]
-        
-        # create inital variable configuration
-        for e in start_with:
-            self.eval(e)
-        initial_var_list = deepcopy(self.var_list)
-        
-        rec_elem = []
-        for elem in FROM:
-            self.var_list = deepcopy(initial_var_list)
-            sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
-            hashID = str(hash(str(sub))) 
-            
-            self.__counter -= 1
-            
-            if self.eval(stop_with, elem, FROM_n):
-                
-                final = False
-                
-                self.__counter -= self.__b**(level-1)
-                
-                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                    final = True
-                    try:
-                        self.tree[hashID][2].add((source,level))
-                    except:
-                        self.tree[hashID] = [sub, final, set([(source, level)])]
+    def reconsturctDeep(self, graph, max_iter, start=None, end=None, max_results=0, infinit=True):
+        result = []
                     
-            else:
-                self.var_list = deepcopy(initial_var_list)
-                if cycle != None:
-                    if hashID in cycle:
-                        self.__counter -= self.__b**(level-1)
-                        self.var_list = deepcopy(initial_var_list)
-                        continue
+        if start == None:
+            start_nodes = []
+            end_nodes   = []
                 
-                rec = True
-                try:
-                    for s,l in self.tree[hashID][2]:
-                        if s==source and l > level:
-                            self.__counter -= self.__b**(level-1)
-                            rec = False
-                            break
+            for key in graph.keys():
+                if None in graph[key][2]:
+                    start_nodes.append(key)
+                if graph[key][0]:
+                    end_nodes.append(key)
+                                
+            for s in start_nodes:
+                for e in end_nodes:
+                    result += self.reconsturctDeep(graph, max_iter, [s], [e], max_results - len(result), infinit)
+                        
+            if result != []:
+                result_sub = []
+                for hashIDs in result:
+                    sub = []
+                    print " array",len(result_sub)
+                    for key in hashIDs:
+                        sub.append(graph[key][1])
+                    if not sub in result_sub: 
+                        result_sub.append(sub)
+                return result_sub
+                                
+        elif start[-1] == end[0]:
+            result.append(start + end[1:])
+            print "found1", len(result[-1]), max_results
+            max_results -= 1
+                    
+        elif len(start) + len(end) > max_iter:
+            pass
+                    
+        elif max_results <= 0 and not infinit:
+            pass
+                    
+        elif graph[start[-1]][3] > graph[end[0]][3]:
+            pass
+                    
+        else:
+            #E = list(graph[end[0]][2])
+            #shuffle(E)
+            for e in graph[end[0]][2]:
+                if e == None:
+                    continue
+                          
+                elif max_results <= 0 and not infinit:
+                    break
                             
-                            #else:
-                        
-                except:
-                    pass
-                        
-                print self.__counter, "   ", 100.*self.__counter/(self.__b**40)
-                
-                if rec:
-                    rec_elem.append([elem, sub, hashID])
-                    
-                    final = False
-                    if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                        final = True
-                    try:
-                        self.tree[hashID][2].add((source,level))
-                    except:
-                        self.tree[hashID] =[sub, final, set([(source, level)])]
+                if graph[end[0]][3] < graph[e][3]:
+                    continue
+                            
+                if e == start[-1]:
+                    result.append(start + [e] + end)
+                    print "found2", len(result[-1]), max_results
+                    max_results -=1
+                    # print "found1", max_results
+                                
+                elif not e in end:
+                    #S = list(graph.keys())
+                    #shuffle(S)
+                    for s in graph.keys():
+                        if max_results <= 0 and not infinit:
+                            break
+                        if (start[-1] in graph[s][2]) and not (s in start):
+                            if graph[start[-1]][3] < graph[s][3]:
+                                #print "ddd"
+                                r = self.reconsturctDeep(graph, max_iter, start+[s], [e]+end, max_results, infinit)
+                                result += r
+                                max_results -= len(r)                       
+        return result
 
-        for [elem, sub, hashID] in rec_elem:
-            self.var_list = deepcopy(initial_var_list)
-            for e in connect_by:
-                self.eval(e, elem, FROM_n)
-            
-            if cycle != None:
-                cycle2=deepcopy(cycle)
-                cycle2.add(hashID)
-                self.evalRecursion2(prog, FROM_n, FROM, level-1, cycle2, hashID)
-            else:
-                self.evalRecursion2(prog, FROM_n, FROM, level-1, None, hashID)
-
-    def evalRecursion4(self, prog, FROM_n, FROM, level, source=None):
-        
-        if level == 0:
-            return
-        
-        start_with = deepcopy(prog[7][0])
-        connect_by = deepcopy(prog[7][1])
-        stop_with  = deepcopy(prog[7][2])
-        
-        prog[7][0] = []                 # remove start with
-        
-        sub_prog = deepcopy(prog)
-        sub_prog[7] = [[],[],[]]
-        
-        # create inital variable configuration
-        for e in start_with:
-            self.eval(e)
-        initial_var_list = deepcopy(self.var_list)
-        
-        rec_elem = []
-        for elem in FROM:
-            self.var_list = deepcopy(initial_var_list)
-            sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
-            hashID = str(hash(str(sub))) 
-            
-            if self.eval(stop_with, elem, FROM_n):
-                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                    try:
-                        self.tree[hashID][2].add(source)
-                    except:
-                        self.tree[hashID] = [sub, True, set([source])]
-                    
-            else:
-                self.var_list = deepcopy(initial_var_list)
-                try:
-                    if source in self.tree[hashID][2]:
-                        continue
-                except:
-                    pass
-                        
-                rec_elem.append([elem, hashID])
-                
-                try:
-                    self.tree[hashID][2].add(source)
-                except:
-                    self.tree[hashID] =[sub, False, set([source])]
-                    
-                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                    self.tree[hashID][1] = True 
-                
-        for [elem, hashID] in rec_elem:
-            self.var_list = deepcopy(initial_var_list)
-            for e in connect_by:
-                self.eval(e, elem, FROM_n)
-            
-            self.evalRecursion4(prog, FROM_n, FROM, level-1, hashID)
 
     def evalRecursion(self, prog, FROM_n, FROM, cycle=None):
         #print "Start recursion"
@@ -681,47 +538,3 @@ class Interpreter():
             self.var_list = deepcopy(initial_var_list)
 
         return result
-    def evalWhere(self, FROM, FROM_n, WHERE):
-        if WHERE == []:
-            return FROM
-        return [ elem for elem in FROM if self.eval(WHERE, elem, FROM_n) ]
-    ####################################################################################################################
-    def evalGroup(self, GROUP, FROM_n, RESULTS):
-        matrix = map( lambda elem:  list(chain( map(lambda g: self.eval(g, elem, FROM_n), GROUP), [elem])), RESULTS )  
-        for i in range(len(GROUP)-1, -1, -1):
-            matrix = sorted(matrix, key=itemgetter(i))        
-        return { key: map(lambda e: e[-1], val) for key, val in groupby( matrix, lambda g: str(g[:-1])[1:-1]) }
-    ####################################################################################################################
-    def evalOrder(self, ORDER, FROM_n, RESULTS):        
-        matrix = map( lambda elem:  list(chain( map(lambda o: self.eval(o[0], elem, FROM_n), ORDER), [elem])), RESULTS )        
-        for i in range(len(ORDER)-1, -1, -1):
-            matrix.sort(key=itemgetter(i), reverse = ORDER[i][1])
-        return map(lambda x: x[-1], matrix)        
-    ####################################################################################################################
-    def evalAs(self, AS, PARAMS, SELECT, FROM_n, RESULTS):
-        if AS == SelectScript.asTypes['list']:
-            return self.evalAS_list(PARAMS, SELECT, FROM_n, RESULTS)
-        elif AS == SelectScript.asTypes['dict']:
-            return self.evalAS_dict(PARAMS, SELECT, FROM_n, RESULTS)
-        elif AS == SelectScript.asTypes['value']:
-            return self.evalAS_value(PARAMS, SELECT, FROM_n, RESULTS)
-        return None
-    ####################################################################################################################
-    def evalAS_value(self, PARAMS, SELECT, FROM_n, RESULTS):
-        if RESULTS != []:
-            return self.eval( SELECT[0] , RESULTS[0], FROM_n )
-        return []
-    ####################################################################################################################
-    def evalAS_list(self, PARAMS, SELECT, FROM_n, RESULTS):
-        return [ self.eval(fct, elem, FROM_n) for elem in RESULTS for fct in SELECT]
-    ####################################################################################################################
-    def evalAS_dict(self, PARAMS, SELECT, FROM_n, RESULTS):
-        return [ { self.eval(f[2][1], elem, FROM_n) if f[1] == "to" else f[1] :
-                       self.eval(f, elem, FROM_n)
-                    for f in SELECT }
-                   for elem in RESULTS  ]
-    ####################################################################################################################
-    def getListFrom(self, obj):
-        return obj if isinstance(obj, list) else [obj]
-    def pprint(self, obj):
-        pass

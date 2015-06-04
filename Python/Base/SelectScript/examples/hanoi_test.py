@@ -38,9 +38,9 @@ moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
               
 SELECT mov.this, tower
 FROM mov=moves
-WHERE [[],[],[8,7,6,5,4,3,2,1]] == move( mov.this, tower )
+WHERE [[],[],[4,3,2,1]] == move( mov.this, tower )
               
-START WITH tower = [[8,7,6,5,4,3,2,1],[],[]]
+START WITH tower = [[4,3,2,1],[],[]]
 CONNECT BY MEMORIZE 255 tower = move( mov.this, tower )
 STOP WITH  [] == move( mov.this, tower )
               

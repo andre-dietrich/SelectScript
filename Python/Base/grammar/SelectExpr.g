@@ -196,7 +196,8 @@ expr : assign_expr
 if_statement : IF '(' expr (END parameter (END parameter)?)? ')' -> ^(IF expr ( ^(THEN parameter (^(ELSE parameter))? ))? )
 ;
 
-assign_expr : PHRASE (age)? ASSIGN expr -> ^(ASSIGN PHRASE expr (age)?);
+//assign_expr : PHRASE (age)? ASSIGN expr -> ^(ASSIGN PHRASE expr (age)?);
+assign_expr : PHRASE (age)? ASSIGN expr -> ^(ASSIGN PHRASE expr (age)?) | this_ ASSIGN expr -> ^(ASSIGN this_ expr );
 
 logic_expr : logic_or ;
 logic_or  : logic_xor (OR^  logic_xor)* ;

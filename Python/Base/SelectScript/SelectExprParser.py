@@ -1,4 +1,4 @@
-# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectExpr.g 2014-12-04 17:45:33
+# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectExpr.g 2015-06-04 17:55:52
 
 import sys
 from antlr3 import *
@@ -178,15 +178,15 @@ class SelectExprParser(Parser):
             transition = self.DFA31_transition
             )
 
-        self.dfa51 = self.DFA51(
-            self, 51,
-            eot = self.DFA51_eot,
-            eof = self.DFA51_eof,
-            min = self.DFA51_min,
-            max = self.DFA51_max,
-            accept = self.DFA51_accept,
-            special = self.DFA51_special,
-            transition = self.DFA51_transition
+        self.dfa52 = self.DFA52(
+            self, 52,
+            eot = self.DFA52_eot,
+            eof = self.DFA52_eof,
+            min = self.DFA52_min,
+            max = self.DFA52_max,
+            accept = self.DFA52_accept,
+            special = self.DFA52_special,
+            transition = self.DFA52_transition
             )
 
 
@@ -659,7 +659,7 @@ class SelectExprParser(Parser):
 
 
                 # AST Rewrite
-                # elements: having_, where_, as_, start_, select_, order_, from_, connect_, stop_, group_
+                # elements: select_, start_, order_, stop_, group_, connect_, having_, from_, as_, where_
                 # token labels: 
                 # rule labels: retval
                 # token list labels: 
@@ -690,7 +690,7 @@ class SelectExprParser(Parser):
 
                     stream_where_.reset();
                     # SelectExpr.g:156:134: ( group_ ( having_ )? )?
-                    if stream_having_.hasNext() or stream_group_.hasNext():
+                    if stream_group_.hasNext() or stream_having_.hasNext():
                         self._adaptor.addChild(root_1, stream_group_.nextTree())
                         # SelectExpr.g:156:142: ( having_ )?
                         if stream_having_.hasNext():
@@ -700,8 +700,8 @@ class SelectExprParser(Parser):
                         stream_having_.reset();
 
 
-                    stream_having_.reset();
                     stream_group_.reset();
+                    stream_having_.reset();
                     # SelectExpr.g:156:155: ( order_ )?
                     if stream_order_.hasNext():
                         self._adaptor.addChild(root_1, stream_order_.nextTree())
@@ -715,7 +715,7 @@ class SelectExprParser(Parser):
 
                     stream_as_.reset();
                     # SelectExpr.g:156:172: ( ( start_ )? connect_ stop_ )?
-                    if stream_start_.hasNext() or stream_connect_.hasNext() or stream_stop_.hasNext():
+                    if stream_start_.hasNext() or stream_stop_.hasNext() or stream_connect_.hasNext():
                         # SelectExpr.g:156:173: ( start_ )?
                         if stream_start_.hasNext():
                             self._adaptor.addChild(root_1, stream_start_.nextTree())
@@ -727,8 +727,8 @@ class SelectExprParser(Parser):
 
 
                     stream_start_.reset();
-                    stream_connect_.reset();
                     stream_stop_.reset();
+                    stream_connect_.reset();
 
                     self._adaptor.addChild(root_0, root_1)
 
@@ -2443,7 +2443,7 @@ class SelectExprParser(Parser):
                     stream_108.add(char_literal91)
 
                 # AST Rewrite
-                # elements: expr, parameter, IF, parameter
+                # elements: IF, expr, parameter, parameter
                 # token labels: 
                 # rule labels: retval
                 # token list labels: 
@@ -2529,7 +2529,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "assign_expr"
-    # SelectExpr.g:199:1: assign_expr : PHRASE ( age )? ASSIGN expr -> ^( ASSIGN PHRASE expr ( age )? ) ;
+    # SelectExpr.g:200:1: assign_expr : ( PHRASE ( age )? ASSIGN expr -> ^( ASSIGN PHRASE expr ( age )? ) | this_ ASSIGN expr -> ^( ASSIGN this_ expr ) );
     def assign_expr(self, ):
 
         retval = self.assign_expr_return()
@@ -2539,91 +2539,178 @@ class SelectExprParser(Parser):
 
         PHRASE92 = None
         ASSIGN94 = None
+        ASSIGN97 = None
         age93 = None
 
         expr95 = None
 
+        this_96 = None
+
+        expr98 = None
+
 
         PHRASE92_tree = None
         ASSIGN94_tree = None
+        ASSIGN97_tree = None
         stream_PHRASE = RewriteRuleTokenStream(self._adaptor, "token PHRASE")
         stream_ASSIGN = RewriteRuleTokenStream(self._adaptor, "token ASSIGN")
+        stream_this_ = RewriteRuleSubtreeStream(self._adaptor, "rule this_")
         stream_expr = RewriteRuleSubtreeStream(self._adaptor, "rule expr")
         stream_age = RewriteRuleSubtreeStream(self._adaptor, "rule age")
         try:
             try:
-                # SelectExpr.g:199:13: ( PHRASE ( age )? ASSIGN expr -> ^( ASSIGN PHRASE expr ( age )? ) )
-                # SelectExpr.g:199:15: PHRASE ( age )? ASSIGN expr
-                pass 
-                PHRASE92=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_assign_expr2040) 
-                if self._state.backtracking == 0:
-                    stream_PHRASE.add(PHRASE92)
-                # SelectExpr.g:199:22: ( age )?
-                alt34 = 2
-                LA34_0 = self.input.LA(1)
+                # SelectExpr.g:200:13: ( PHRASE ( age )? ASSIGN expr -> ^( ASSIGN PHRASE expr ( age )? ) | this_ ASSIGN expr -> ^( ASSIGN this_ expr ) )
+                alt35 = 2
+                LA35_0 = self.input.LA(1)
 
-                if (LA34_0 == AGE_BEGIN) :
-                    alt34 = 1
-                if alt34 == 1:
-                    # SelectExpr.g:199:23: age
+                if (LA35_0 == PHRASE) :
+                    LA35_1 = self.input.LA(2)
+
+                    if (LA35_1 == DOT) :
+                        alt35 = 2
+                    elif (LA35_1 == ASSIGN or LA35_1 == AGE_BEGIN) :
+                        alt35 = 1
+                    else:
+                        if self._state.backtracking > 0:
+                            raise BacktrackingFailed
+
+                        nvae = NoViableAltException("", 35, 1, self.input)
+
+                        raise nvae
+
+                elif (LA35_0 == THIS) :
+                    alt35 = 2
+                else:
+                    if self._state.backtracking > 0:
+                        raise BacktrackingFailed
+
+                    nvae = NoViableAltException("", 35, 0, self.input)
+
+                    raise nvae
+
+                if alt35 == 1:
+                    # SelectExpr.g:200:15: PHRASE ( age )? ASSIGN expr
                     pass 
-                    self._state.following.append(self.FOLLOW_age_in_assign_expr2043)
-                    age93 = self.age()
+                    PHRASE92=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_assign_expr2041) 
+                    if self._state.backtracking == 0:
+                        stream_PHRASE.add(PHRASE92)
+                    # SelectExpr.g:200:22: ( age )?
+                    alt34 = 2
+                    LA34_0 = self.input.LA(1)
+
+                    if (LA34_0 == AGE_BEGIN) :
+                        alt34 = 1
+                    if alt34 == 1:
+                        # SelectExpr.g:200:23: age
+                        pass 
+                        self._state.following.append(self.FOLLOW_age_in_assign_expr2044)
+                        age93 = self.age()
+
+                        self._state.following.pop()
+                        if self._state.backtracking == 0:
+                            stream_age.add(age93.tree)
+
+
+
+                    ASSIGN94=self.match(self.input, ASSIGN, self.FOLLOW_ASSIGN_in_assign_expr2048) 
+                    if self._state.backtracking == 0:
+                        stream_ASSIGN.add(ASSIGN94)
+                    self._state.following.append(self.FOLLOW_expr_in_assign_expr2050)
+                    expr95 = self.expr()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_age.add(age93.tree)
+                        stream_expr.add(expr95.tree)
+
+                    # AST Rewrite
+                    # elements: expr, PHRASE, age, ASSIGN
+                    # token labels: 
+                    # rule labels: retval
+                    # token list labels: 
+                    # rule list labels: 
+                    # wildcard labels: 
+                    if self._state.backtracking == 0:
+
+                        retval.tree = root_0
+
+                        if retval is not None:
+                            stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                        else:
+                            stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+
+
+                        root_0 = self._adaptor.nil()
+                        # 200:41: -> ^( ASSIGN PHRASE expr ( age )? )
+                        # SelectExpr.g:200:44: ^( ASSIGN PHRASE expr ( age )? )
+                        root_1 = self._adaptor.nil()
+                        root_1 = self._adaptor.becomeRoot(stream_ASSIGN.nextNode(), root_1)
+
+                        self._adaptor.addChild(root_1, stream_PHRASE.nextNode())
+                        self._adaptor.addChild(root_1, stream_expr.nextTree())
+                        # SelectExpr.g:200:65: ( age )?
+                        if stream_age.hasNext():
+                            self._adaptor.addChild(root_1, stream_age.nextTree())
+
+
+                        stream_age.reset();
+
+                        self._adaptor.addChild(root_0, root_1)
 
 
 
-                ASSIGN94=self.match(self.input, ASSIGN, self.FOLLOW_ASSIGN_in_assign_expr2047) 
-                if self._state.backtracking == 0:
-                    stream_ASSIGN.add(ASSIGN94)
-                self._state.following.append(self.FOLLOW_expr_in_assign_expr2049)
-                expr95 = self.expr()
-
-                self._state.following.pop()
-                if self._state.backtracking == 0:
-                    stream_expr.add(expr95.tree)
-
-                # AST Rewrite
-                # elements: expr, PHRASE, ASSIGN, age
-                # token labels: 
-                # rule labels: retval
-                # token list labels: 
-                # rule list labels: 
-                # wildcard labels: 
-                if self._state.backtracking == 0:
-
-                    retval.tree = root_0
-
-                    if retval is not None:
-                        stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
-                    else:
-                        stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+                        retval.tree = root_0
 
 
-                    root_0 = self._adaptor.nil()
-                    # 199:41: -> ^( ASSIGN PHRASE expr ( age )? )
-                    # SelectExpr.g:199:44: ^( ASSIGN PHRASE expr ( age )? )
-                    root_1 = self._adaptor.nil()
-                    root_1 = self._adaptor.becomeRoot(stream_ASSIGN.nextNode(), root_1)
+                elif alt35 == 2:
+                    # SelectExpr.g:200:75: this_ ASSIGN expr
+                    pass 
+                    self._state.following.append(self.FOLLOW_this__in_assign_expr2069)
+                    this_96 = self.this_()
 
-                    self._adaptor.addChild(root_1, stream_PHRASE.nextNode())
-                    self._adaptor.addChild(root_1, stream_expr.nextTree())
-                    # SelectExpr.g:199:65: ( age )?
-                    if stream_age.hasNext():
-                        self._adaptor.addChild(root_1, stream_age.nextTree())
+                    self._state.following.pop()
+                    if self._state.backtracking == 0:
+                        stream_this_.add(this_96.tree)
+                    ASSIGN97=self.match(self.input, ASSIGN, self.FOLLOW_ASSIGN_in_assign_expr2071) 
+                    if self._state.backtracking == 0:
+                        stream_ASSIGN.add(ASSIGN97)
+                    self._state.following.append(self.FOLLOW_expr_in_assign_expr2073)
+                    expr98 = self.expr()
+
+                    self._state.following.pop()
+                    if self._state.backtracking == 0:
+                        stream_expr.add(expr98.tree)
+
+                    # AST Rewrite
+                    # elements: expr, ASSIGN, this_
+                    # token labels: 
+                    # rule labels: retval
+                    # token list labels: 
+                    # rule list labels: 
+                    # wildcard labels: 
+                    if self._state.backtracking == 0:
+
+                        retval.tree = root_0
+
+                        if retval is not None:
+                            stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                        else:
+                            stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
 
 
-                    stream_age.reset();
+                        root_0 = self._adaptor.nil()
+                        # 200:93: -> ^( ASSIGN this_ expr )
+                        # SelectExpr.g:200:96: ^( ASSIGN this_ expr )
+                        root_1 = self._adaptor.nil()
+                        root_1 = self._adaptor.becomeRoot(stream_ASSIGN.nextNode(), root_1)
 
-                    self._adaptor.addChild(root_0, root_1)
+                        self._adaptor.addChild(root_1, stream_this_.nextTree())
+                        self._adaptor.addChild(root_1, stream_expr.nextTree())
+
+                        self._adaptor.addChild(root_0, root_1)
 
 
 
-                    retval.tree = root_0
-
+                        retval.tree = root_0
 
 
                 retval.stop = self.input.LT(-1)
@@ -2655,7 +2742,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "logic_expr"
-    # SelectExpr.g:201:1: logic_expr : logic_or ;
+    # SelectExpr.g:202:1: logic_expr : logic_or ;
     def logic_expr(self, ):
 
         retval = self.logic_expr_return()
@@ -2663,23 +2750,23 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        logic_or96 = None
+        logic_or99 = None
 
 
 
         try:
             try:
-                # SelectExpr.g:201:12: ( logic_or )
-                # SelectExpr.g:201:14: logic_or
+                # SelectExpr.g:202:12: ( logic_or )
+                # SelectExpr.g:202:14: logic_or
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_logic_or_in_logic_expr2072)
-                logic_or96 = self.logic_or()
+                self._state.following.append(self.FOLLOW_logic_or_in_logic_expr2092)
+                logic_or99 = self.logic_or()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, logic_or96.tree)
+                    self._adaptor.addChild(root_0, logic_or99.tree)
 
 
 
@@ -2712,7 +2799,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "logic_or"
-    # SelectExpr.g:202:1: logic_or : logic_xor ( OR logic_xor )* ;
+    # SelectExpr.g:203:1: logic_or : logic_xor ( OR logic_xor )* ;
     def logic_or(self, ):
 
         retval = self.logic_or_return()
@@ -2720,60 +2807,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        OR98 = None
-        logic_xor97 = None
+        OR101 = None
+        logic_xor100 = None
 
-        logic_xor99 = None
+        logic_xor102 = None
 
 
-        OR98_tree = None
+        OR101_tree = None
 
         try:
             try:
-                # SelectExpr.g:202:11: ( logic_xor ( OR logic_xor )* )
-                # SelectExpr.g:202:13: logic_xor ( OR logic_xor )*
+                # SelectExpr.g:203:11: ( logic_xor ( OR logic_xor )* )
+                # SelectExpr.g:203:13: logic_xor ( OR logic_xor )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_logic_xor_in_logic_or2081)
-                logic_xor97 = self.logic_xor()
+                self._state.following.append(self.FOLLOW_logic_xor_in_logic_or2101)
+                logic_xor100 = self.logic_xor()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, logic_xor97.tree)
-                # SelectExpr.g:202:23: ( OR logic_xor )*
-                while True: #loop35
-                    alt35 = 2
-                    LA35_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, logic_xor100.tree)
+                # SelectExpr.g:203:23: ( OR logic_xor )*
+                while True: #loop36
+                    alt36 = 2
+                    LA36_0 = self.input.LA(1)
 
-                    if (LA35_0 == OR) :
-                        LA35_2 = self.input.LA(2)
+                    if (LA36_0 == OR) :
+                        LA36_2 = self.input.LA(2)
 
-                        if (self.synpred41_SelectExpr()) :
-                            alt35 = 1
-
-
+                        if (self.synpred42_SelectExpr()) :
+                            alt36 = 1
 
 
-                    if alt35 == 1:
-                        # SelectExpr.g:202:24: OR logic_xor
+
+
+                    if alt36 == 1:
+                        # SelectExpr.g:203:24: OR logic_xor
                         pass 
-                        OR98=self.match(self.input, OR, self.FOLLOW_OR_in_logic_or2084)
+                        OR101=self.match(self.input, OR, self.FOLLOW_OR_in_logic_or2104)
                         if self._state.backtracking == 0:
 
-                            OR98_tree = self._adaptor.createWithPayload(OR98)
-                            root_0 = self._adaptor.becomeRoot(OR98_tree, root_0)
+                            OR101_tree = self._adaptor.createWithPayload(OR101)
+                            root_0 = self._adaptor.becomeRoot(OR101_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_logic_xor_in_logic_or2088)
-                        logic_xor99 = self.logic_xor()
+                        self._state.following.append(self.FOLLOW_logic_xor_in_logic_or2108)
+                        logic_xor102 = self.logic_xor()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, logic_xor99.tree)
+                            self._adaptor.addChild(root_0, logic_xor102.tree)
 
 
                     else:
-                        break #loop35
+                        break #loop36
 
 
 
@@ -2806,7 +2893,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "logic_xor"
-    # SelectExpr.g:203:1: logic_xor : logic_and ( XOR logic_and )* ;
+    # SelectExpr.g:204:1: logic_xor : logic_and ( XOR logic_and )* ;
     def logic_xor(self, ):
 
         retval = self.logic_xor_return()
@@ -2814,60 +2901,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        XOR101 = None
-        logic_and100 = None
+        XOR104 = None
+        logic_and103 = None
 
-        logic_and102 = None
+        logic_and105 = None
 
 
-        XOR101_tree = None
+        XOR104_tree = None
 
         try:
             try:
-                # SelectExpr.g:203:11: ( logic_and ( XOR logic_and )* )
-                # SelectExpr.g:203:13: logic_and ( XOR logic_and )*
+                # SelectExpr.g:204:11: ( logic_and ( XOR logic_and )* )
+                # SelectExpr.g:204:13: logic_and ( XOR logic_and )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_logic_and_in_logic_xor2098)
-                logic_and100 = self.logic_and()
+                self._state.following.append(self.FOLLOW_logic_and_in_logic_xor2118)
+                logic_and103 = self.logic_and()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, logic_and100.tree)
-                # SelectExpr.g:203:23: ( XOR logic_and )*
-                while True: #loop36
-                    alt36 = 2
-                    LA36_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, logic_and103.tree)
+                # SelectExpr.g:204:23: ( XOR logic_and )*
+                while True: #loop37
+                    alt37 = 2
+                    LA37_0 = self.input.LA(1)
 
-                    if (LA36_0 == XOR) :
-                        LA36_2 = self.input.LA(2)
+                    if (LA37_0 == XOR) :
+                        LA37_2 = self.input.LA(2)
 
-                        if (self.synpred42_SelectExpr()) :
-                            alt36 = 1
-
-
+                        if (self.synpred43_SelectExpr()) :
+                            alt37 = 1
 
 
-                    if alt36 == 1:
-                        # SelectExpr.g:203:24: XOR logic_and
+
+
+                    if alt37 == 1:
+                        # SelectExpr.g:204:24: XOR logic_and
                         pass 
-                        XOR101=self.match(self.input, XOR, self.FOLLOW_XOR_in_logic_xor2101)
+                        XOR104=self.match(self.input, XOR, self.FOLLOW_XOR_in_logic_xor2121)
                         if self._state.backtracking == 0:
 
-                            XOR101_tree = self._adaptor.createWithPayload(XOR101)
-                            root_0 = self._adaptor.becomeRoot(XOR101_tree, root_0)
+                            XOR104_tree = self._adaptor.createWithPayload(XOR104)
+                            root_0 = self._adaptor.becomeRoot(XOR104_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_logic_and_in_logic_xor2104)
-                        logic_and102 = self.logic_and()
+                        self._state.following.append(self.FOLLOW_logic_and_in_logic_xor2124)
+                        logic_and105 = self.logic_and()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, logic_and102.tree)
+                            self._adaptor.addChild(root_0, logic_and105.tree)
 
 
                     else:
-                        break #loop36
+                        break #loop37
 
 
 
@@ -2900,7 +2987,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "logic_and"
-    # SelectExpr.g:204:1: logic_and : logic_not ( AND logic_not )* ;
+    # SelectExpr.g:205:1: logic_and : logic_not ( AND logic_not )* ;
     def logic_and(self, ):
 
         retval = self.logic_and_return()
@@ -2908,60 +2995,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        AND104 = None
-        logic_not103 = None
+        AND107 = None
+        logic_not106 = None
 
-        logic_not105 = None
+        logic_not108 = None
 
 
-        AND104_tree = None
+        AND107_tree = None
 
         try:
             try:
-                # SelectExpr.g:204:11: ( logic_not ( AND logic_not )* )
-                # SelectExpr.g:204:13: logic_not ( AND logic_not )*
+                # SelectExpr.g:205:11: ( logic_not ( AND logic_not )* )
+                # SelectExpr.g:205:13: logic_not ( AND logic_not )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_logic_not_in_logic_and2114)
-                logic_not103 = self.logic_not()
+                self._state.following.append(self.FOLLOW_logic_not_in_logic_and2134)
+                logic_not106 = self.logic_not()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, logic_not103.tree)
-                # SelectExpr.g:204:23: ( AND logic_not )*
-                while True: #loop37
-                    alt37 = 2
-                    LA37_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, logic_not106.tree)
+                # SelectExpr.g:205:23: ( AND logic_not )*
+                while True: #loop38
+                    alt38 = 2
+                    LA38_0 = self.input.LA(1)
 
-                    if (LA37_0 == AND) :
-                        LA37_2 = self.input.LA(2)
+                    if (LA38_0 == AND) :
+                        LA38_2 = self.input.LA(2)
 
-                        if (self.synpred43_SelectExpr()) :
-                            alt37 = 1
-
-
+                        if (self.synpred44_SelectExpr()) :
+                            alt38 = 1
 
 
-                    if alt37 == 1:
-                        # SelectExpr.g:204:24: AND logic_not
+
+
+                    if alt38 == 1:
+                        # SelectExpr.g:205:24: AND logic_not
                         pass 
-                        AND104=self.match(self.input, AND, self.FOLLOW_AND_in_logic_and2117)
+                        AND107=self.match(self.input, AND, self.FOLLOW_AND_in_logic_and2137)
                         if self._state.backtracking == 0:
 
-                            AND104_tree = self._adaptor.createWithPayload(AND104)
-                            root_0 = self._adaptor.becomeRoot(AND104_tree, root_0)
+                            AND107_tree = self._adaptor.createWithPayload(AND107)
+                            root_0 = self._adaptor.becomeRoot(AND107_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_logic_not_in_logic_and2120)
-                        logic_not105 = self.logic_not()
+                        self._state.following.append(self.FOLLOW_logic_not_in_logic_and2140)
+                        logic_not108 = self.logic_not()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, logic_not105.tree)
+                            self._adaptor.addChild(root_0, logic_not108.tree)
 
 
                     else:
-                        break #loop37
+                        break #loop38
 
 
 
@@ -2994,7 +3081,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "logic_not"
-    # SelectExpr.g:205:1: logic_not : ( NOT )? compare_expr ;
+    # SelectExpr.g:206:1: logic_not : ( NOT )? compare_expr ;
     def logic_not(self, ):
 
         retval = self.logic_not_return()
@@ -3002,43 +3089,43 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        NOT106 = None
-        compare_expr107 = None
+        NOT109 = None
+        compare_expr110 = None
 
 
-        NOT106_tree = None
+        NOT109_tree = None
 
         try:
             try:
-                # SelectExpr.g:205:11: ( ( NOT )? compare_expr )
-                # SelectExpr.g:205:13: ( NOT )? compare_expr
+                # SelectExpr.g:206:11: ( ( NOT )? compare_expr )
+                # SelectExpr.g:206:13: ( NOT )? compare_expr
                 pass 
                 root_0 = self._adaptor.nil()
 
-                # SelectExpr.g:205:13: ( NOT )?
-                alt38 = 2
-                LA38_0 = self.input.LA(1)
+                # SelectExpr.g:206:13: ( NOT )?
+                alt39 = 2
+                LA39_0 = self.input.LA(1)
 
-                if (LA38_0 == NOT) :
-                    alt38 = 1
-                if alt38 == 1:
-                    # SelectExpr.g:205:14: NOT
+                if (LA39_0 == NOT) :
+                    alt39 = 1
+                if alt39 == 1:
+                    # SelectExpr.g:206:14: NOT
                     pass 
-                    NOT106=self.match(self.input, NOT, self.FOLLOW_NOT_in_logic_not2131)
+                    NOT109=self.match(self.input, NOT, self.FOLLOW_NOT_in_logic_not2151)
                     if self._state.backtracking == 0:
 
-                        NOT106_tree = self._adaptor.createWithPayload(NOT106)
-                        root_0 = self._adaptor.becomeRoot(NOT106_tree, root_0)
+                        NOT109_tree = self._adaptor.createWithPayload(NOT109)
+                        root_0 = self._adaptor.becomeRoot(NOT109_tree, root_0)
 
 
 
 
-                self._state.following.append(self.FOLLOW_compare_expr_in_logic_not2136)
-                compare_expr107 = self.compare_expr()
+                self._state.following.append(self.FOLLOW_compare_expr_in_logic_not2156)
+                compare_expr110 = self.compare_expr()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_expr107.tree)
+                    self._adaptor.addChild(root_0, compare_expr110.tree)
 
 
 
@@ -3071,7 +3158,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_expr"
-    # SelectExpr.g:207:1: compare_expr : compare_in ;
+    # SelectExpr.g:208:1: compare_expr : compare_in ;
     def compare_expr(self, ):
 
         retval = self.compare_expr_return()
@@ -3079,23 +3166,23 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        compare_in108 = None
+        compare_in111 = None
 
 
 
         try:
             try:
-                # SelectExpr.g:207:14: ( compare_in )
-                # SelectExpr.g:207:16: compare_in
+                # SelectExpr.g:208:14: ( compare_in )
+                # SelectExpr.g:208:16: compare_in
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_in_in_compare_expr2145)
-                compare_in108 = self.compare_in()
+                self._state.following.append(self.FOLLOW_compare_in_in_compare_expr2165)
+                compare_in111 = self.compare_in()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_in108.tree)
+                    self._adaptor.addChild(root_0, compare_in111.tree)
 
 
 
@@ -3128,7 +3215,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_in"
-    # SelectExpr.g:208:1: compare_in : compare_eq ( IN atom )* ;
+    # SelectExpr.g:209:1: compare_in : compare_eq ( IN atom )* ;
     def compare_in(self, ):
 
         retval = self.compare_in_return()
@@ -3136,60 +3223,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        IN110 = None
-        compare_eq109 = None
+        IN113 = None
+        compare_eq112 = None
 
-        atom111 = None
+        atom114 = None
 
 
-        IN110_tree = None
+        IN113_tree = None
 
         try:
             try:
-                # SelectExpr.g:208:12: ( compare_eq ( IN atom )* )
-                # SelectExpr.g:208:14: compare_eq ( IN atom )*
+                # SelectExpr.g:209:12: ( compare_eq ( IN atom )* )
+                # SelectExpr.g:209:14: compare_eq ( IN atom )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_eq_in_compare_in2153)
-                compare_eq109 = self.compare_eq()
+                self._state.following.append(self.FOLLOW_compare_eq_in_compare_in2173)
+                compare_eq112 = self.compare_eq()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_eq109.tree)
-                # SelectExpr.g:208:25: ( IN atom )*
-                while True: #loop39
-                    alt39 = 2
-                    LA39_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_eq112.tree)
+                # SelectExpr.g:209:25: ( IN atom )*
+                while True: #loop40
+                    alt40 = 2
+                    LA40_0 = self.input.LA(1)
 
-                    if (LA39_0 == IN) :
-                        LA39_2 = self.input.LA(2)
+                    if (LA40_0 == IN) :
+                        LA40_2 = self.input.LA(2)
 
-                        if (self.synpred45_SelectExpr()) :
-                            alt39 = 1
-
-
+                        if (self.synpred46_SelectExpr()) :
+                            alt40 = 1
 
 
-                    if alt39 == 1:
-                        # SelectExpr.g:208:26: IN atom
+
+
+                    if alt40 == 1:
+                        # SelectExpr.g:209:26: IN atom
                         pass 
-                        IN110=self.match(self.input, IN, self.FOLLOW_IN_in_compare_in2156)
+                        IN113=self.match(self.input, IN, self.FOLLOW_IN_in_compare_in2176)
                         if self._state.backtracking == 0:
 
-                            IN110_tree = self._adaptor.createWithPayload(IN110)
-                            root_0 = self._adaptor.becomeRoot(IN110_tree, root_0)
+                            IN113_tree = self._adaptor.createWithPayload(IN113)
+                            root_0 = self._adaptor.becomeRoot(IN113_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_atom_in_compare_in2159)
-                        atom111 = self.atom()
+                        self._state.following.append(self.FOLLOW_atom_in_compare_in2179)
+                        atom114 = self.atom()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, atom111.tree)
+                            self._adaptor.addChild(root_0, atom114.tree)
 
 
                     else:
-                        break #loop39
+                        break #loop40
 
 
 
@@ -3222,7 +3309,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_eq"
-    # SelectExpr.g:209:1: compare_eq : compare_ne ( EQ compare_ne )* ;
+    # SelectExpr.g:210:1: compare_eq : compare_ne ( EQ compare_ne )* ;
     def compare_eq(self, ):
 
         retval = self.compare_eq_return()
@@ -3230,60 +3317,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        EQ113 = None
-        compare_ne112 = None
+        EQ116 = None
+        compare_ne115 = None
 
-        compare_ne114 = None
+        compare_ne117 = None
 
 
-        EQ113_tree = None
+        EQ116_tree = None
 
         try:
             try:
-                # SelectExpr.g:209:12: ( compare_ne ( EQ compare_ne )* )
-                # SelectExpr.g:209:14: compare_ne ( EQ compare_ne )*
+                # SelectExpr.g:210:12: ( compare_ne ( EQ compare_ne )* )
+                # SelectExpr.g:210:14: compare_ne ( EQ compare_ne )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_ne_in_compare_eq2169)
-                compare_ne112 = self.compare_ne()
+                self._state.following.append(self.FOLLOW_compare_ne_in_compare_eq2189)
+                compare_ne115 = self.compare_ne()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_ne112.tree)
-                # SelectExpr.g:209:25: ( EQ compare_ne )*
-                while True: #loop40
-                    alt40 = 2
-                    LA40_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_ne115.tree)
+                # SelectExpr.g:210:25: ( EQ compare_ne )*
+                while True: #loop41
+                    alt41 = 2
+                    LA41_0 = self.input.LA(1)
 
-                    if (LA40_0 == EQ) :
-                        LA40_2 = self.input.LA(2)
+                    if (LA41_0 == EQ) :
+                        LA41_2 = self.input.LA(2)
 
-                        if (self.synpred46_SelectExpr()) :
-                            alt40 = 1
-
-
+                        if (self.synpred47_SelectExpr()) :
+                            alt41 = 1
 
 
-                    if alt40 == 1:
-                        # SelectExpr.g:209:26: EQ compare_ne
+
+
+                    if alt41 == 1:
+                        # SelectExpr.g:210:26: EQ compare_ne
                         pass 
-                        EQ113=self.match(self.input, EQ, self.FOLLOW_EQ_in_compare_eq2172)
+                        EQ116=self.match(self.input, EQ, self.FOLLOW_EQ_in_compare_eq2192)
                         if self._state.backtracking == 0:
 
-                            EQ113_tree = self._adaptor.createWithPayload(EQ113)
-                            root_0 = self._adaptor.becomeRoot(EQ113_tree, root_0)
+                            EQ116_tree = self._adaptor.createWithPayload(EQ116)
+                            root_0 = self._adaptor.becomeRoot(EQ116_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_compare_ne_in_compare_eq2175)
-                        compare_ne114 = self.compare_ne()
+                        self._state.following.append(self.FOLLOW_compare_ne_in_compare_eq2195)
+                        compare_ne117 = self.compare_ne()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, compare_ne114.tree)
+                            self._adaptor.addChild(root_0, compare_ne117.tree)
 
 
                     else:
-                        break #loop40
+                        break #loop41
 
 
 
@@ -3316,7 +3403,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_ne"
-    # SelectExpr.g:210:1: compare_ne : compare_ge ( NE compare_ge )* ;
+    # SelectExpr.g:211:1: compare_ne : compare_ge ( NE compare_ge )* ;
     def compare_ne(self, ):
 
         retval = self.compare_ne_return()
@@ -3324,60 +3411,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        NE116 = None
-        compare_ge115 = None
+        NE119 = None
+        compare_ge118 = None
 
-        compare_ge117 = None
+        compare_ge120 = None
 
 
-        NE116_tree = None
+        NE119_tree = None
 
         try:
             try:
-                # SelectExpr.g:210:12: ( compare_ge ( NE compare_ge )* )
-                # SelectExpr.g:210:14: compare_ge ( NE compare_ge )*
+                # SelectExpr.g:211:12: ( compare_ge ( NE compare_ge )* )
+                # SelectExpr.g:211:14: compare_ge ( NE compare_ge )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_ge_in_compare_ne2185)
-                compare_ge115 = self.compare_ge()
+                self._state.following.append(self.FOLLOW_compare_ge_in_compare_ne2205)
+                compare_ge118 = self.compare_ge()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_ge115.tree)
-                # SelectExpr.g:210:25: ( NE compare_ge )*
-                while True: #loop41
-                    alt41 = 2
-                    LA41_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_ge118.tree)
+                # SelectExpr.g:211:25: ( NE compare_ge )*
+                while True: #loop42
+                    alt42 = 2
+                    LA42_0 = self.input.LA(1)
 
-                    if (LA41_0 == NE) :
-                        LA41_2 = self.input.LA(2)
+                    if (LA42_0 == NE) :
+                        LA42_2 = self.input.LA(2)
 
-                        if (self.synpred47_SelectExpr()) :
-                            alt41 = 1
-
-
+                        if (self.synpred48_SelectExpr()) :
+                            alt42 = 1
 
 
-                    if alt41 == 1:
-                        # SelectExpr.g:210:26: NE compare_ge
+
+
+                    if alt42 == 1:
+                        # SelectExpr.g:211:26: NE compare_ge
                         pass 
-                        NE116=self.match(self.input, NE, self.FOLLOW_NE_in_compare_ne2188)
+                        NE119=self.match(self.input, NE, self.FOLLOW_NE_in_compare_ne2208)
                         if self._state.backtracking == 0:
 
-                            NE116_tree = self._adaptor.createWithPayload(NE116)
-                            root_0 = self._adaptor.becomeRoot(NE116_tree, root_0)
+                            NE119_tree = self._adaptor.createWithPayload(NE119)
+                            root_0 = self._adaptor.becomeRoot(NE119_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_compare_ge_in_compare_ne2191)
-                        compare_ge117 = self.compare_ge()
+                        self._state.following.append(self.FOLLOW_compare_ge_in_compare_ne2211)
+                        compare_ge120 = self.compare_ge()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, compare_ge117.tree)
+                            self._adaptor.addChild(root_0, compare_ge120.tree)
 
 
                     else:
-                        break #loop41
+                        break #loop42
 
 
 
@@ -3410,7 +3497,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_ge"
-    # SelectExpr.g:211:1: compare_ge : compare_gt ( GE compare_gt )* ;
+    # SelectExpr.g:212:1: compare_ge : compare_gt ( GE compare_gt )* ;
     def compare_ge(self, ):
 
         retval = self.compare_ge_return()
@@ -3418,60 +3505,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        GE119 = None
-        compare_gt118 = None
+        GE122 = None
+        compare_gt121 = None
 
-        compare_gt120 = None
+        compare_gt123 = None
 
 
-        GE119_tree = None
+        GE122_tree = None
 
         try:
             try:
-                # SelectExpr.g:211:12: ( compare_gt ( GE compare_gt )* )
-                # SelectExpr.g:211:14: compare_gt ( GE compare_gt )*
+                # SelectExpr.g:212:12: ( compare_gt ( GE compare_gt )* )
+                # SelectExpr.g:212:14: compare_gt ( GE compare_gt )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_gt_in_compare_ge2201)
-                compare_gt118 = self.compare_gt()
+                self._state.following.append(self.FOLLOW_compare_gt_in_compare_ge2221)
+                compare_gt121 = self.compare_gt()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_gt118.tree)
-                # SelectExpr.g:211:25: ( GE compare_gt )*
-                while True: #loop42
-                    alt42 = 2
-                    LA42_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_gt121.tree)
+                # SelectExpr.g:212:25: ( GE compare_gt )*
+                while True: #loop43
+                    alt43 = 2
+                    LA43_0 = self.input.LA(1)
 
-                    if (LA42_0 == GE) :
-                        LA42_2 = self.input.LA(2)
+                    if (LA43_0 == GE) :
+                        LA43_2 = self.input.LA(2)
 
-                        if (self.synpred48_SelectExpr()) :
-                            alt42 = 1
-
-
+                        if (self.synpred49_SelectExpr()) :
+                            alt43 = 1
 
 
-                    if alt42 == 1:
-                        # SelectExpr.g:211:26: GE compare_gt
+
+
+                    if alt43 == 1:
+                        # SelectExpr.g:212:26: GE compare_gt
                         pass 
-                        GE119=self.match(self.input, GE, self.FOLLOW_GE_in_compare_ge2204)
+                        GE122=self.match(self.input, GE, self.FOLLOW_GE_in_compare_ge2224)
                         if self._state.backtracking == 0:
 
-                            GE119_tree = self._adaptor.createWithPayload(GE119)
-                            root_0 = self._adaptor.becomeRoot(GE119_tree, root_0)
+                            GE122_tree = self._adaptor.createWithPayload(GE122)
+                            root_0 = self._adaptor.becomeRoot(GE122_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_compare_gt_in_compare_ge2207)
-                        compare_gt120 = self.compare_gt()
+                        self._state.following.append(self.FOLLOW_compare_gt_in_compare_ge2227)
+                        compare_gt123 = self.compare_gt()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, compare_gt120.tree)
+                            self._adaptor.addChild(root_0, compare_gt123.tree)
 
 
                     else:
-                        break #loop42
+                        break #loop43
 
 
 
@@ -3504,7 +3591,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_gt"
-    # SelectExpr.g:212:1: compare_gt : compare_le ( GT compare_le )* ;
+    # SelectExpr.g:213:1: compare_gt : compare_le ( GT compare_le )* ;
     def compare_gt(self, ):
 
         retval = self.compare_gt_return()
@@ -3512,60 +3599,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        GT122 = None
-        compare_le121 = None
+        GT125 = None
+        compare_le124 = None
 
-        compare_le123 = None
+        compare_le126 = None
 
 
-        GT122_tree = None
+        GT125_tree = None
 
         try:
             try:
-                # SelectExpr.g:212:12: ( compare_le ( GT compare_le )* )
-                # SelectExpr.g:212:14: compare_le ( GT compare_le )*
+                # SelectExpr.g:213:12: ( compare_le ( GT compare_le )* )
+                # SelectExpr.g:213:14: compare_le ( GT compare_le )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_le_in_compare_gt2217)
-                compare_le121 = self.compare_le()
+                self._state.following.append(self.FOLLOW_compare_le_in_compare_gt2237)
+                compare_le124 = self.compare_le()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_le121.tree)
-                # SelectExpr.g:212:25: ( GT compare_le )*
-                while True: #loop43
-                    alt43 = 2
-                    LA43_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_le124.tree)
+                # SelectExpr.g:213:25: ( GT compare_le )*
+                while True: #loop44
+                    alt44 = 2
+                    LA44_0 = self.input.LA(1)
 
-                    if (LA43_0 == GT) :
-                        LA43_2 = self.input.LA(2)
+                    if (LA44_0 == GT) :
+                        LA44_2 = self.input.LA(2)
 
-                        if (self.synpred49_SelectExpr()) :
-                            alt43 = 1
-
-
+                        if (self.synpred50_SelectExpr()) :
+                            alt44 = 1
 
 
-                    if alt43 == 1:
-                        # SelectExpr.g:212:26: GT compare_le
+
+
+                    if alt44 == 1:
+                        # SelectExpr.g:213:26: GT compare_le
                         pass 
-                        GT122=self.match(self.input, GT, self.FOLLOW_GT_in_compare_gt2220)
+                        GT125=self.match(self.input, GT, self.FOLLOW_GT_in_compare_gt2240)
                         if self._state.backtracking == 0:
 
-                            GT122_tree = self._adaptor.createWithPayload(GT122)
-                            root_0 = self._adaptor.becomeRoot(GT122_tree, root_0)
+                            GT125_tree = self._adaptor.createWithPayload(GT125)
+                            root_0 = self._adaptor.becomeRoot(GT125_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_compare_le_in_compare_gt2223)
-                        compare_le123 = self.compare_le()
+                        self._state.following.append(self.FOLLOW_compare_le_in_compare_gt2243)
+                        compare_le126 = self.compare_le()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, compare_le123.tree)
+                            self._adaptor.addChild(root_0, compare_le126.tree)
 
 
                     else:
-                        break #loop43
+                        break #loop44
 
 
 
@@ -3598,7 +3685,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_le"
-    # SelectExpr.g:213:1: compare_le : compare_lt ( LE compare_lt )* ;
+    # SelectExpr.g:214:1: compare_le : compare_lt ( LE compare_lt )* ;
     def compare_le(self, ):
 
         retval = self.compare_le_return()
@@ -3606,60 +3693,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        LE125 = None
-        compare_lt124 = None
+        LE128 = None
+        compare_lt127 = None
 
-        compare_lt126 = None
+        compare_lt129 = None
 
 
-        LE125_tree = None
+        LE128_tree = None
 
         try:
             try:
-                # SelectExpr.g:213:12: ( compare_lt ( LE compare_lt )* )
-                # SelectExpr.g:213:14: compare_lt ( LE compare_lt )*
+                # SelectExpr.g:214:12: ( compare_lt ( LE compare_lt )* )
+                # SelectExpr.g:214:14: compare_lt ( LE compare_lt )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_compare_lt_in_compare_le2233)
-                compare_lt124 = self.compare_lt()
+                self._state.following.append(self.FOLLOW_compare_lt_in_compare_le2253)
+                compare_lt127 = self.compare_lt()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, compare_lt124.tree)
-                # SelectExpr.g:213:25: ( LE compare_lt )*
-                while True: #loop44
-                    alt44 = 2
-                    LA44_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, compare_lt127.tree)
+                # SelectExpr.g:214:25: ( LE compare_lt )*
+                while True: #loop45
+                    alt45 = 2
+                    LA45_0 = self.input.LA(1)
 
-                    if (LA44_0 == LE) :
-                        LA44_2 = self.input.LA(2)
+                    if (LA45_0 == LE) :
+                        LA45_2 = self.input.LA(2)
 
-                        if (self.synpred50_SelectExpr()) :
-                            alt44 = 1
-
-
+                        if (self.synpred51_SelectExpr()) :
+                            alt45 = 1
 
 
-                    if alt44 == 1:
-                        # SelectExpr.g:213:26: LE compare_lt
+
+
+                    if alt45 == 1:
+                        # SelectExpr.g:214:26: LE compare_lt
                         pass 
-                        LE125=self.match(self.input, LE, self.FOLLOW_LE_in_compare_le2236)
+                        LE128=self.match(self.input, LE, self.FOLLOW_LE_in_compare_le2256)
                         if self._state.backtracking == 0:
 
-                            LE125_tree = self._adaptor.createWithPayload(LE125)
-                            root_0 = self._adaptor.becomeRoot(LE125_tree, root_0)
+                            LE128_tree = self._adaptor.createWithPayload(LE128)
+                            root_0 = self._adaptor.becomeRoot(LE128_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_compare_lt_in_compare_le2239)
-                        compare_lt126 = self.compare_lt()
+                        self._state.following.append(self.FOLLOW_compare_lt_in_compare_le2259)
+                        compare_lt129 = self.compare_lt()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, compare_lt126.tree)
+                            self._adaptor.addChild(root_0, compare_lt129.tree)
 
 
                     else:
-                        break #loop44
+                        break #loop45
 
 
 
@@ -3692,7 +3779,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "compare_lt"
-    # SelectExpr.g:214:1: compare_lt : arithmetic_expr ( LT arithmetic_expr )* ;
+    # SelectExpr.g:215:1: compare_lt : arithmetic_expr ( LT arithmetic_expr )* ;
     def compare_lt(self, ):
 
         retval = self.compare_lt_return()
@@ -3700,60 +3787,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        LT128 = None
-        arithmetic_expr127 = None
+        LT131 = None
+        arithmetic_expr130 = None
 
-        arithmetic_expr129 = None
+        arithmetic_expr132 = None
 
 
-        LT128_tree = None
+        LT131_tree = None
 
         try:
             try:
-                # SelectExpr.g:214:12: ( arithmetic_expr ( LT arithmetic_expr )* )
-                # SelectExpr.g:214:14: arithmetic_expr ( LT arithmetic_expr )*
+                # SelectExpr.g:215:12: ( arithmetic_expr ( LT arithmetic_expr )* )
+                # SelectExpr.g:215:14: arithmetic_expr ( LT arithmetic_expr )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_arithmetic_expr_in_compare_lt2249)
-                arithmetic_expr127 = self.arithmetic_expr()
+                self._state.following.append(self.FOLLOW_arithmetic_expr_in_compare_lt2269)
+                arithmetic_expr130 = self.arithmetic_expr()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, arithmetic_expr127.tree)
-                # SelectExpr.g:214:30: ( LT arithmetic_expr )*
-                while True: #loop45
-                    alt45 = 2
-                    LA45_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, arithmetic_expr130.tree)
+                # SelectExpr.g:215:30: ( LT arithmetic_expr )*
+                while True: #loop46
+                    alt46 = 2
+                    LA46_0 = self.input.LA(1)
 
-                    if (LA45_0 == LT) :
-                        LA45_2 = self.input.LA(2)
+                    if (LA46_0 == LT) :
+                        LA46_2 = self.input.LA(2)
 
-                        if (self.synpred51_SelectExpr()) :
-                            alt45 = 1
-
-
+                        if (self.synpred52_SelectExpr()) :
+                            alt46 = 1
 
 
-                    if alt45 == 1:
-                        # SelectExpr.g:214:31: LT arithmetic_expr
+
+
+                    if alt46 == 1:
+                        # SelectExpr.g:215:31: LT arithmetic_expr
                         pass 
-                        LT128=self.match(self.input, LT, self.FOLLOW_LT_in_compare_lt2252)
+                        LT131=self.match(self.input, LT, self.FOLLOW_LT_in_compare_lt2272)
                         if self._state.backtracking == 0:
 
-                            LT128_tree = self._adaptor.createWithPayload(LT128)
-                            root_0 = self._adaptor.becomeRoot(LT128_tree, root_0)
+                            LT131_tree = self._adaptor.createWithPayload(LT131)
+                            root_0 = self._adaptor.becomeRoot(LT131_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_arithmetic_expr_in_compare_lt2255)
-                        arithmetic_expr129 = self.arithmetic_expr()
+                        self._state.following.append(self.FOLLOW_arithmetic_expr_in_compare_lt2275)
+                        arithmetic_expr132 = self.arithmetic_expr()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, arithmetic_expr129.tree)
+                            self._adaptor.addChild(root_0, arithmetic_expr132.tree)
 
 
                     else:
-                        break #loop45
+                        break #loop46
 
 
 
@@ -3786,7 +3873,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "arithmetic_expr"
-    # SelectExpr.g:216:1: arithmetic_expr : arithmetic_sub_add ;
+    # SelectExpr.g:217:1: arithmetic_expr : arithmetic_sub_add ;
     def arithmetic_expr(self, ):
 
         retval = self.arithmetic_expr_return()
@@ -3794,23 +3881,23 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        arithmetic_sub_add130 = None
+        arithmetic_sub_add133 = None
 
 
 
         try:
             try:
-                # SelectExpr.g:216:17: ( arithmetic_sub_add )
-                # SelectExpr.g:216:19: arithmetic_sub_add
+                # SelectExpr.g:217:17: ( arithmetic_sub_add )
+                # SelectExpr.g:217:19: arithmetic_sub_add
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_arithmetic_sub_add_in_arithmetic_expr2266)
-                arithmetic_sub_add130 = self.arithmetic_sub_add()
+                self._state.following.append(self.FOLLOW_arithmetic_sub_add_in_arithmetic_expr2286)
+                arithmetic_sub_add133 = self.arithmetic_sub_add()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, arithmetic_sub_add130.tree)
+                    self._adaptor.addChild(root_0, arithmetic_sub_add133.tree)
 
 
 
@@ -3843,7 +3930,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "arithmetic_sub_add"
-    # SelectExpr.g:217:1: arithmetic_sub_add : arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )* ;
+    # SelectExpr.g:218:1: arithmetic_sub_add : arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )* ;
     def arithmetic_sub_add(self, ):
 
         retval = self.arithmetic_sub_add_return()
@@ -3851,102 +3938,102 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        SUB132 = None
-        ADD133 = None
-        arithmetic_mul_div_mod131 = None
-
+        SUB135 = None
+        ADD136 = None
         arithmetic_mul_div_mod134 = None
 
+        arithmetic_mul_div_mod137 = None
 
-        SUB132_tree = None
-        ADD133_tree = None
+
+        SUB135_tree = None
+        ADD136_tree = None
 
         try:
             try:
-                # SelectExpr.g:217:20: ( arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )* )
-                # SelectExpr.g:217:22: arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )*
+                # SelectExpr.g:218:20: ( arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )* )
+                # SelectExpr.g:218:22: arithmetic_mul_div_mod ( ( SUB | ADD ) arithmetic_mul_div_mod )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2274)
-                arithmetic_mul_div_mod131 = self.arithmetic_mul_div_mod()
+                self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2294)
+                arithmetic_mul_div_mod134 = self.arithmetic_mul_div_mod()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, arithmetic_mul_div_mod131.tree)
-                # SelectExpr.g:217:45: ( ( SUB | ADD ) arithmetic_mul_div_mod )*
-                while True: #loop47
-                    alt47 = 2
-                    LA47_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, arithmetic_mul_div_mod134.tree)
+                # SelectExpr.g:218:45: ( ( SUB | ADD ) arithmetic_mul_div_mod )*
+                while True: #loop48
+                    alt48 = 2
+                    LA48_0 = self.input.LA(1)
 
-                    if (LA47_0 == SUB) :
-                        LA47_2 = self.input.LA(2)
+                    if (LA48_0 == SUB) :
+                        LA48_2 = self.input.LA(2)
 
-                        if (self.synpred53_SelectExpr()) :
-                            alt47 = 1
-
-
-                    elif (LA47_0 == ADD) :
-                        LA47_3 = self.input.LA(2)
-
-                        if (self.synpred53_SelectExpr()) :
-                            alt47 = 1
+                        if (self.synpred54_SelectExpr()) :
+                            alt48 = 1
 
 
+                    elif (LA48_0 == ADD) :
+                        LA48_3 = self.input.LA(2)
+
+                        if (self.synpred54_SelectExpr()) :
+                            alt48 = 1
 
 
-                    if alt47 == 1:
-                        # SelectExpr.g:217:46: ( SUB | ADD ) arithmetic_mul_div_mod
+
+
+                    if alt48 == 1:
+                        # SelectExpr.g:218:46: ( SUB | ADD ) arithmetic_mul_div_mod
                         pass 
-                        # SelectExpr.g:217:46: ( SUB | ADD )
-                        alt46 = 2
-                        LA46_0 = self.input.LA(1)
+                        # SelectExpr.g:218:46: ( SUB | ADD )
+                        alt47 = 2
+                        LA47_0 = self.input.LA(1)
 
-                        if (LA46_0 == SUB) :
-                            alt46 = 1
-                        elif (LA46_0 == ADD) :
-                            alt46 = 2
+                        if (LA47_0 == SUB) :
+                            alt47 = 1
+                        elif (LA47_0 == ADD) :
+                            alt47 = 2
                         else:
                             if self._state.backtracking > 0:
                                 raise BacktrackingFailed
 
-                            nvae = NoViableAltException("", 46, 0, self.input)
+                            nvae = NoViableAltException("", 47, 0, self.input)
 
                             raise nvae
 
-                        if alt46 == 1:
-                            # SelectExpr.g:217:47: SUB
+                        if alt47 == 1:
+                            # SelectExpr.g:218:47: SUB
                             pass 
-                            SUB132=self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_sub_add2278)
+                            SUB135=self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_sub_add2298)
                             if self._state.backtracking == 0:
 
-                                SUB132_tree = self._adaptor.createWithPayload(SUB132)
-                                root_0 = self._adaptor.becomeRoot(SUB132_tree, root_0)
+                                SUB135_tree = self._adaptor.createWithPayload(SUB135)
+                                root_0 = self._adaptor.becomeRoot(SUB135_tree, root_0)
 
 
 
-                        elif alt46 == 2:
-                            # SelectExpr.g:217:52: ADD
+                        elif alt47 == 2:
+                            # SelectExpr.g:218:52: ADD
                             pass 
-                            ADD133=self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_sub_add2281)
+                            ADD136=self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_sub_add2301)
                             if self._state.backtracking == 0:
 
-                                ADD133_tree = self._adaptor.createWithPayload(ADD133)
-                                root_0 = self._adaptor.becomeRoot(ADD133_tree, root_0)
+                                ADD136_tree = self._adaptor.createWithPayload(ADD136)
+                                root_0 = self._adaptor.becomeRoot(ADD136_tree, root_0)
 
 
 
 
-                        self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2285)
-                        arithmetic_mul_div_mod134 = self.arithmetic_mul_div_mod()
+                        self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2305)
+                        arithmetic_mul_div_mod137 = self.arithmetic_mul_div_mod()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, arithmetic_mul_div_mod134.tree)
+                            self._adaptor.addChild(root_0, arithmetic_mul_div_mod137.tree)
 
 
                     else:
-                        break #loop47
+                        break #loop48
 
 
 
@@ -3979,7 +4066,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "arithmetic_mul_div_mod"
-    # SelectExpr.g:218:1: arithmetic_mul_div_mod : arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )* ;
+    # SelectExpr.g:219:1: arithmetic_mul_div_mod : arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )* ;
     def arithmetic_mul_div_mod(self, ):
 
         retval = self.arithmetic_mul_div_mod_return()
@@ -3987,121 +4074,121 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        MUL136 = None
-        DIV137 = None
-        MOD138 = None
-        arithmetic_pow135 = None
+        MUL139 = None
+        DIV140 = None
+        MOD141 = None
+        arithmetic_pow138 = None
 
-        arithmetic_pow139 = None
+        arithmetic_pow142 = None
 
 
-        MUL136_tree = None
-        DIV137_tree = None
-        MOD138_tree = None
+        MUL139_tree = None
+        DIV140_tree = None
+        MOD141_tree = None
 
         try:
             try:
-                # SelectExpr.g:218:24: ( arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )* )
-                # SelectExpr.g:218:26: arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )*
+                # SelectExpr.g:219:24: ( arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )* )
+                # SelectExpr.g:219:26: arithmetic_pow ( ( MUL | DIV | MOD ) arithmetic_pow )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2295)
-                arithmetic_pow135 = self.arithmetic_pow()
+                self._state.following.append(self.FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2315)
+                arithmetic_pow138 = self.arithmetic_pow()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, arithmetic_pow135.tree)
-                # SelectExpr.g:218:41: ( ( MUL | DIV | MOD ) arithmetic_pow )*
-                while True: #loop49
-                    alt49 = 2
-                    LA49 = self.input.LA(1)
-                    if LA49 == MUL:
-                        LA49_2 = self.input.LA(2)
+                    self._adaptor.addChild(root_0, arithmetic_pow138.tree)
+                # SelectExpr.g:219:41: ( ( MUL | DIV | MOD ) arithmetic_pow )*
+                while True: #loop50
+                    alt50 = 2
+                    LA50 = self.input.LA(1)
+                    if LA50 == MUL:
+                        LA50_2 = self.input.LA(2)
 
-                        if (self.synpred56_SelectExpr()) :
-                            alt49 = 1
-
-
-                    elif LA49 == DIV:
-                        LA49_3 = self.input.LA(2)
-
-                        if (self.synpred56_SelectExpr()) :
-                            alt49 = 1
+                        if (self.synpred57_SelectExpr()) :
+                            alt50 = 1
 
 
-                    elif LA49 == MOD:
-                        LA49_4 = self.input.LA(2)
+                    elif LA50 == DIV:
+                        LA50_3 = self.input.LA(2)
 
-                        if (self.synpred56_SelectExpr()) :
-                            alt49 = 1
+                        if (self.synpred57_SelectExpr()) :
+                            alt50 = 1
+
+
+                    elif LA50 == MOD:
+                        LA50_4 = self.input.LA(2)
+
+                        if (self.synpred57_SelectExpr()) :
+                            alt50 = 1
 
 
 
-                    if alt49 == 1:
-                        # SelectExpr.g:218:42: ( MUL | DIV | MOD ) arithmetic_pow
+                    if alt50 == 1:
+                        # SelectExpr.g:219:42: ( MUL | DIV | MOD ) arithmetic_pow
                         pass 
-                        # SelectExpr.g:218:42: ( MUL | DIV | MOD )
-                        alt48 = 3
-                        LA48 = self.input.LA(1)
-                        if LA48 == MUL:
-                            alt48 = 1
-                        elif LA48 == DIV:
-                            alt48 = 2
-                        elif LA48 == MOD:
-                            alt48 = 3
+                        # SelectExpr.g:219:42: ( MUL | DIV | MOD )
+                        alt49 = 3
+                        LA49 = self.input.LA(1)
+                        if LA49 == MUL:
+                            alt49 = 1
+                        elif LA49 == DIV:
+                            alt49 = 2
+                        elif LA49 == MOD:
+                            alt49 = 3
                         else:
                             if self._state.backtracking > 0:
                                 raise BacktrackingFailed
 
-                            nvae = NoViableAltException("", 48, 0, self.input)
+                            nvae = NoViableAltException("", 49, 0, self.input)
 
                             raise nvae
 
-                        if alt48 == 1:
-                            # SelectExpr.g:218:43: MUL
+                        if alt49 == 1:
+                            # SelectExpr.g:219:43: MUL
                             pass 
-                            MUL136=self.match(self.input, MUL, self.FOLLOW_MUL_in_arithmetic_mul_div_mod2299)
+                            MUL139=self.match(self.input, MUL, self.FOLLOW_MUL_in_arithmetic_mul_div_mod2319)
                             if self._state.backtracking == 0:
 
-                                MUL136_tree = self._adaptor.createWithPayload(MUL136)
-                                root_0 = self._adaptor.becomeRoot(MUL136_tree, root_0)
+                                MUL139_tree = self._adaptor.createWithPayload(MUL139)
+                                root_0 = self._adaptor.becomeRoot(MUL139_tree, root_0)
 
 
 
-                        elif alt48 == 2:
-                            # SelectExpr.g:218:50: DIV
+                        elif alt49 == 2:
+                            # SelectExpr.g:219:50: DIV
                             pass 
-                            DIV137=self.match(self.input, DIV, self.FOLLOW_DIV_in_arithmetic_mul_div_mod2304)
+                            DIV140=self.match(self.input, DIV, self.FOLLOW_DIV_in_arithmetic_mul_div_mod2324)
                             if self._state.backtracking == 0:
 
-                                DIV137_tree = self._adaptor.createWithPayload(DIV137)
-                                root_0 = self._adaptor.becomeRoot(DIV137_tree, root_0)
+                                DIV140_tree = self._adaptor.createWithPayload(DIV140)
+                                root_0 = self._adaptor.becomeRoot(DIV140_tree, root_0)
 
 
 
-                        elif alt48 == 3:
-                            # SelectExpr.g:218:57: MOD
+                        elif alt49 == 3:
+                            # SelectExpr.g:219:57: MOD
                             pass 
-                            MOD138=self.match(self.input, MOD, self.FOLLOW_MOD_in_arithmetic_mul_div_mod2309)
+                            MOD141=self.match(self.input, MOD, self.FOLLOW_MOD_in_arithmetic_mul_div_mod2329)
                             if self._state.backtracking == 0:
 
-                                MOD138_tree = self._adaptor.createWithPayload(MOD138)
-                                root_0 = self._adaptor.becomeRoot(MOD138_tree, root_0)
+                                MOD141_tree = self._adaptor.createWithPayload(MOD141)
+                                root_0 = self._adaptor.becomeRoot(MOD141_tree, root_0)
 
 
 
 
-                        self._state.following.append(self.FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2313)
-                        arithmetic_pow139 = self.arithmetic_pow()
+                        self._state.following.append(self.FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2333)
+                        arithmetic_pow142 = self.arithmetic_pow()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, arithmetic_pow139.tree)
+                            self._adaptor.addChild(root_0, arithmetic_pow142.tree)
 
 
                     else:
-                        break #loop49
+                        break #loop50
 
 
 
@@ -4134,7 +4221,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "arithmetic_pow"
-    # SelectExpr.g:219:1: arithmetic_pow : arithmetic_unary ( POW arithmetic_unary )* ;
+    # SelectExpr.g:220:1: arithmetic_pow : arithmetic_unary ( POW arithmetic_unary )* ;
     def arithmetic_pow(self, ):
 
         retval = self.arithmetic_pow_return()
@@ -4142,60 +4229,60 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        POW141 = None
-        arithmetic_unary140 = None
+        POW144 = None
+        arithmetic_unary143 = None
 
-        arithmetic_unary142 = None
+        arithmetic_unary145 = None
 
 
-        POW141_tree = None
+        POW144_tree = None
 
         try:
             try:
-                # SelectExpr.g:219:16: ( arithmetic_unary ( POW arithmetic_unary )* )
-                # SelectExpr.g:219:18: arithmetic_unary ( POW arithmetic_unary )*
+                # SelectExpr.g:220:16: ( arithmetic_unary ( POW arithmetic_unary )* )
+                # SelectExpr.g:220:18: arithmetic_unary ( POW arithmetic_unary )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_arithmetic_unary_in_arithmetic_pow2323)
-                arithmetic_unary140 = self.arithmetic_unary()
+                self._state.following.append(self.FOLLOW_arithmetic_unary_in_arithmetic_pow2343)
+                arithmetic_unary143 = self.arithmetic_unary()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, arithmetic_unary140.tree)
-                # SelectExpr.g:219:35: ( POW arithmetic_unary )*
-                while True: #loop50
-                    alt50 = 2
-                    LA50_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, arithmetic_unary143.tree)
+                # SelectExpr.g:220:35: ( POW arithmetic_unary )*
+                while True: #loop51
+                    alt51 = 2
+                    LA51_0 = self.input.LA(1)
 
-                    if (LA50_0 == POW) :
-                        LA50_2 = self.input.LA(2)
+                    if (LA51_0 == POW) :
+                        LA51_2 = self.input.LA(2)
 
-                        if (self.synpred57_SelectExpr()) :
-                            alt50 = 1
-
-
+                        if (self.synpred58_SelectExpr()) :
+                            alt51 = 1
 
 
-                    if alt50 == 1:
-                        # SelectExpr.g:219:36: POW arithmetic_unary
+
+
+                    if alt51 == 1:
+                        # SelectExpr.g:220:36: POW arithmetic_unary
                         pass 
-                        POW141=self.match(self.input, POW, self.FOLLOW_POW_in_arithmetic_pow2326)
+                        POW144=self.match(self.input, POW, self.FOLLOW_POW_in_arithmetic_pow2346)
                         if self._state.backtracking == 0:
 
-                            POW141_tree = self._adaptor.createWithPayload(POW141)
-                            root_0 = self._adaptor.becomeRoot(POW141_tree, root_0)
+                            POW144_tree = self._adaptor.createWithPayload(POW144)
+                            root_0 = self._adaptor.becomeRoot(POW144_tree, root_0)
 
-                        self._state.following.append(self.FOLLOW_arithmetic_unary_in_arithmetic_pow2329)
-                        arithmetic_unary142 = self.arithmetic_unary()
+                        self._state.following.append(self.FOLLOW_arithmetic_unary_in_arithmetic_pow2349)
+                        arithmetic_unary145 = self.arithmetic_unary()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, arithmetic_unary142.tree)
+                            self._adaptor.addChild(root_0, arithmetic_unary145.tree)
 
 
                     else:
-                        break #loop50
+                        break #loop51
 
 
 
@@ -4228,7 +4315,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "arithmetic_unary"
-    # SelectExpr.g:220:1: arithmetic_unary : ( SUB atom -> ^( NEG atom ) | ADD atom -> ^( POS atom ) | atom LIST_BEGIN parameter LIST_END -> ^( ELEMENT atom parameter ) | atom );
+    # SelectExpr.g:221:1: arithmetic_unary : ( SUB atom -> ^( NEG atom ) | ADD atom -> ^( POS atom ) | atom LIST_BEGIN parameter LIST_END -> ^( ELEMENT atom parameter ) | atom );
     def arithmetic_unary(self, ):
 
         retval = self.arithmetic_unary_return()
@@ -4236,25 +4323,25 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        SUB143 = None
-        ADD145 = None
-        LIST_BEGIN148 = None
-        LIST_END150 = None
-        atom144 = None
-
-        atom146 = None
-
+        SUB146 = None
+        ADD148 = None
+        LIST_BEGIN151 = None
+        LIST_END153 = None
         atom147 = None
 
-        parameter149 = None
+        atom149 = None
 
-        atom151 = None
+        atom150 = None
+
+        parameter152 = None
+
+        atom154 = None
 
 
-        SUB143_tree = None
-        ADD145_tree = None
-        LIST_BEGIN148_tree = None
-        LIST_END150_tree = None
+        SUB146_tree = None
+        ADD148_tree = None
+        LIST_BEGIN151_tree = None
+        LIST_END153_tree = None
         stream_SUB = RewriteRuleTokenStream(self._adaptor, "token SUB")
         stream_ADD = RewriteRuleTokenStream(self._adaptor, "token ADD")
         stream_LIST_END = RewriteRuleTokenStream(self._adaptor, "token LIST_END")
@@ -4263,21 +4350,21 @@ class SelectExprParser(Parser):
         stream_atom = RewriteRuleSubtreeStream(self._adaptor, "rule atom")
         try:
             try:
-                # SelectExpr.g:220:18: ( SUB atom -> ^( NEG atom ) | ADD atom -> ^( POS atom ) | atom LIST_BEGIN parameter LIST_END -> ^( ELEMENT atom parameter ) | atom )
-                alt51 = 4
-                alt51 = self.dfa51.predict(self.input)
-                if alt51 == 1:
-                    # SelectExpr.g:221:2: SUB atom
+                # SelectExpr.g:221:18: ( SUB atom -> ^( NEG atom ) | ADD atom -> ^( POS atom ) | atom LIST_BEGIN parameter LIST_END -> ^( ELEMENT atom parameter ) | atom )
+                alt52 = 4
+                alt52 = self.dfa52.predict(self.input)
+                if alt52 == 1:
+                    # SelectExpr.g:222:2: SUB atom
                     pass 
-                    SUB143=self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_unary2340) 
+                    SUB146=self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_unary2360) 
                     if self._state.backtracking == 0:
-                        stream_SUB.add(SUB143)
-                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2342)
-                    atom144 = self.atom()
+                        stream_SUB.add(SUB146)
+                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2362)
+                    atom147 = self.atom()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_atom.add(atom144.tree)
+                        stream_atom.add(atom147.tree)
 
                     # AST Rewrite
                     # elements: atom
@@ -4297,8 +4384,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 221:11: -> ^( NEG atom )
-                        # SelectExpr.g:221:14: ^( NEG atom )
+                        # 222:11: -> ^( NEG atom )
+                        # SelectExpr.g:222:14: ^( NEG atom )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(NEG, "NEG"), root_1)
 
@@ -4311,18 +4398,18 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt51 == 2:
-                    # SelectExpr.g:222:5: ADD atom
+                elif alt52 == 2:
+                    # SelectExpr.g:223:5: ADD atom
                     pass 
-                    ADD145=self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_unary2356) 
+                    ADD148=self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_unary2376) 
                     if self._state.backtracking == 0:
-                        stream_ADD.add(ADD145)
-                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2358)
-                    atom146 = self.atom()
+                        stream_ADD.add(ADD148)
+                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2378)
+                    atom149 = self.atom()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_atom.add(atom146.tree)
+                        stream_atom.add(atom149.tree)
 
                     # AST Rewrite
                     # elements: atom
@@ -4342,8 +4429,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 222:14: -> ^( POS atom )
-                        # SelectExpr.g:222:17: ^( POS atom )
+                        # 223:14: -> ^( POS atom )
+                        # SelectExpr.g:223:17: ^( POS atom )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(POS, "POS"), root_1)
 
@@ -4356,30 +4443,30 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt51 == 3:
-                    # SelectExpr.g:223:5: atom LIST_BEGIN parameter LIST_END
+                elif alt52 == 3:
+                    # SelectExpr.g:224:5: atom LIST_BEGIN parameter LIST_END
                     pass 
-                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2372)
-                    atom147 = self.atom()
+                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2392)
+                    atom150 = self.atom()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_atom.add(atom147.tree)
-                    LIST_BEGIN148=self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_arithmetic_unary2374) 
+                        stream_atom.add(atom150.tree)
+                    LIST_BEGIN151=self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_arithmetic_unary2394) 
                     if self._state.backtracking == 0:
-                        stream_LIST_BEGIN.add(LIST_BEGIN148)
-                    self._state.following.append(self.FOLLOW_parameter_in_arithmetic_unary2376)
-                    parameter149 = self.parameter()
+                        stream_LIST_BEGIN.add(LIST_BEGIN151)
+                    self._state.following.append(self.FOLLOW_parameter_in_arithmetic_unary2396)
+                    parameter152 = self.parameter()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_parameter.add(parameter149.tree)
-                    LIST_END150=self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_arithmetic_unary2378) 
+                        stream_parameter.add(parameter152.tree)
+                    LIST_END153=self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_arithmetic_unary2398) 
                     if self._state.backtracking == 0:
-                        stream_LIST_END.add(LIST_END150)
+                        stream_LIST_END.add(LIST_END153)
 
                     # AST Rewrite
-                    # elements: parameter, atom
+                    # elements: atom, parameter
                     # token labels: 
                     # rule labels: retval
                     # token list labels: 
@@ -4396,8 +4483,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 223:40: -> ^( ELEMENT atom parameter )
-                        # SelectExpr.g:223:43: ^( ELEMENT atom parameter )
+                        # 224:40: -> ^( ELEMENT atom parameter )
+                        # SelectExpr.g:224:43: ^( ELEMENT atom parameter )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(ELEMENT, "ELEMENT"), root_1)
 
@@ -4411,17 +4498,17 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt51 == 4:
-                    # SelectExpr.g:224:5: atom
+                elif alt52 == 4:
+                    # SelectExpr.g:225:5: atom
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2394)
-                    atom151 = self.atom()
+                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_unary2414)
+                    atom154 = self.atom()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, atom151.tree)
+                        self._adaptor.addChild(root_0, atom154.tree)
 
 
                 retval.stop = self.input.LT(-1)
@@ -4453,7 +4540,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "atom"
-    # SelectExpr.g:227:1: atom : ( value | variable | if_statement | function | '(' expr ')' | statement_select );
+    # SelectExpr.g:228:1: atom : ( value | variable | if_statement | function | '(' expr ')' | statement_select );
     def atom(self, ):
 
         retval = self.atom_return()
@@ -4461,139 +4548,139 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        char_literal156 = None
-        char_literal158 = None
-        value152 = None
+        char_literal159 = None
+        char_literal161 = None
+        value155 = None
 
-        variable153 = None
+        variable156 = None
 
-        if_statement154 = None
+        if_statement157 = None
 
-        function155 = None
+        function158 = None
 
-        expr157 = None
+        expr160 = None
 
-        statement_select159 = None
+        statement_select162 = None
 
 
-        char_literal156_tree = None
-        char_literal158_tree = None
+        char_literal159_tree = None
+        char_literal161_tree = None
 
         try:
             try:
-                # SelectExpr.g:228:2: ( value | variable | if_statement | function | '(' expr ')' | statement_select )
-                alt52 = 6
-                LA52 = self.input.LA(1)
-                if LA52 == LIST_BEGIN or LA52 == THIS or LA52 == STRING or LA52 == INTEGER or LA52 == FLOAT or LA52 == TRUE or LA52 == FALSE:
-                    alt52 = 1
-                elif LA52 == PHRASE:
-                    LA52 = self.input.LA(2)
-                    if LA52 == DOT:
-                        alt52 = 1
-                    elif LA52 == 107:
-                        alt52 = 4
-                    elif LA52 == EOF or LA52 == SEP or LA52 == END or LA52 == AND or LA52 == XOR or LA52 == OR or LA52 == IN or LA52 == EQ or LA52 == NE or LA52 == LE or LA52 == GE or LA52 == LT or LA52 == GT or LA52 == ADD or LA52 == SUB or LA52 == MUL or LA52 == DIV or LA52 == MOD or LA52 == POW or LA52 == LIST_BEGIN or LA52 == LIST_END or LA52 == AGE_BEGIN or LA52 == AGE_END or LA52 == WHERE or LA52 == ORDER or LA52 == GROUP or LA52 == AS or LA52 == CONNECT or LA52 == START or LA52 == STOP or LA52 == 108:
-                        alt52 = 2
+                # SelectExpr.g:229:2: ( value | variable | if_statement | function | '(' expr ')' | statement_select )
+                alt53 = 6
+                LA53 = self.input.LA(1)
+                if LA53 == LIST_BEGIN or LA53 == THIS or LA53 == STRING or LA53 == INTEGER or LA53 == FLOAT or LA53 == TRUE or LA53 == FALSE:
+                    alt53 = 1
+                elif LA53 == PHRASE:
+                    LA53 = self.input.LA(2)
+                    if LA53 == DOT:
+                        alt53 = 1
+                    elif LA53 == 107:
+                        alt53 = 4
+                    elif LA53 == EOF or LA53 == SEP or LA53 == END or LA53 == AND or LA53 == XOR or LA53 == OR or LA53 == IN or LA53 == EQ or LA53 == NE or LA53 == LE or LA53 == GE or LA53 == LT or LA53 == GT or LA53 == ADD or LA53 == SUB or LA53 == MUL or LA53 == DIV or LA53 == MOD or LA53 == POW or LA53 == LIST_BEGIN or LA53 == LIST_END or LA53 == AGE_BEGIN or LA53 == AGE_END or LA53 == WHERE or LA53 == ORDER or LA53 == GROUP or LA53 == AS or LA53 == CONNECT or LA53 == START or LA53 == STOP or LA53 == 108:
+                        alt53 = 2
                     else:
                         if self._state.backtracking > 0:
                             raise BacktrackingFailed
 
-                        nvae = NoViableAltException("", 52, 2, self.input)
+                        nvae = NoViableAltException("", 53, 2, self.input)
 
                         raise nvae
 
-                elif LA52 == IF:
-                    alt52 = 3
-                elif LA52 == 107:
-                    alt52 = 5
-                elif LA52 == SELECT:
-                    alt52 = 6
+                elif LA53 == IF:
+                    alt53 = 3
+                elif LA53 == 107:
+                    alt53 = 5
+                elif LA53 == SELECT:
+                    alt53 = 6
                 else:
                     if self._state.backtracking > 0:
                         raise BacktrackingFailed
 
-                    nvae = NoViableAltException("", 52, 0, self.input)
+                    nvae = NoViableAltException("", 53, 0, self.input)
 
                     raise nvae
 
-                if alt52 == 1:
-                    # SelectExpr.g:228:4: value
+                if alt53 == 1:
+                    # SelectExpr.g:229:4: value
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_value_in_atom2405)
-                    value152 = self.value()
+                    self._state.following.append(self.FOLLOW_value_in_atom2425)
+                    value155 = self.value()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, value152.tree)
+                        self._adaptor.addChild(root_0, value155.tree)
 
 
-                elif alt52 == 2:
-                    # SelectExpr.g:229:4: variable
+                elif alt53 == 2:
+                    # SelectExpr.g:230:4: variable
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_variable_in_atom2410)
-                    variable153 = self.variable()
+                    self._state.following.append(self.FOLLOW_variable_in_atom2430)
+                    variable156 = self.variable()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, variable153.tree)
+                        self._adaptor.addChild(root_0, variable156.tree)
 
 
-                elif alt52 == 3:
-                    # SelectExpr.g:230:4: if_statement
+                elif alt53 == 3:
+                    # SelectExpr.g:231:4: if_statement
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_if_statement_in_atom2415)
-                    if_statement154 = self.if_statement()
+                    self._state.following.append(self.FOLLOW_if_statement_in_atom2435)
+                    if_statement157 = self.if_statement()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, if_statement154.tree)
+                        self._adaptor.addChild(root_0, if_statement157.tree)
 
 
-                elif alt52 == 4:
-                    # SelectExpr.g:231:4: function
+                elif alt53 == 4:
+                    # SelectExpr.g:232:4: function
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_function_in_atom2420)
-                    function155 = self.function()
+                    self._state.following.append(self.FOLLOW_function_in_atom2440)
+                    function158 = self.function()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, function155.tree)
+                        self._adaptor.addChild(root_0, function158.tree)
 
 
-                elif alt52 == 5:
-                    # SelectExpr.g:232:4: '(' expr ')'
+                elif alt53 == 5:
+                    # SelectExpr.g:233:4: '(' expr ')'
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    char_literal156=self.match(self.input, 107, self.FOLLOW_107_in_atom2425)
-                    self._state.following.append(self.FOLLOW_expr_in_atom2428)
-                    expr157 = self.expr()
+                    char_literal159=self.match(self.input, 107, self.FOLLOW_107_in_atom2445)
+                    self._state.following.append(self.FOLLOW_expr_in_atom2448)
+                    expr160 = self.expr()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, expr157.tree)
-                    char_literal158=self.match(self.input, 108, self.FOLLOW_108_in_atom2430)
+                        self._adaptor.addChild(root_0, expr160.tree)
+                    char_literal161=self.match(self.input, 108, self.FOLLOW_108_in_atom2450)
 
 
-                elif alt52 == 6:
-                    # SelectExpr.g:233:4: statement_select
+                elif alt53 == 6:
+                    # SelectExpr.g:234:4: statement_select
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_statement_select_in_atom2436)
-                    statement_select159 = self.statement_select()
+                    self._state.following.append(self.FOLLOW_statement_select_in_atom2456)
+                    statement_select162 = self.statement_select()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, statement_select159.tree)
+                        self._adaptor.addChild(root_0, statement_select162.tree)
 
 
                 retval.stop = self.input.LT(-1)
@@ -4625,7 +4712,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "function"
-    # SelectExpr.g:236:1: function : PHRASE '(' ( parameter )? ')' -> ^( FCT PHRASE ( parameter )? ) ;
+    # SelectExpr.g:237:1: function : PHRASE '(' ( parameter )? ')' -> ^( FCT PHRASE ( parameter )? ) ;
     def function(self, ):
 
         retval = self.function_return()
@@ -4633,51 +4720,51 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        PHRASE160 = None
-        char_literal161 = None
-        char_literal163 = None
-        parameter162 = None
+        PHRASE163 = None
+        char_literal164 = None
+        char_literal166 = None
+        parameter165 = None
 
 
-        PHRASE160_tree = None
-        char_literal161_tree = None
-        char_literal163_tree = None
+        PHRASE163_tree = None
+        char_literal164_tree = None
+        char_literal166_tree = None
         stream_107 = RewriteRuleTokenStream(self._adaptor, "token 107")
         stream_108 = RewriteRuleTokenStream(self._adaptor, "token 108")
         stream_PHRASE = RewriteRuleTokenStream(self._adaptor, "token PHRASE")
         stream_parameter = RewriteRuleSubtreeStream(self._adaptor, "rule parameter")
         try:
             try:
-                # SelectExpr.g:236:10: ( PHRASE '(' ( parameter )? ')' -> ^( FCT PHRASE ( parameter )? ) )
-                # SelectExpr.g:236:12: PHRASE '(' ( parameter )? ')'
+                # SelectExpr.g:237:10: ( PHRASE '(' ( parameter )? ')' -> ^( FCT PHRASE ( parameter )? ) )
+                # SelectExpr.g:237:12: PHRASE '(' ( parameter )? ')'
                 pass 
-                PHRASE160=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_function2445) 
+                PHRASE163=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_function2465) 
                 if self._state.backtracking == 0:
-                    stream_PHRASE.add(PHRASE160)
-                char_literal161=self.match(self.input, 107, self.FOLLOW_107_in_function2447) 
+                    stream_PHRASE.add(PHRASE163)
+                char_literal164=self.match(self.input, 107, self.FOLLOW_107_in_function2467) 
                 if self._state.backtracking == 0:
-                    stream_107.add(char_literal161)
-                # SelectExpr.g:236:23: ( parameter )?
-                alt53 = 2
-                LA53_0 = self.input.LA(1)
+                    stream_107.add(char_literal164)
+                # SelectExpr.g:237:23: ( parameter )?
+                alt54 = 2
+                LA54_0 = self.input.LA(1)
 
-                if (LA53_0 == NOT or (ADD <= LA53_0 <= SUB) or LA53_0 == IF or LA53_0 == LIST_BEGIN or LA53_0 == SELECT or LA53_0 == THIS or LA53_0 == STRING or (INTEGER <= LA53_0 <= FALSE) or LA53_0 == PHRASE or LA53_0 == 107) :
-                    alt53 = 1
-                if alt53 == 1:
+                if (LA54_0 == NOT or (ADD <= LA54_0 <= SUB) or LA54_0 == IF or LA54_0 == LIST_BEGIN or LA54_0 == SELECT or LA54_0 == THIS or LA54_0 == STRING or (INTEGER <= LA54_0 <= FALSE) or LA54_0 == PHRASE or LA54_0 == 107) :
+                    alt54 = 1
+                if alt54 == 1:
                     # SelectExpr.g:0:0: parameter
                     pass 
-                    self._state.following.append(self.FOLLOW_parameter_in_function2449)
-                    parameter162 = self.parameter()
+                    self._state.following.append(self.FOLLOW_parameter_in_function2469)
+                    parameter165 = self.parameter()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_parameter.add(parameter162.tree)
+                        stream_parameter.add(parameter165.tree)
 
 
 
-                char_literal163=self.match(self.input, 108, self.FOLLOW_108_in_function2452) 
+                char_literal166=self.match(self.input, 108, self.FOLLOW_108_in_function2472) 
                 if self._state.backtracking == 0:
-                    stream_108.add(char_literal163)
+                    stream_108.add(char_literal166)
 
                 # AST Rewrite
                 # elements: PHRASE, parameter
@@ -4697,13 +4784,13 @@ class SelectExprParser(Parser):
 
 
                     root_0 = self._adaptor.nil()
-                    # 236:38: -> ^( FCT PHRASE ( parameter )? )
-                    # SelectExpr.g:236:41: ^( FCT PHRASE ( parameter )? )
+                    # 237:38: -> ^( FCT PHRASE ( parameter )? )
+                    # SelectExpr.g:237:41: ^( FCT PHRASE ( parameter )? )
                     root_1 = self._adaptor.nil()
                     root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(FCT, "FCT"), root_1)
 
                     self._adaptor.addChild(root_1, stream_PHRASE.nextNode())
-                    # SelectExpr.g:236:54: ( parameter )?
+                    # SelectExpr.g:237:54: ( parameter )?
                     if stream_parameter.hasNext():
                         self._adaptor.addChild(root_1, stream_parameter.nextTree())
 
@@ -4747,7 +4834,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "parameter"
-    # SelectExpr.g:239:1: parameter : expr ( SEP expr )* ;
+    # SelectExpr.g:240:1: parameter : expr ( SEP expr )* ;
     def parameter(self, ):
 
         retval = self.parameter_return()
@@ -4755,50 +4842,50 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        SEP165 = None
-        expr164 = None
+        SEP168 = None
+        expr167 = None
 
-        expr166 = None
+        expr169 = None
 
 
-        SEP165_tree = None
+        SEP168_tree = None
 
         try:
             try:
-                # SelectExpr.g:239:11: ( expr ( SEP expr )* )
-                # SelectExpr.g:239:13: expr ( SEP expr )*
+                # SelectExpr.g:240:11: ( expr ( SEP expr )* )
+                # SelectExpr.g:240:13: expr ( SEP expr )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_expr_in_parameter2472)
-                expr164 = self.expr()
+                self._state.following.append(self.FOLLOW_expr_in_parameter2492)
+                expr167 = self.expr()
 
                 self._state.following.pop()
                 if self._state.backtracking == 0:
-                    self._adaptor.addChild(root_0, expr164.tree)
-                # SelectExpr.g:239:18: ( SEP expr )*
-                while True: #loop54
-                    alt54 = 2
-                    LA54_0 = self.input.LA(1)
+                    self._adaptor.addChild(root_0, expr167.tree)
+                # SelectExpr.g:240:18: ( SEP expr )*
+                while True: #loop55
+                    alt55 = 2
+                    LA55_0 = self.input.LA(1)
 
-                    if (LA54_0 == SEP) :
-                        alt54 = 1
+                    if (LA55_0 == SEP) :
+                        alt55 = 1
 
 
-                    if alt54 == 1:
-                        # SelectExpr.g:239:19: SEP expr
+                    if alt55 == 1:
+                        # SelectExpr.g:240:19: SEP expr
                         pass 
-                        SEP165=self.match(self.input, SEP, self.FOLLOW_SEP_in_parameter2475)
-                        self._state.following.append(self.FOLLOW_expr_in_parameter2478)
-                        expr166 = self.expr()
+                        SEP168=self.match(self.input, SEP, self.FOLLOW_SEP_in_parameter2495)
+                        self._state.following.append(self.FOLLOW_expr_in_parameter2498)
+                        expr169 = self.expr()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            self._adaptor.addChild(root_0, expr166.tree)
+                            self._adaptor.addChild(root_0, expr169.tree)
 
 
                     else:
-                        break #loop54
+                        break #loop55
 
 
 
@@ -4831,7 +4918,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "variable"
-    # SelectExpr.g:242:1: variable : PHRASE ( age )? -> ^( VAR PHRASE ( age )? ) ;
+    # SelectExpr.g:243:1: variable : PHRASE ( age )? -> ^( VAR PHRASE ( age )? ) ;
     def variable(self, ):
 
         retval = self.variable_return()
@@ -4839,36 +4926,36 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        PHRASE167 = None
-        age168 = None
+        PHRASE170 = None
+        age171 = None
 
 
-        PHRASE167_tree = None
+        PHRASE170_tree = None
         stream_PHRASE = RewriteRuleTokenStream(self._adaptor, "token PHRASE")
         stream_age = RewriteRuleSubtreeStream(self._adaptor, "rule age")
         try:
             try:
-                # SelectExpr.g:242:10: ( PHRASE ( age )? -> ^( VAR PHRASE ( age )? ) )
-                # SelectExpr.g:242:12: PHRASE ( age )?
+                # SelectExpr.g:243:10: ( PHRASE ( age )? -> ^( VAR PHRASE ( age )? ) )
+                # SelectExpr.g:243:12: PHRASE ( age )?
                 pass 
-                PHRASE167=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_variable2489) 
+                PHRASE170=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_variable2509) 
                 if self._state.backtracking == 0:
-                    stream_PHRASE.add(PHRASE167)
-                # SelectExpr.g:242:19: ( age )?
-                alt55 = 2
-                LA55_0 = self.input.LA(1)
+                    stream_PHRASE.add(PHRASE170)
+                # SelectExpr.g:243:19: ( age )?
+                alt56 = 2
+                LA56_0 = self.input.LA(1)
 
-                if (LA55_0 == AGE_BEGIN) :
-                    alt55 = 1
-                if alt55 == 1:
-                    # SelectExpr.g:242:20: age
+                if (LA56_0 == AGE_BEGIN) :
+                    alt56 = 1
+                if alt56 == 1:
+                    # SelectExpr.g:243:20: age
                     pass 
-                    self._state.following.append(self.FOLLOW_age_in_variable2492)
-                    age168 = self.age()
+                    self._state.following.append(self.FOLLOW_age_in_variable2512)
+                    age171 = self.age()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_age.add(age168.tree)
+                        stream_age.add(age171.tree)
 
 
 
@@ -4891,13 +4978,13 @@ class SelectExprParser(Parser):
 
 
                     root_0 = self._adaptor.nil()
-                    # 242:26: -> ^( VAR PHRASE ( age )? )
-                    # SelectExpr.g:242:29: ^( VAR PHRASE ( age )? )
+                    # 243:26: -> ^( VAR PHRASE ( age )? )
+                    # SelectExpr.g:243:29: ^( VAR PHRASE ( age )? )
                     root_1 = self._adaptor.nil()
                     root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAR, "VAR"), root_1)
 
                     self._adaptor.addChild(root_1, stream_PHRASE.nextNode())
-                    # SelectExpr.g:242:42: ( age )?
+                    # SelectExpr.g:243:42: ( age )?
                     if stream_age.hasNext():
                         self._adaptor.addChild(root_1, stream_age.nextTree())
 
@@ -4941,7 +5028,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "age"
-    # SelectExpr.g:245:1: age : AGE_BEGIN ( expr )? AGE_END -> ^( AGE ( expr )? ) ;
+    # SelectExpr.g:246:1: age : AGE_BEGIN ( expr )? AGE_END -> ^( AGE ( expr )? ) ;
     def age(self, ):
 
         retval = self.age_return()
@@ -4949,45 +5036,45 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        AGE_BEGIN169 = None
-        AGE_END171 = None
-        expr170 = None
+        AGE_BEGIN172 = None
+        AGE_END174 = None
+        expr173 = None
 
 
-        AGE_BEGIN169_tree = None
-        AGE_END171_tree = None
+        AGE_BEGIN172_tree = None
+        AGE_END174_tree = None
         stream_AGE_BEGIN = RewriteRuleTokenStream(self._adaptor, "token AGE_BEGIN")
         stream_AGE_END = RewriteRuleTokenStream(self._adaptor, "token AGE_END")
         stream_expr = RewriteRuleSubtreeStream(self._adaptor, "rule expr")
         try:
             try:
-                # SelectExpr.g:245:5: ( AGE_BEGIN ( expr )? AGE_END -> ^( AGE ( expr )? ) )
-                # SelectExpr.g:245:7: AGE_BEGIN ( expr )? AGE_END
+                # SelectExpr.g:246:5: ( AGE_BEGIN ( expr )? AGE_END -> ^( AGE ( expr )? ) )
+                # SelectExpr.g:246:7: AGE_BEGIN ( expr )? AGE_END
                 pass 
-                AGE_BEGIN169=self.match(self.input, AGE_BEGIN, self.FOLLOW_AGE_BEGIN_in_age2516) 
+                AGE_BEGIN172=self.match(self.input, AGE_BEGIN, self.FOLLOW_AGE_BEGIN_in_age2536) 
                 if self._state.backtracking == 0:
-                    stream_AGE_BEGIN.add(AGE_BEGIN169)
-                # SelectExpr.g:245:17: ( expr )?
-                alt56 = 2
-                LA56_0 = self.input.LA(1)
+                    stream_AGE_BEGIN.add(AGE_BEGIN172)
+                # SelectExpr.g:246:17: ( expr )?
+                alt57 = 2
+                LA57_0 = self.input.LA(1)
 
-                if (LA56_0 == NOT or (ADD <= LA56_0 <= SUB) or LA56_0 == IF or LA56_0 == LIST_BEGIN or LA56_0 == SELECT or LA56_0 == THIS or LA56_0 == STRING or (INTEGER <= LA56_0 <= FALSE) or LA56_0 == PHRASE or LA56_0 == 107) :
-                    alt56 = 1
-                if alt56 == 1:
+                if (LA57_0 == NOT or (ADD <= LA57_0 <= SUB) or LA57_0 == IF or LA57_0 == LIST_BEGIN or LA57_0 == SELECT or LA57_0 == THIS or LA57_0 == STRING or (INTEGER <= LA57_0 <= FALSE) or LA57_0 == PHRASE or LA57_0 == 107) :
+                    alt57 = 1
+                if alt57 == 1:
                     # SelectExpr.g:0:0: expr
                     pass 
-                    self._state.following.append(self.FOLLOW_expr_in_age2518)
-                    expr170 = self.expr()
+                    self._state.following.append(self.FOLLOW_expr_in_age2538)
+                    expr173 = self.expr()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_expr.add(expr170.tree)
+                        stream_expr.add(expr173.tree)
 
 
 
-                AGE_END171=self.match(self.input, AGE_END, self.FOLLOW_AGE_END_in_age2521) 
+                AGE_END174=self.match(self.input, AGE_END, self.FOLLOW_AGE_END_in_age2541) 
                 if self._state.backtracking == 0:
-                    stream_AGE_END.add(AGE_END171)
+                    stream_AGE_END.add(AGE_END174)
 
                 # AST Rewrite
                 # elements: expr
@@ -5007,12 +5094,12 @@ class SelectExprParser(Parser):
 
 
                     root_0 = self._adaptor.nil()
-                    # 245:31: -> ^( AGE ( expr )? )
-                    # SelectExpr.g:245:34: ^( AGE ( expr )? )
+                    # 246:31: -> ^( AGE ( expr )? )
+                    # SelectExpr.g:246:34: ^( AGE ( expr )? )
                     root_1 = self._adaptor.nil()
                     root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(AGE, "AGE"), root_1)
 
-                    # SelectExpr.g:245:40: ( expr )?
+                    # SelectExpr.g:246:40: ( expr )?
                     if stream_expr.hasNext():
                         self._adaptor.addChild(root_1, stream_expr.nextTree())
 
@@ -5056,7 +5143,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "value"
-    # SelectExpr.g:248:1: value : ( STRING -> ^( VAL STRING ) | FLOAT -> ^( VAL FLOAT ) | INTEGER -> ^( VAL INTEGER ) | TRUE -> ^( VAL TRUE ) | FALSE -> ^( VAL FALSE ) | this_ | list_ );
+    # SelectExpr.g:249:1: value : ( STRING -> ^( VAL STRING ) | FLOAT -> ^( VAL FLOAT ) | INTEGER -> ^( VAL INTEGER ) | TRUE -> ^( VAL TRUE ) | FALSE -> ^( VAL FALSE ) | this_ | list_ );
     def value(self, ):
 
         retval = self.value_return()
@@ -5064,21 +5151,21 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        STRING172 = None
-        FLOAT173 = None
-        INTEGER174 = None
-        TRUE175 = None
-        FALSE176 = None
-        this_177 = None
+        STRING175 = None
+        FLOAT176 = None
+        INTEGER177 = None
+        TRUE178 = None
+        FALSE179 = None
+        this_180 = None
 
-        list_178 = None
+        list_181 = None
 
 
-        STRING172_tree = None
-        FLOAT173_tree = None
-        INTEGER174_tree = None
-        TRUE175_tree = None
-        FALSE176_tree = None
+        STRING175_tree = None
+        FLOAT176_tree = None
+        INTEGER177_tree = None
+        TRUE178_tree = None
+        FALSE179_tree = None
         stream_FLOAT = RewriteRuleTokenStream(self._adaptor, "token FLOAT")
         stream_STRING = RewriteRuleTokenStream(self._adaptor, "token STRING")
         stream_TRUE = RewriteRuleTokenStream(self._adaptor, "token TRUE")
@@ -5087,37 +5174,37 @@ class SelectExprParser(Parser):
 
         try:
             try:
-                # SelectExpr.g:248:7: ( STRING -> ^( VAL STRING ) | FLOAT -> ^( VAL FLOAT ) | INTEGER -> ^( VAL INTEGER ) | TRUE -> ^( VAL TRUE ) | FALSE -> ^( VAL FALSE ) | this_ | list_ )
-                alt57 = 7
-                LA57 = self.input.LA(1)
-                if LA57 == STRING:
-                    alt57 = 1
-                elif LA57 == FLOAT:
-                    alt57 = 2
-                elif LA57 == INTEGER:
-                    alt57 = 3
-                elif LA57 == TRUE:
-                    alt57 = 4
-                elif LA57 == FALSE:
-                    alt57 = 5
-                elif LA57 == THIS or LA57 == PHRASE:
-                    alt57 = 6
-                elif LA57 == LIST_BEGIN:
-                    alt57 = 7
+                # SelectExpr.g:249:7: ( STRING -> ^( VAL STRING ) | FLOAT -> ^( VAL FLOAT ) | INTEGER -> ^( VAL INTEGER ) | TRUE -> ^( VAL TRUE ) | FALSE -> ^( VAL FALSE ) | this_ | list_ )
+                alt58 = 7
+                LA58 = self.input.LA(1)
+                if LA58 == STRING:
+                    alt58 = 1
+                elif LA58 == FLOAT:
+                    alt58 = 2
+                elif LA58 == INTEGER:
+                    alt58 = 3
+                elif LA58 == TRUE:
+                    alt58 = 4
+                elif LA58 == FALSE:
+                    alt58 = 5
+                elif LA58 == THIS or LA58 == PHRASE:
+                    alt58 = 6
+                elif LA58 == LIST_BEGIN:
+                    alt58 = 7
                 else:
                     if self._state.backtracking > 0:
                         raise BacktrackingFailed
 
-                    nvae = NoViableAltException("", 57, 0, self.input)
+                    nvae = NoViableAltException("", 58, 0, self.input)
 
                     raise nvae
 
-                if alt57 == 1:
-                    # SelectExpr.g:248:9: STRING
+                if alt58 == 1:
+                    # SelectExpr.g:249:9: STRING
                     pass 
-                    STRING172=self.match(self.input, STRING, self.FOLLOW_STRING_in_value2539) 
+                    STRING175=self.match(self.input, STRING, self.FOLLOW_STRING_in_value2559) 
                     if self._state.backtracking == 0:
-                        stream_STRING.add(STRING172)
+                        stream_STRING.add(STRING175)
 
                     # AST Rewrite
                     # elements: STRING
@@ -5137,8 +5224,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 248:17: -> ^( VAL STRING )
-                        # SelectExpr.g:248:20: ^( VAL STRING )
+                        # 249:17: -> ^( VAL STRING )
+                        # SelectExpr.g:249:20: ^( VAL STRING )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAL, "VAL"), root_1)
 
@@ -5151,12 +5238,12 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt57 == 2:
-                    # SelectExpr.g:249:4: FLOAT
+                elif alt58 == 2:
+                    # SelectExpr.g:250:4: FLOAT
                     pass 
-                    FLOAT173=self.match(self.input, FLOAT, self.FOLLOW_FLOAT_in_value2553) 
+                    FLOAT176=self.match(self.input, FLOAT, self.FOLLOW_FLOAT_in_value2573) 
                     if self._state.backtracking == 0:
-                        stream_FLOAT.add(FLOAT173)
+                        stream_FLOAT.add(FLOAT176)
 
                     # AST Rewrite
                     # elements: FLOAT
@@ -5176,8 +5263,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 249:11: -> ^( VAL FLOAT )
-                        # SelectExpr.g:249:14: ^( VAL FLOAT )
+                        # 250:11: -> ^( VAL FLOAT )
+                        # SelectExpr.g:250:14: ^( VAL FLOAT )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAL, "VAL"), root_1)
 
@@ -5190,12 +5277,12 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt57 == 3:
-                    # SelectExpr.g:250:4: INTEGER
+                elif alt58 == 3:
+                    # SelectExpr.g:251:4: INTEGER
                     pass 
-                    INTEGER174=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_value2567) 
+                    INTEGER177=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_value2587) 
                     if self._state.backtracking == 0:
-                        stream_INTEGER.add(INTEGER174)
+                        stream_INTEGER.add(INTEGER177)
 
                     # AST Rewrite
                     # elements: INTEGER
@@ -5215,8 +5302,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 250:12: -> ^( VAL INTEGER )
-                        # SelectExpr.g:250:15: ^( VAL INTEGER )
+                        # 251:12: -> ^( VAL INTEGER )
+                        # SelectExpr.g:251:15: ^( VAL INTEGER )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAL, "VAL"), root_1)
 
@@ -5229,12 +5316,12 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt57 == 4:
-                    # SelectExpr.g:251:4: TRUE
+                elif alt58 == 4:
+                    # SelectExpr.g:252:4: TRUE
                     pass 
-                    TRUE175=self.match(self.input, TRUE, self.FOLLOW_TRUE_in_value2580) 
+                    TRUE178=self.match(self.input, TRUE, self.FOLLOW_TRUE_in_value2600) 
                     if self._state.backtracking == 0:
-                        stream_TRUE.add(TRUE175)
+                        stream_TRUE.add(TRUE178)
 
                     # AST Rewrite
                     # elements: TRUE
@@ -5254,8 +5341,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 251:10: -> ^( VAL TRUE )
-                        # SelectExpr.g:251:13: ^( VAL TRUE )
+                        # 252:10: -> ^( VAL TRUE )
+                        # SelectExpr.g:252:13: ^( VAL TRUE )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAL, "VAL"), root_1)
 
@@ -5268,12 +5355,12 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt57 == 5:
-                    # SelectExpr.g:252:4: FALSE
+                elif alt58 == 5:
+                    # SelectExpr.g:253:4: FALSE
                     pass 
-                    FALSE176=self.match(self.input, FALSE, self.FOLLOW_FALSE_in_value2594) 
+                    FALSE179=self.match(self.input, FALSE, self.FOLLOW_FALSE_in_value2614) 
                     if self._state.backtracking == 0:
-                        stream_FALSE.add(FALSE176)
+                        stream_FALSE.add(FALSE179)
 
                     # AST Rewrite
                     # elements: FALSE
@@ -5293,8 +5380,8 @@ class SelectExprParser(Parser):
 
 
                         root_0 = self._adaptor.nil()
-                        # 252:11: -> ^( VAL FALSE )
-                        # SelectExpr.g:252:14: ^( VAL FALSE )
+                        # 253:11: -> ^( VAL FALSE )
+                        # SelectExpr.g:253:14: ^( VAL FALSE )
                         root_1 = self._adaptor.nil()
                         root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(VAL, "VAL"), root_1)
 
@@ -5307,30 +5394,30 @@ class SelectExprParser(Parser):
                         retval.tree = root_0
 
 
-                elif alt57 == 6:
-                    # SelectExpr.g:253:4: this_
+                elif alt58 == 6:
+                    # SelectExpr.g:254:4: this_
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_this__in_value2608)
-                    this_177 = self.this_()
+                    self._state.following.append(self.FOLLOW_this__in_value2628)
+                    this_180 = self.this_()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, this_177.tree)
+                        self._adaptor.addChild(root_0, this_180.tree)
 
 
-                elif alt57 == 7:
-                    # SelectExpr.g:254:4: list_
+                elif alt58 == 7:
+                    # SelectExpr.g:255:4: list_
                     pass 
                     root_0 = self._adaptor.nil()
 
-                    self._state.following.append(self.FOLLOW_list__in_value2613)
-                    list_178 = self.list_()
+                    self._state.following.append(self.FOLLOW_list__in_value2633)
+                    list_181 = self.list_()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        self._adaptor.addChild(root_0, list_178.tree)
+                        self._adaptor.addChild(root_0, list_181.tree)
 
 
                 retval.stop = self.input.LT(-1)
@@ -5362,7 +5449,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "this_"
-    # SelectExpr.g:257:1: this_ : ( PHRASE DOT )? THIS -> ^( THIS ( PHRASE )? ) ;
+    # SelectExpr.g:258:1: this_ : ( PHRASE DOT )? THIS -> ^( THIS ( PHRASE )? ) ;
     def this_(self, ):
 
         retval = self.this__return()
@@ -5370,43 +5457,43 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        PHRASE179 = None
-        DOT180 = None
-        THIS181 = None
+        PHRASE182 = None
+        DOT183 = None
+        THIS184 = None
 
-        PHRASE179_tree = None
-        DOT180_tree = None
-        THIS181_tree = None
+        PHRASE182_tree = None
+        DOT183_tree = None
+        THIS184_tree = None
         stream_DOT = RewriteRuleTokenStream(self._adaptor, "token DOT")
         stream_PHRASE = RewriteRuleTokenStream(self._adaptor, "token PHRASE")
         stream_THIS = RewriteRuleTokenStream(self._adaptor, "token THIS")
 
         try:
             try:
-                # SelectExpr.g:257:7: ( ( PHRASE DOT )? THIS -> ^( THIS ( PHRASE )? ) )
-                # SelectExpr.g:257:9: ( PHRASE DOT )? THIS
+                # SelectExpr.g:258:7: ( ( PHRASE DOT )? THIS -> ^( THIS ( PHRASE )? ) )
+                # SelectExpr.g:258:9: ( PHRASE DOT )? THIS
                 pass 
-                # SelectExpr.g:257:9: ( PHRASE DOT )?
-                alt58 = 2
-                LA58_0 = self.input.LA(1)
+                # SelectExpr.g:258:9: ( PHRASE DOT )?
+                alt59 = 2
+                LA59_0 = self.input.LA(1)
 
-                if (LA58_0 == PHRASE) :
-                    alt58 = 1
-                if alt58 == 1:
-                    # SelectExpr.g:257:10: PHRASE DOT
+                if (LA59_0 == PHRASE) :
+                    alt59 = 1
+                if alt59 == 1:
+                    # SelectExpr.g:258:10: PHRASE DOT
                     pass 
-                    PHRASE179=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_this_2624) 
+                    PHRASE182=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_this_2644) 
                     if self._state.backtracking == 0:
-                        stream_PHRASE.add(PHRASE179)
-                    DOT180=self.match(self.input, DOT, self.FOLLOW_DOT_in_this_2626) 
+                        stream_PHRASE.add(PHRASE182)
+                    DOT183=self.match(self.input, DOT, self.FOLLOW_DOT_in_this_2646) 
                     if self._state.backtracking == 0:
-                        stream_DOT.add(DOT180)
+                        stream_DOT.add(DOT183)
 
 
 
-                THIS181=self.match(self.input, THIS, self.FOLLOW_THIS_in_this_2630) 
+                THIS184=self.match(self.input, THIS, self.FOLLOW_THIS_in_this_2650) 
                 if self._state.backtracking == 0:
-                    stream_THIS.add(THIS181)
+                    stream_THIS.add(THIS184)
 
                 # AST Rewrite
                 # elements: PHRASE, THIS
@@ -5426,12 +5513,12 @@ class SelectExprParser(Parser):
 
 
                     root_0 = self._adaptor.nil()
-                    # 257:29: -> ^( THIS ( PHRASE )? )
-                    # SelectExpr.g:257:32: ^( THIS ( PHRASE )? )
+                    # 258:29: -> ^( THIS ( PHRASE )? )
+                    # SelectExpr.g:258:32: ^( THIS ( PHRASE )? )
                     root_1 = self._adaptor.nil()
                     root_1 = self._adaptor.becomeRoot(stream_THIS.nextNode(), root_1)
 
-                    # SelectExpr.g:257:39: ( PHRASE )?
+                    # SelectExpr.g:258:39: ( PHRASE )?
                     if stream_PHRASE.hasNext():
                         self._adaptor.addChild(root_1, stream_PHRASE.nextNode())
 
@@ -5475,7 +5562,7 @@ class SelectExprParser(Parser):
 
 
     # $ANTLR start "list_"
-    # SelectExpr.g:260:1: list_ : LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END -> ^( LIST ( expr )* ) ;
+    # SelectExpr.g:261:1: list_ : LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END -> ^( LIST ( expr )* ) ;
     def list_(self, ):
 
         retval = self.list__return()
@@ -5483,81 +5570,81 @@ class SelectExprParser(Parser):
 
         root_0 = None
 
-        LIST_BEGIN182 = None
-        SEP184 = None
-        LIST_END186 = None
-        expr183 = None
+        LIST_BEGIN185 = None
+        SEP187 = None
+        LIST_END189 = None
+        expr186 = None
 
-        expr185 = None
+        expr188 = None
 
 
-        LIST_BEGIN182_tree = None
-        SEP184_tree = None
-        LIST_END186_tree = None
+        LIST_BEGIN185_tree = None
+        SEP187_tree = None
+        LIST_END189_tree = None
         stream_LIST_END = RewriteRuleTokenStream(self._adaptor, "token LIST_END")
         stream_LIST_BEGIN = RewriteRuleTokenStream(self._adaptor, "token LIST_BEGIN")
         stream_SEP = RewriteRuleTokenStream(self._adaptor, "token SEP")
         stream_expr = RewriteRuleSubtreeStream(self._adaptor, "rule expr")
         try:
             try:
-                # SelectExpr.g:260:7: ( LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END -> ^( LIST ( expr )* ) )
-                # SelectExpr.g:260:10: LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END
+                # SelectExpr.g:261:7: ( LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END -> ^( LIST ( expr )* ) )
+                # SelectExpr.g:261:10: LIST_BEGIN ( ( expr )? ( SEP expr )* ) LIST_END
                 pass 
-                LIST_BEGIN182=self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_list_2651) 
+                LIST_BEGIN185=self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_list_2671) 
                 if self._state.backtracking == 0:
-                    stream_LIST_BEGIN.add(LIST_BEGIN182)
-                # SelectExpr.g:260:21: ( ( expr )? ( SEP expr )* )
-                # SelectExpr.g:260:23: ( expr )? ( SEP expr )*
+                    stream_LIST_BEGIN.add(LIST_BEGIN185)
+                # SelectExpr.g:261:21: ( ( expr )? ( SEP expr )* )
+                # SelectExpr.g:261:23: ( expr )? ( SEP expr )*
                 pass 
-                # SelectExpr.g:260:23: ( expr )?
-                alt59 = 2
-                LA59_0 = self.input.LA(1)
+                # SelectExpr.g:261:23: ( expr )?
+                alt60 = 2
+                LA60_0 = self.input.LA(1)
 
-                if (LA59_0 == NOT or (ADD <= LA59_0 <= SUB) or LA59_0 == IF or LA59_0 == LIST_BEGIN or LA59_0 == SELECT or LA59_0 == THIS or LA59_0 == STRING or (INTEGER <= LA59_0 <= FALSE) or LA59_0 == PHRASE or LA59_0 == 107) :
-                    alt59 = 1
-                if alt59 == 1:
+                if (LA60_0 == NOT or (ADD <= LA60_0 <= SUB) or LA60_0 == IF or LA60_0 == LIST_BEGIN or LA60_0 == SELECT or LA60_0 == THIS or LA60_0 == STRING or (INTEGER <= LA60_0 <= FALSE) or LA60_0 == PHRASE or LA60_0 == 107) :
+                    alt60 = 1
+                if alt60 == 1:
                     # SelectExpr.g:0:0: expr
                     pass 
-                    self._state.following.append(self.FOLLOW_expr_in_list_2655)
-                    expr183 = self.expr()
+                    self._state.following.append(self.FOLLOW_expr_in_list_2675)
+                    expr186 = self.expr()
 
                     self._state.following.pop()
                     if self._state.backtracking == 0:
-                        stream_expr.add(expr183.tree)
+                        stream_expr.add(expr186.tree)
 
 
 
-                # SelectExpr.g:260:29: ( SEP expr )*
-                while True: #loop60
-                    alt60 = 2
-                    LA60_0 = self.input.LA(1)
+                # SelectExpr.g:261:29: ( SEP expr )*
+                while True: #loop61
+                    alt61 = 2
+                    LA61_0 = self.input.LA(1)
 
-                    if (LA60_0 == SEP) :
-                        alt60 = 1
+                    if (LA61_0 == SEP) :
+                        alt61 = 1
 
 
-                    if alt60 == 1:
-                        # SelectExpr.g:260:30: SEP expr
+                    if alt61 == 1:
+                        # SelectExpr.g:261:30: SEP expr
                         pass 
-                        SEP184=self.match(self.input, SEP, self.FOLLOW_SEP_in_list_2659) 
+                        SEP187=self.match(self.input, SEP, self.FOLLOW_SEP_in_list_2679) 
                         if self._state.backtracking == 0:
-                            stream_SEP.add(SEP184)
-                        self._state.following.append(self.FOLLOW_expr_in_list_2661)
-                        expr185 = self.expr()
+                            stream_SEP.add(SEP187)
+                        self._state.following.append(self.FOLLOW_expr_in_list_2681)
+                        expr188 = self.expr()
 
                         self._state.following.pop()
                         if self._state.backtracking == 0:
-                            stream_expr.add(expr185.tree)
+                            stream_expr.add(expr188.tree)
 
 
                     else:
-                        break #loop60
+                        break #loop61
 
 
 
-                LIST_END186=self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_list_2667) 
+                LIST_END189=self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_list_2687) 
                 if self._state.backtracking == 0:
-                    stream_LIST_END.add(LIST_END186)
+                    stream_LIST_END.add(LIST_END189)
 
                 # AST Rewrite
                 # elements: expr
@@ -5577,12 +5664,12 @@ class SelectExprParser(Parser):
 
 
                     root_0 = self._adaptor.nil()
-                    # 260:52: -> ^( LIST ( expr )* )
-                    # SelectExpr.g:260:55: ^( LIST ( expr )* )
+                    # 261:52: -> ^( LIST ( expr )* )
+                    # SelectExpr.g:261:55: ^( LIST ( expr )* )
                     root_1 = self._adaptor.nil()
                     root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(LIST, "LIST"), root_1)
 
-                    # SelectExpr.g:260:62: ( expr )*
+                    # SelectExpr.g:261:62: ( expr )*
                     while stream_expr.hasNext():
                         self._adaptor.addChild(root_1, stream_expr.nextTree())
 
@@ -5669,12 +5756,12 @@ class SelectExprParser(Parser):
         # SelectExpr.g:156:27: ( start_ )? connect_ stop_
         pass 
         # SelectExpr.g:156:27: ( start_ )?
-        alt61 = 2
-        LA61_0 = self.input.LA(1)
+        alt62 = 2
+        LA62_0 = self.input.LA(1)
 
-        if (LA61_0 == START) :
-            alt61 = 1
-        if alt61 == 1:
+        if (LA62_0 == START) :
+            alt62 = 1
+        if alt62 == 1:
             # SelectExpr.g:156:28: start_
             pass 
             self._state.following.append(self.FOLLOW_start__in_synpred6_SelectExpr1551)
@@ -5708,12 +5795,12 @@ class SelectExprParser(Parser):
 
         self._state.following.pop()
         # SelectExpr.g:156:62: ( having_ )?
-        alt62 = 2
-        LA62_0 = self.input.LA(1)
+        alt63 = 2
+        LA63_0 = self.input.LA(1)
 
-        if (LA62_0 == HAVING) :
-            alt62 = 1
-        if alt62 == 1:
+        if (LA63_0 == HAVING) :
+            alt63 = 1
+        if alt63 == 1:
             # SelectExpr.g:156:63: having_
             pass 
             self._state.following.append(self.FOLLOW_having__in_synpred8_SelectExpr1565)
@@ -5782,21 +5869,21 @@ class SelectExprParser(Parser):
         pass 
         self.match(self.input, SEP, self.FOLLOW_SEP_in_synpred26_SelectExpr1827)
         # SelectExpr.g:177:49: ( PHRASE | function )
-        alt64 = 2
-        LA64_0 = self.input.LA(1)
+        alt65 = 2
+        LA65_0 = self.input.LA(1)
 
-        if (LA64_0 == PHRASE) :
-            LA64_1 = self.input.LA(2)
+        if (LA65_0 == PHRASE) :
+            LA65_1 = self.input.LA(2)
 
-            if (LA64_1 == 107) :
-                alt64 = 2
-            elif (LA64_1 == EOF) :
-                alt64 = 1
+            if (LA65_1 == 107) :
+                alt65 = 2
+            elif (LA65_1 == EOF) :
+                alt65 = 1
             else:
                 if self._state.backtracking > 0:
                     raise BacktrackingFailed
 
-                nvae = NoViableAltException("", 64, 1, self.input)
+                nvae = NoViableAltException("", 65, 1, self.input)
 
                 raise nvae
 
@@ -5804,17 +5891,17 @@ class SelectExprParser(Parser):
             if self._state.backtracking > 0:
                 raise BacktrackingFailed
 
-            nvae = NoViableAltException("", 64, 0, self.input)
+            nvae = NoViableAltException("", 65, 0, self.input)
 
             raise nvae
 
-        if alt64 == 1:
+        if alt65 == 1:
             # SelectExpr.g:177:51: PHRASE
             pass 
             self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_synpred26_SelectExpr1832)
 
 
-        elif alt64 == 2:
+        elif alt65 == 2:
             # SelectExpr.g:177:60: function
             pass 
             self._state.following.append(self.FOLLOW_function_in_synpred26_SelectExpr1836)
@@ -5837,21 +5924,21 @@ class SelectExprParser(Parser):
         pass 
         self.match(self.input, SEP, self.FOLLOW_SEP_in_synpred29_SelectExpr1883)
         # SelectExpr.g:183:71: ( PHRASE direction_ | function direction_ )
-        alt65 = 2
-        LA65_0 = self.input.LA(1)
+        alt66 = 2
+        LA66_0 = self.input.LA(1)
 
-        if (LA65_0 == PHRASE) :
-            LA65_1 = self.input.LA(2)
+        if (LA66_0 == PHRASE) :
+            LA66_1 = self.input.LA(2)
 
-            if (LA65_1 == 107) :
-                alt65 = 2
-            elif (LA65_1 == EOF or (ASC <= LA65_1 <= DESC)) :
-                alt65 = 1
+            if (LA66_1 == 107) :
+                alt66 = 2
+            elif (LA66_1 == EOF or (ASC <= LA66_1 <= DESC)) :
+                alt66 = 1
             else:
                 if self._state.backtracking > 0:
                     raise BacktrackingFailed
 
-                nvae = NoViableAltException("", 65, 1, self.input)
+                nvae = NoViableAltException("", 66, 1, self.input)
 
                 raise nvae
 
@@ -5859,11 +5946,11 @@ class SelectExprParser(Parser):
             if self._state.backtracking > 0:
                 raise BacktrackingFailed
 
-            nvae = NoViableAltException("", 65, 0, self.input)
+            nvae = NoViableAltException("", 66, 0, self.input)
 
             raise nvae
 
-        if alt65 == 1:
+        if alt66 == 1:
             # SelectExpr.g:183:73: PHRASE direction_
             pass 
             self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_synpred29_SelectExpr1888)
@@ -5873,7 +5960,7 @@ class SelectExprParser(Parser):
             self._state.following.pop()
 
 
-        elif alt65 == 2:
+        elif alt66 == 2:
             # SelectExpr.g:183:93: function direction_
             pass 
             self._state.following.append(self.FOLLOW_function_in_synpred29_SelectExpr1894)
@@ -5908,30 +5995,14 @@ class SelectExprParser(Parser):
 
 
 
-    # $ANTLR start "synpred41_SelectExpr"
-    def synpred41_SelectExpr_fragment(self, ):
-        # SelectExpr.g:202:24: ( OR logic_xor )
-        # SelectExpr.g:202:24: OR logic_xor
-        pass 
-        self.match(self.input, OR, self.FOLLOW_OR_in_synpred41_SelectExpr2084)
-        self._state.following.append(self.FOLLOW_logic_xor_in_synpred41_SelectExpr2088)
-        self.logic_xor()
-
-        self._state.following.pop()
-
-
-    # $ANTLR end "synpred41_SelectExpr"
-
-
-
     # $ANTLR start "synpred42_SelectExpr"
     def synpred42_SelectExpr_fragment(self, ):
-        # SelectExpr.g:203:24: ( XOR logic_and )
-        # SelectExpr.g:203:24: XOR logic_and
+        # SelectExpr.g:203:24: ( OR logic_xor )
+        # SelectExpr.g:203:24: OR logic_xor
         pass 
-        self.match(self.input, XOR, self.FOLLOW_XOR_in_synpred42_SelectExpr2101)
-        self._state.following.append(self.FOLLOW_logic_and_in_synpred42_SelectExpr2104)
-        self.logic_and()
+        self.match(self.input, OR, self.FOLLOW_OR_in_synpred42_SelectExpr2104)
+        self._state.following.append(self.FOLLOW_logic_xor_in_synpred42_SelectExpr2108)
+        self.logic_xor()
 
         self._state.following.pop()
 
@@ -5942,12 +6013,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred43_SelectExpr"
     def synpred43_SelectExpr_fragment(self, ):
-        # SelectExpr.g:204:24: ( AND logic_not )
-        # SelectExpr.g:204:24: AND logic_not
+        # SelectExpr.g:204:24: ( XOR logic_and )
+        # SelectExpr.g:204:24: XOR logic_and
         pass 
-        self.match(self.input, AND, self.FOLLOW_AND_in_synpred43_SelectExpr2117)
-        self._state.following.append(self.FOLLOW_logic_not_in_synpred43_SelectExpr2120)
-        self.logic_not()
+        self.match(self.input, XOR, self.FOLLOW_XOR_in_synpred43_SelectExpr2121)
+        self._state.following.append(self.FOLLOW_logic_and_in_synpred43_SelectExpr2124)
+        self.logic_and()
 
         self._state.following.pop()
 
@@ -5956,30 +6027,30 @@ class SelectExprParser(Parser):
 
 
 
-    # $ANTLR start "synpred45_SelectExpr"
-    def synpred45_SelectExpr_fragment(self, ):
-        # SelectExpr.g:208:26: ( IN atom )
-        # SelectExpr.g:208:26: IN atom
+    # $ANTLR start "synpred44_SelectExpr"
+    def synpred44_SelectExpr_fragment(self, ):
+        # SelectExpr.g:205:24: ( AND logic_not )
+        # SelectExpr.g:205:24: AND logic_not
         pass 
-        self.match(self.input, IN, self.FOLLOW_IN_in_synpred45_SelectExpr2156)
-        self._state.following.append(self.FOLLOW_atom_in_synpred45_SelectExpr2159)
-        self.atom()
+        self.match(self.input, AND, self.FOLLOW_AND_in_synpred44_SelectExpr2137)
+        self._state.following.append(self.FOLLOW_logic_not_in_synpred44_SelectExpr2140)
+        self.logic_not()
 
         self._state.following.pop()
 
 
-    # $ANTLR end "synpred45_SelectExpr"
+    # $ANTLR end "synpred44_SelectExpr"
 
 
 
     # $ANTLR start "synpred46_SelectExpr"
     def synpred46_SelectExpr_fragment(self, ):
-        # SelectExpr.g:209:26: ( EQ compare_ne )
-        # SelectExpr.g:209:26: EQ compare_ne
+        # SelectExpr.g:209:26: ( IN atom )
+        # SelectExpr.g:209:26: IN atom
         pass 
-        self.match(self.input, EQ, self.FOLLOW_EQ_in_synpred46_SelectExpr2172)
-        self._state.following.append(self.FOLLOW_compare_ne_in_synpred46_SelectExpr2175)
-        self.compare_ne()
+        self.match(self.input, IN, self.FOLLOW_IN_in_synpred46_SelectExpr2176)
+        self._state.following.append(self.FOLLOW_atom_in_synpred46_SelectExpr2179)
+        self.atom()
 
         self._state.following.pop()
 
@@ -5990,12 +6061,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred47_SelectExpr"
     def synpred47_SelectExpr_fragment(self, ):
-        # SelectExpr.g:210:26: ( NE compare_ge )
-        # SelectExpr.g:210:26: NE compare_ge
+        # SelectExpr.g:210:26: ( EQ compare_ne )
+        # SelectExpr.g:210:26: EQ compare_ne
         pass 
-        self.match(self.input, NE, self.FOLLOW_NE_in_synpred47_SelectExpr2188)
-        self._state.following.append(self.FOLLOW_compare_ge_in_synpred47_SelectExpr2191)
-        self.compare_ge()
+        self.match(self.input, EQ, self.FOLLOW_EQ_in_synpred47_SelectExpr2192)
+        self._state.following.append(self.FOLLOW_compare_ne_in_synpred47_SelectExpr2195)
+        self.compare_ne()
 
         self._state.following.pop()
 
@@ -6006,12 +6077,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred48_SelectExpr"
     def synpred48_SelectExpr_fragment(self, ):
-        # SelectExpr.g:211:26: ( GE compare_gt )
-        # SelectExpr.g:211:26: GE compare_gt
+        # SelectExpr.g:211:26: ( NE compare_ge )
+        # SelectExpr.g:211:26: NE compare_ge
         pass 
-        self.match(self.input, GE, self.FOLLOW_GE_in_synpred48_SelectExpr2204)
-        self._state.following.append(self.FOLLOW_compare_gt_in_synpred48_SelectExpr2207)
-        self.compare_gt()
+        self.match(self.input, NE, self.FOLLOW_NE_in_synpred48_SelectExpr2208)
+        self._state.following.append(self.FOLLOW_compare_ge_in_synpred48_SelectExpr2211)
+        self.compare_ge()
 
         self._state.following.pop()
 
@@ -6022,12 +6093,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred49_SelectExpr"
     def synpred49_SelectExpr_fragment(self, ):
-        # SelectExpr.g:212:26: ( GT compare_le )
-        # SelectExpr.g:212:26: GT compare_le
+        # SelectExpr.g:212:26: ( GE compare_gt )
+        # SelectExpr.g:212:26: GE compare_gt
         pass 
-        self.match(self.input, GT, self.FOLLOW_GT_in_synpred49_SelectExpr2220)
-        self._state.following.append(self.FOLLOW_compare_le_in_synpred49_SelectExpr2223)
-        self.compare_le()
+        self.match(self.input, GE, self.FOLLOW_GE_in_synpred49_SelectExpr2224)
+        self._state.following.append(self.FOLLOW_compare_gt_in_synpred49_SelectExpr2227)
+        self.compare_gt()
 
         self._state.following.pop()
 
@@ -6038,12 +6109,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred50_SelectExpr"
     def synpred50_SelectExpr_fragment(self, ):
-        # SelectExpr.g:213:26: ( LE compare_lt )
-        # SelectExpr.g:213:26: LE compare_lt
+        # SelectExpr.g:213:26: ( GT compare_le )
+        # SelectExpr.g:213:26: GT compare_le
         pass 
-        self.match(self.input, LE, self.FOLLOW_LE_in_synpred50_SelectExpr2236)
-        self._state.following.append(self.FOLLOW_compare_lt_in_synpred50_SelectExpr2239)
-        self.compare_lt()
+        self.match(self.input, GT, self.FOLLOW_GT_in_synpred50_SelectExpr2240)
+        self._state.following.append(self.FOLLOW_compare_le_in_synpred50_SelectExpr2243)
+        self.compare_le()
 
         self._state.following.pop()
 
@@ -6054,12 +6125,12 @@ class SelectExprParser(Parser):
 
     # $ANTLR start "synpred51_SelectExpr"
     def synpred51_SelectExpr_fragment(self, ):
-        # SelectExpr.g:214:31: ( LT arithmetic_expr )
-        # SelectExpr.g:214:31: LT arithmetic_expr
+        # SelectExpr.g:214:26: ( LE compare_lt )
+        # SelectExpr.g:214:26: LE compare_lt
         pass 
-        self.match(self.input, LT, self.FOLLOW_LT_in_synpred51_SelectExpr2252)
-        self._state.following.append(self.FOLLOW_arithmetic_expr_in_synpred51_SelectExpr2255)
-        self.arithmetic_expr()
+        self.match(self.input, LE, self.FOLLOW_LE_in_synpred51_SelectExpr2256)
+        self._state.following.append(self.FOLLOW_compare_lt_in_synpred51_SelectExpr2259)
+        self.compare_lt()
 
         self._state.following.pop()
 
@@ -6068,10 +6139,26 @@ class SelectExprParser(Parser):
 
 
 
-    # $ANTLR start "synpred53_SelectExpr"
-    def synpred53_SelectExpr_fragment(self, ):
-        # SelectExpr.g:217:46: ( ( SUB | ADD ) arithmetic_mul_div_mod )
-        # SelectExpr.g:217:46: ( SUB | ADD ) arithmetic_mul_div_mod
+    # $ANTLR start "synpred52_SelectExpr"
+    def synpred52_SelectExpr_fragment(self, ):
+        # SelectExpr.g:215:31: ( LT arithmetic_expr )
+        # SelectExpr.g:215:31: LT arithmetic_expr
+        pass 
+        self.match(self.input, LT, self.FOLLOW_LT_in_synpred52_SelectExpr2272)
+        self._state.following.append(self.FOLLOW_arithmetic_expr_in_synpred52_SelectExpr2275)
+        self.arithmetic_expr()
+
+        self._state.following.pop()
+
+
+    # $ANTLR end "synpred52_SelectExpr"
+
+
+
+    # $ANTLR start "synpred54_SelectExpr"
+    def synpred54_SelectExpr_fragment(self, ):
+        # SelectExpr.g:218:46: ( ( SUB | ADD ) arithmetic_mul_div_mod )
+        # SelectExpr.g:218:46: ( SUB | ADD ) arithmetic_mul_div_mod
         pass 
         if (ADD <= self.input.LA(1) <= SUB):
             self.input.consume()
@@ -6085,20 +6172,20 @@ class SelectExprParser(Parser):
             raise mse
 
 
-        self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_synpred53_SelectExpr2285)
+        self._state.following.append(self.FOLLOW_arithmetic_mul_div_mod_in_synpred54_SelectExpr2305)
         self.arithmetic_mul_div_mod()
 
         self._state.following.pop()
 
 
-    # $ANTLR end "synpred53_SelectExpr"
+    # $ANTLR end "synpred54_SelectExpr"
 
 
 
-    # $ANTLR start "synpred56_SelectExpr"
-    def synpred56_SelectExpr_fragment(self, ):
-        # SelectExpr.g:218:42: ( ( MUL | DIV | MOD ) arithmetic_pow )
-        # SelectExpr.g:218:42: ( MUL | DIV | MOD ) arithmetic_pow
+    # $ANTLR start "synpred57_SelectExpr"
+    def synpred57_SelectExpr_fragment(self, ):
+        # SelectExpr.g:219:42: ( ( MUL | DIV | MOD ) arithmetic_pow )
+        # SelectExpr.g:219:42: ( MUL | DIV | MOD ) arithmetic_pow
         pass 
         if (MUL <= self.input.LA(1) <= MOD):
             self.input.consume()
@@ -6112,24 +6199,8 @@ class SelectExprParser(Parser):
             raise mse
 
 
-        self._state.following.append(self.FOLLOW_arithmetic_pow_in_synpred56_SelectExpr2313)
+        self._state.following.append(self.FOLLOW_arithmetic_pow_in_synpred57_SelectExpr2333)
         self.arithmetic_pow()
-
-        self._state.following.pop()
-
-
-    # $ANTLR end "synpred56_SelectExpr"
-
-
-
-    # $ANTLR start "synpred57_SelectExpr"
-    def synpred57_SelectExpr_fragment(self, ):
-        # SelectExpr.g:219:36: ( POW arithmetic_unary )
-        # SelectExpr.g:219:36: POW arithmetic_unary
-        pass 
-        self.match(self.input, POW, self.FOLLOW_POW_in_synpred57_SelectExpr2326)
-        self._state.following.append(self.FOLLOW_arithmetic_unary_in_synpred57_SelectExpr2329)
-        self.arithmetic_unary()
 
         self._state.following.pop()
 
@@ -6138,24 +6209,40 @@ class SelectExprParser(Parser):
 
 
 
-    # $ANTLR start "synpred60_SelectExpr"
-    def synpred60_SelectExpr_fragment(self, ):
-        # SelectExpr.g:223:5: ( atom LIST_BEGIN parameter LIST_END )
-        # SelectExpr.g:223:5: atom LIST_BEGIN parameter LIST_END
+    # $ANTLR start "synpred58_SelectExpr"
+    def synpred58_SelectExpr_fragment(self, ):
+        # SelectExpr.g:220:36: ( POW arithmetic_unary )
+        # SelectExpr.g:220:36: POW arithmetic_unary
         pass 
-        self._state.following.append(self.FOLLOW_atom_in_synpred60_SelectExpr2372)
+        self.match(self.input, POW, self.FOLLOW_POW_in_synpred58_SelectExpr2346)
+        self._state.following.append(self.FOLLOW_arithmetic_unary_in_synpred58_SelectExpr2349)
+        self.arithmetic_unary()
+
+        self._state.following.pop()
+
+
+    # $ANTLR end "synpred58_SelectExpr"
+
+
+
+    # $ANTLR start "synpred61_SelectExpr"
+    def synpred61_SelectExpr_fragment(self, ):
+        # SelectExpr.g:224:5: ( atom LIST_BEGIN parameter LIST_END )
+        # SelectExpr.g:224:5: atom LIST_BEGIN parameter LIST_END
+        pass 
+        self._state.following.append(self.FOLLOW_atom_in_synpred61_SelectExpr2392)
         self.atom()
 
         self._state.following.pop()
-        self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_synpred60_SelectExpr2374)
-        self._state.following.append(self.FOLLOW_parameter_in_synpred60_SelectExpr2376)
+        self.match(self.input, LIST_BEGIN, self.FOLLOW_LIST_BEGIN_in_synpred61_SelectExpr2394)
+        self._state.following.append(self.FOLLOW_parameter_in_synpred61_SelectExpr2396)
         self.parameter()
 
         self._state.following.pop()
-        self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_synpred60_SelectExpr2378)
+        self.match(self.input, LIST_END, self.FOLLOW_LIST_END_in_synpred61_SelectExpr2398)
 
 
-    # $ANTLR end "synpred60_SelectExpr"
+    # $ANTLR end "synpred61_SelectExpr"
 
 
 
@@ -6167,19 +6254,6 @@ class SelectExprParser(Parser):
         start = self.input.mark()
         try:
             self.synpred57_SelectExpr_fragment()
-        except BacktrackingFailed:
-            success = False
-        else:
-            success = True
-        self.input.rewind(start)
-        self._state.backtracking -= 1
-        return success
-
-    def synpred60_SelectExpr(self):
-        self._state.backtracking += 1
-        start = self.input.mark()
-        try:
-            self.synpred60_SelectExpr_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -6227,6 +6301,32 @@ class SelectExprParser(Parser):
         self._state.backtracking -= 1
         return success
 
+    def synpred54_SelectExpr(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred54_SelectExpr_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred44_SelectExpr(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred44_SelectExpr_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
     def synpred48_SelectExpr(self):
         self._state.backtracking += 1
         start = self.input.mark()
@@ -6253,6 +6353,32 @@ class SelectExprParser(Parser):
         self._state.backtracking -= 1
         return success
 
+    def synpred58_SelectExpr(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred58_SelectExpr_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred61_SelectExpr(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred61_SelectExpr_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
     def synpred9_SelectExpr(self):
         self._state.backtracking += 1
         start = self.input.mark()
@@ -6266,37 +6392,11 @@ class SelectExprParser(Parser):
         self._state.backtracking -= 1
         return success
 
-    def synpred45_SelectExpr(self):
-        self._state.backtracking += 1
-        start = self.input.mark()
-        try:
-            self.synpred45_SelectExpr_fragment()
-        except BacktrackingFailed:
-            success = False
-        else:
-            success = True
-        self.input.rewind(start)
-        self._state.backtracking -= 1
-        return success
-
     def synpred6_SelectExpr(self):
         self._state.backtracking += 1
         start = self.input.mark()
         try:
             self.synpred6_SelectExpr_fragment()
-        except BacktrackingFailed:
-            success = False
-        else:
-            success = True
-        self.input.rewind(start)
-        self._state.backtracking -= 1
-        return success
-
-    def synpred41_SelectExpr(self):
-        self._state.backtracking += 1
-        start = self.input.mark()
-        try:
-            self.synpred41_SelectExpr_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -6336,6 +6436,19 @@ class SelectExprParser(Parser):
         start = self.input.mark()
         try:
             self.synpred42_SelectExpr_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred52_SelectExpr(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred52_SelectExpr_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -6414,32 +6527,6 @@ class SelectExprParser(Parser):
         start = self.input.mark()
         try:
             self.synpred46_SelectExpr_fragment()
-        except BacktrackingFailed:
-            success = False
-        else:
-            success = True
-        self.input.rewind(start)
-        self._state.backtracking -= 1
-        return success
-
-    def synpred56_SelectExpr(self):
-        self._state.backtracking += 1
-        start = self.input.mark()
-        try:
-            self.synpred56_SelectExpr_fragment()
-        except BacktrackingFailed:
-            success = False
-        else:
-            success = True
-        self.input.rewind(start)
-        self._state.backtracking -= 1
-        return success
-
-    def synpred53_SelectExpr(self):
-        self._state.backtracking += 1
-        start = self.input.mark()
-        try:
-            self.synpred53_SelectExpr_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -6588,28 +6675,28 @@ class SelectExprParser(Parser):
         )
 
     DFA31_min = DFA.unpack(
-        u"\1\35\1\0\16\uffff"
+        u"\1\35\2\0\15\uffff"
         )
 
     DFA31_max = DFA.unpack(
-        u"\1\153\1\0\16\uffff"
+        u"\1\153\2\0\15\uffff"
         )
 
     DFA31_accept = DFA.unpack(
-        u"\2\uffff\1\2\14\uffff\1\1"
+        u"\3\uffff\1\2\13\uffff\1\1"
         )
 
     DFA31_special = DFA.unpack(
-        u"\1\uffff\1\0\16\uffff"
+        u"\1\uffff\1\0\1\1\15\uffff"
         )
 
             
     DFA31_transition = [
-        DFA.unpack(u"\1\2\11\uffff\2\2\5\uffff\1\2\2\uffff\1\2\7\uffff\1"
-        u"\2\20\uffff\1\2\25\uffff\1\2\1\uffff\4\2\2\uffff\1\1\2\uffff\1"
-        u"\2"),
+        DFA.unpack(u"\1\3\11\uffff\2\3\5\uffff\1\3\2\uffff\1\3\7\uffff\1"
+        u"\3\20\uffff\1\2\25\uffff\1\3\1\uffff\4\3\2\uffff\1\1\2\uffff\1"
+        u"\3"),
         DFA.unpack(u"\1\uffff"),
-        DFA.unpack(u""),
+        DFA.unpack(u"\1\uffff"),
         DFA.unpack(u""),
         DFA.unpack(u""),
         DFA.unpack(u""),
@@ -6652,10 +6739,27 @@ class SelectExprParser(Parser):
                     s = 15
 
                 elif (True):
-                    s = 2
+                    s = 3
 
                  
                 input.seek(index31_1)
+                if s >= 0:
+                    return s
+            elif s == 1: 
+                LA31_2 = input.LA(1)
+
+                 
+                index31_2 = input.index()
+                input.rewind()
+                s = -1
+                if (self.synpred37_SelectExpr()):
+                    s = 15
+
+                elif (True):
+                    s = 3
+
+                 
+                input.seek(index31_2)
                 if s >= 0:
                     return s
 
@@ -6664,34 +6768,34 @@ class SelectExprParser(Parser):
             nvae = NoViableAltException(self_.getDescription(), 31, _s, input)
             self_.error(nvae)
             raise nvae
-    # lookup tables for DFA #51
+    # lookup tables for DFA #52
 
-    DFA51_eot = DFA.unpack(
+    DFA52_eot = DFA.unpack(
         u"\20\uffff"
         )
 
-    DFA51_eof = DFA.unpack(
+    DFA52_eof = DFA.unpack(
         u"\20\uffff"
         )
 
-    DFA51_min = DFA.unpack(
+    DFA52_min = DFA.unpack(
         u"\1\47\2\uffff\13\0\2\uffff"
         )
 
-    DFA51_max = DFA.unpack(
+    DFA52_max = DFA.unpack(
         u"\1\153\2\uffff\13\0\2\uffff"
         )
 
-    DFA51_accept = DFA.unpack(
+    DFA52_accept = DFA.unpack(
         u"\1\uffff\1\1\1\2\13\uffff\1\3\1\4"
         )
 
-    DFA51_special = DFA.unpack(
+    DFA52_special = DFA.unpack(
         u"\3\uffff\1\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\2\uffff"
         )
 
             
-    DFA51_transition = [
+    DFA52_transition = [
         DFA.unpack(u"\1\2\1\1\5\uffff\1\13\2\uffff\1\12\7\uffff\1\15\20\uffff"
         u"\1\11\25\uffff\1\3\1\uffff\1\5\1\4\1\6\1\7\2\uffff\1\10\2\uffff"
         u"\1\14"),
@@ -6712,9 +6816,9 @@ class SelectExprParser(Parser):
         DFA.unpack(u"")
     ]
 
-    # class definition for DFA #51
+    # class definition for DFA #52
 
-    class DFA51(DFA):
+    class DFA52(DFA):
         pass
 
 
@@ -6729,196 +6833,196 @@ class SelectExprParser(Parser):
             _s = s
 
             if s == 0: 
-                LA51_3 = input.LA(1)
+                LA52_3 = input.LA(1)
 
                  
-                index51_3 = input.index()
+                index52_3 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_3)
+                input.seek(index52_3)
                 if s >= 0:
                     return s
             elif s == 1: 
-                LA51_4 = input.LA(1)
+                LA52_4 = input.LA(1)
 
                  
-                index51_4 = input.index()
+                index52_4 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_4)
+                input.seek(index52_4)
                 if s >= 0:
                     return s
             elif s == 2: 
-                LA51_5 = input.LA(1)
+                LA52_5 = input.LA(1)
 
                  
-                index51_5 = input.index()
+                index52_5 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_5)
+                input.seek(index52_5)
                 if s >= 0:
                     return s
             elif s == 3: 
-                LA51_6 = input.LA(1)
+                LA52_6 = input.LA(1)
 
                  
-                index51_6 = input.index()
+                index52_6 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_6)
+                input.seek(index52_6)
                 if s >= 0:
                     return s
             elif s == 4: 
-                LA51_7 = input.LA(1)
+                LA52_7 = input.LA(1)
 
                  
-                index51_7 = input.index()
+                index52_7 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_7)
+                input.seek(index52_7)
                 if s >= 0:
                     return s
             elif s == 5: 
-                LA51_8 = input.LA(1)
+                LA52_8 = input.LA(1)
 
                  
-                index51_8 = input.index()
+                index52_8 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_8)
+                input.seek(index52_8)
                 if s >= 0:
                     return s
             elif s == 6: 
-                LA51_9 = input.LA(1)
+                LA52_9 = input.LA(1)
 
                  
-                index51_9 = input.index()
+                index52_9 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_9)
+                input.seek(index52_9)
                 if s >= 0:
                     return s
             elif s == 7: 
-                LA51_10 = input.LA(1)
+                LA52_10 = input.LA(1)
 
                  
-                index51_10 = input.index()
+                index52_10 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_10)
+                input.seek(index52_10)
                 if s >= 0:
                     return s
             elif s == 8: 
-                LA51_11 = input.LA(1)
+                LA52_11 = input.LA(1)
 
                  
-                index51_11 = input.index()
+                index52_11 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_11)
+                input.seek(index52_11)
                 if s >= 0:
                     return s
             elif s == 9: 
-                LA51_12 = input.LA(1)
+                LA52_12 = input.LA(1)
 
                  
-                index51_12 = input.index()
+                index52_12 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_12)
+                input.seek(index52_12)
                 if s >= 0:
                     return s
             elif s == 10: 
-                LA51_13 = input.LA(1)
+                LA52_13 = input.LA(1)
 
                  
-                index51_13 = input.index()
+                index52_13 = input.index()
                 input.rewind()
                 s = -1
-                if (self.synpred60_SelectExpr()):
+                if (self.synpred61_SelectExpr()):
                     s = 14
 
                 elif (True):
                     s = 15
 
                  
-                input.seek(index51_13)
+                input.seek(index52_13)
                 if s >= 0:
                     return s
 
             if self._state.backtracking >0:
                 raise BacktrackingFailed
-            nvae = NoViableAltException(self_.getDescription(), 51, _s, input)
+            nvae = NoViableAltException(self_.getDescription(), 52, _s, input)
             self_.error(nvae)
             raise nvae
  
@@ -7014,101 +7118,104 @@ class SelectExprParser(Parser):
     FOLLOW_END_in_if_statement1994 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
     FOLLOW_parameter_in_if_statement1996 = frozenset([108])
     FOLLOW_108_in_if_statement2002 = frozenset([1])
-    FOLLOW_PHRASE_in_assign_expr2040 = frozenset([32, 51])
-    FOLLOW_age_in_assign_expr2043 = frozenset([32])
-    FOLLOW_ASSIGN_in_assign_expr2047 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_assign_expr2049 = frozenset([1])
-    FOLLOW_logic_or_in_logic_expr2072 = frozenset([1])
-    FOLLOW_logic_xor_in_logic_or2081 = frozenset([1, 27])
-    FOLLOW_OR_in_logic_or2084 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_xor_in_logic_or2088 = frozenset([1, 27])
-    FOLLOW_logic_and_in_logic_xor2098 = frozenset([1, 26])
-    FOLLOW_XOR_in_logic_xor2101 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_and_in_logic_xor2104 = frozenset([1, 26])
-    FOLLOW_logic_not_in_logic_and2114 = frozenset([1, 22])
-    FOLLOW_AND_in_logic_and2117 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_not_in_logic_and2120 = frozenset([1, 22])
-    FOLLOW_NOT_in_logic_not2131 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_expr_in_logic_not2136 = frozenset([1])
-    FOLLOW_compare_in_in_compare_expr2145 = frozenset([1])
-    FOLLOW_compare_eq_in_compare_in2153 = frozenset([1, 31])
-    FOLLOW_IN_in_compare_in2156 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_atom_in_compare_in2159 = frozenset([1, 31])
-    FOLLOW_compare_ne_in_compare_eq2169 = frozenset([1, 33])
-    FOLLOW_EQ_in_compare_eq2172 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_ne_in_compare_eq2175 = frozenset([1, 33])
-    FOLLOW_compare_ge_in_compare_ne2185 = frozenset([1, 34])
-    FOLLOW_NE_in_compare_ne2188 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_ge_in_compare_ne2191 = frozenset([1, 34])
-    FOLLOW_compare_gt_in_compare_ge2201 = frozenset([1, 36])
-    FOLLOW_GE_in_compare_ge2204 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_gt_in_compare_ge2207 = frozenset([1, 36])
-    FOLLOW_compare_le_in_compare_gt2217 = frozenset([1, 38])
-    FOLLOW_GT_in_compare_gt2220 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_le_in_compare_gt2223 = frozenset([1, 38])
-    FOLLOW_compare_lt_in_compare_le2233 = frozenset([1, 35])
-    FOLLOW_LE_in_compare_le2236 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_lt_in_compare_le2239 = frozenset([1, 35])
-    FOLLOW_arithmetic_expr_in_compare_lt2249 = frozenset([1, 37])
-    FOLLOW_LT_in_compare_lt2252 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_expr_in_compare_lt2255 = frozenset([1, 37])
-    FOLLOW_arithmetic_sub_add_in_arithmetic_expr2266 = frozenset([1])
-    FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2274 = frozenset([1, 39, 40])
-    FOLLOW_SUB_in_arithmetic_sub_add2278 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_ADD_in_arithmetic_sub_add2281 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2285 = frozenset([1, 39, 40])
-    FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2295 = frozenset([1, 41, 42, 43])
-    FOLLOW_MUL_in_arithmetic_mul_div_mod2299 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_DIV_in_arithmetic_mul_div_mod2304 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_MOD_in_arithmetic_mul_div_mod2309 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2313 = frozenset([1, 41, 42, 43])
-    FOLLOW_arithmetic_unary_in_arithmetic_pow2323 = frozenset([1, 44])
-    FOLLOW_POW_in_arithmetic_pow2326 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_unary_in_arithmetic_pow2329 = frozenset([1, 44])
-    FOLLOW_SUB_in_arithmetic_unary2340 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_atom_in_arithmetic_unary2342 = frozenset([1])
-    FOLLOW_ADD_in_arithmetic_unary2356 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_atom_in_arithmetic_unary2358 = frozenset([1])
-    FOLLOW_atom_in_arithmetic_unary2372 = frozenset([49])
-    FOLLOW_LIST_BEGIN_in_arithmetic_unary2374 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_parameter_in_arithmetic_unary2376 = frozenset([50])
-    FOLLOW_LIST_END_in_arithmetic_unary2378 = frozenset([1])
-    FOLLOW_atom_in_arithmetic_unary2394 = frozenset([1])
-    FOLLOW_value_in_atom2405 = frozenset([1])
-    FOLLOW_variable_in_atom2410 = frozenset([1])
-    FOLLOW_if_statement_in_atom2415 = frozenset([1])
-    FOLLOW_function_in_atom2420 = frozenset([1])
-    FOLLOW_107_in_atom2425 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_atom2428 = frozenset([108])
-    FOLLOW_108_in_atom2430 = frozenset([1])
-    FOLLOW_statement_select_in_atom2436 = frozenset([1])
-    FOLLOW_PHRASE_in_function2445 = frozenset([107])
-    FOLLOW_107_in_function2447 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107, 108])
-    FOLLOW_parameter_in_function2449 = frozenset([108])
-    FOLLOW_108_in_function2452 = frozenset([1])
-    FOLLOW_expr_in_parameter2472 = frozenset([1, 16])
-    FOLLOW_SEP_in_parameter2475 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_parameter2478 = frozenset([1, 16])
-    FOLLOW_PHRASE_in_variable2489 = frozenset([1, 51])
-    FOLLOW_age_in_variable2492 = frozenset([1])
-    FOLLOW_AGE_BEGIN_in_age2516 = frozenset([29, 39, 40, 46, 49, 52, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_age2518 = frozenset([52])
-    FOLLOW_AGE_END_in_age2521 = frozenset([1])
-    FOLLOW_STRING_in_value2539 = frozenset([1])
-    FOLLOW_FLOAT_in_value2553 = frozenset([1])
-    FOLLOW_INTEGER_in_value2567 = frozenset([1])
-    FOLLOW_TRUE_in_value2580 = frozenset([1])
-    FOLLOW_FALSE_in_value2594 = frozenset([1])
-    FOLLOW_this__in_value2608 = frozenset([1])
-    FOLLOW_list__in_value2613 = frozenset([1])
-    FOLLOW_PHRASE_in_this_2624 = frozenset([15])
-    FOLLOW_DOT_in_this_2626 = frozenset([74])
-    FOLLOW_THIS_in_this_2630 = frozenset([1])
-    FOLLOW_LIST_BEGIN_in_list_2651 = frozenset([16, 29, 39, 40, 46, 49, 50, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_list_2655 = frozenset([16, 50])
-    FOLLOW_SEP_in_list_2659 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_expr_in_list_2661 = frozenset([16, 50])
-    FOLLOW_LIST_END_in_list_2667 = frozenset([1])
+    FOLLOW_PHRASE_in_assign_expr2041 = frozenset([32, 51])
+    FOLLOW_age_in_assign_expr2044 = frozenset([32])
+    FOLLOW_ASSIGN_in_assign_expr2048 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_assign_expr2050 = frozenset([1])
+    FOLLOW_this__in_assign_expr2069 = frozenset([32])
+    FOLLOW_ASSIGN_in_assign_expr2071 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_assign_expr2073 = frozenset([1])
+    FOLLOW_logic_or_in_logic_expr2092 = frozenset([1])
+    FOLLOW_logic_xor_in_logic_or2101 = frozenset([1, 27])
+    FOLLOW_OR_in_logic_or2104 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_xor_in_logic_or2108 = frozenset([1, 27])
+    FOLLOW_logic_and_in_logic_xor2118 = frozenset([1, 26])
+    FOLLOW_XOR_in_logic_xor2121 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_and_in_logic_xor2124 = frozenset([1, 26])
+    FOLLOW_logic_not_in_logic_and2134 = frozenset([1, 22])
+    FOLLOW_AND_in_logic_and2137 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_not_in_logic_and2140 = frozenset([1, 22])
+    FOLLOW_NOT_in_logic_not2151 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_expr_in_logic_not2156 = frozenset([1])
+    FOLLOW_compare_in_in_compare_expr2165 = frozenset([1])
+    FOLLOW_compare_eq_in_compare_in2173 = frozenset([1, 31])
+    FOLLOW_IN_in_compare_in2176 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_atom_in_compare_in2179 = frozenset([1, 31])
+    FOLLOW_compare_ne_in_compare_eq2189 = frozenset([1, 33])
+    FOLLOW_EQ_in_compare_eq2192 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_ne_in_compare_eq2195 = frozenset([1, 33])
+    FOLLOW_compare_ge_in_compare_ne2205 = frozenset([1, 34])
+    FOLLOW_NE_in_compare_ne2208 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_ge_in_compare_ne2211 = frozenset([1, 34])
+    FOLLOW_compare_gt_in_compare_ge2221 = frozenset([1, 36])
+    FOLLOW_GE_in_compare_ge2224 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_gt_in_compare_ge2227 = frozenset([1, 36])
+    FOLLOW_compare_le_in_compare_gt2237 = frozenset([1, 38])
+    FOLLOW_GT_in_compare_gt2240 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_le_in_compare_gt2243 = frozenset([1, 38])
+    FOLLOW_compare_lt_in_compare_le2253 = frozenset([1, 35])
+    FOLLOW_LE_in_compare_le2256 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_lt_in_compare_le2259 = frozenset([1, 35])
+    FOLLOW_arithmetic_expr_in_compare_lt2269 = frozenset([1, 37])
+    FOLLOW_LT_in_compare_lt2272 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_expr_in_compare_lt2275 = frozenset([1, 37])
+    FOLLOW_arithmetic_sub_add_in_arithmetic_expr2286 = frozenset([1])
+    FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2294 = frozenset([1, 39, 40])
+    FOLLOW_SUB_in_arithmetic_sub_add2298 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_ADD_in_arithmetic_sub_add2301 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_mul_div_mod_in_arithmetic_sub_add2305 = frozenset([1, 39, 40])
+    FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2315 = frozenset([1, 41, 42, 43])
+    FOLLOW_MUL_in_arithmetic_mul_div_mod2319 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_DIV_in_arithmetic_mul_div_mod2324 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_MOD_in_arithmetic_mul_div_mod2329 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_pow_in_arithmetic_mul_div_mod2333 = frozenset([1, 41, 42, 43])
+    FOLLOW_arithmetic_unary_in_arithmetic_pow2343 = frozenset([1, 44])
+    FOLLOW_POW_in_arithmetic_pow2346 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_unary_in_arithmetic_pow2349 = frozenset([1, 44])
+    FOLLOW_SUB_in_arithmetic_unary2360 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_atom_in_arithmetic_unary2362 = frozenset([1])
+    FOLLOW_ADD_in_arithmetic_unary2376 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_atom_in_arithmetic_unary2378 = frozenset([1])
+    FOLLOW_atom_in_arithmetic_unary2392 = frozenset([49])
+    FOLLOW_LIST_BEGIN_in_arithmetic_unary2394 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_parameter_in_arithmetic_unary2396 = frozenset([50])
+    FOLLOW_LIST_END_in_arithmetic_unary2398 = frozenset([1])
+    FOLLOW_atom_in_arithmetic_unary2414 = frozenset([1])
+    FOLLOW_value_in_atom2425 = frozenset([1])
+    FOLLOW_variable_in_atom2430 = frozenset([1])
+    FOLLOW_if_statement_in_atom2435 = frozenset([1])
+    FOLLOW_function_in_atom2440 = frozenset([1])
+    FOLLOW_107_in_atom2445 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_atom2448 = frozenset([108])
+    FOLLOW_108_in_atom2450 = frozenset([1])
+    FOLLOW_statement_select_in_atom2456 = frozenset([1])
+    FOLLOW_PHRASE_in_function2465 = frozenset([107])
+    FOLLOW_107_in_function2467 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107, 108])
+    FOLLOW_parameter_in_function2469 = frozenset([108])
+    FOLLOW_108_in_function2472 = frozenset([1])
+    FOLLOW_expr_in_parameter2492 = frozenset([1, 16])
+    FOLLOW_SEP_in_parameter2495 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_parameter2498 = frozenset([1, 16])
+    FOLLOW_PHRASE_in_variable2509 = frozenset([1, 51])
+    FOLLOW_age_in_variable2512 = frozenset([1])
+    FOLLOW_AGE_BEGIN_in_age2536 = frozenset([29, 39, 40, 46, 49, 52, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_age2538 = frozenset([52])
+    FOLLOW_AGE_END_in_age2541 = frozenset([1])
+    FOLLOW_STRING_in_value2559 = frozenset([1])
+    FOLLOW_FLOAT_in_value2573 = frozenset([1])
+    FOLLOW_INTEGER_in_value2587 = frozenset([1])
+    FOLLOW_TRUE_in_value2600 = frozenset([1])
+    FOLLOW_FALSE_in_value2614 = frozenset([1])
+    FOLLOW_this__in_value2628 = frozenset([1])
+    FOLLOW_list__in_value2633 = frozenset([1])
+    FOLLOW_PHRASE_in_this_2644 = frozenset([15])
+    FOLLOW_DOT_in_this_2646 = frozenset([74])
+    FOLLOW_THIS_in_this_2650 = frozenset([1])
+    FOLLOW_LIST_BEGIN_in_list_2671 = frozenset([16, 29, 39, 40, 46, 49, 50, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_list_2675 = frozenset([16, 50])
+    FOLLOW_SEP_in_list_2679 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_expr_in_list_2681 = frozenset([16, 50])
+    FOLLOW_LIST_END_in_list_2687 = frozenset([1])
     FOLLOW_statement_select_in_synpred2_SelectExpr1513 = frozenset([17])
     FOLLOW_END_in_synpred2_SelectExpr1515 = frozenset([1])
     FOLLOW_expr_in_synpred3_SelectExpr1521 = frozenset([17])
@@ -7132,36 +7239,36 @@ class SelectExprParser(Parser):
     FOLLOW_function_in_synpred29_SelectExpr1894 = frozenset([87, 88])
     FOLLOW_direction__in_synpred29_SelectExpr1896 = frozenset([1])
     FOLLOW_assign_expr_in_synpred37_SelectExpr1967 = frozenset([1])
-    FOLLOW_OR_in_synpred41_SelectExpr2084 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_xor_in_synpred41_SelectExpr2088 = frozenset([1])
-    FOLLOW_XOR_in_synpred42_SelectExpr2101 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_and_in_synpred42_SelectExpr2104 = frozenset([1])
-    FOLLOW_AND_in_synpred43_SelectExpr2117 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_logic_not_in_synpred43_SelectExpr2120 = frozenset([1])
-    FOLLOW_IN_in_synpred45_SelectExpr2156 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_atom_in_synpred45_SelectExpr2159 = frozenset([1])
-    FOLLOW_EQ_in_synpred46_SelectExpr2172 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_ne_in_synpred46_SelectExpr2175 = frozenset([1])
-    FOLLOW_NE_in_synpred47_SelectExpr2188 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_ge_in_synpred47_SelectExpr2191 = frozenset([1])
-    FOLLOW_GE_in_synpred48_SelectExpr2204 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_gt_in_synpred48_SelectExpr2207 = frozenset([1])
-    FOLLOW_GT_in_synpred49_SelectExpr2220 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_le_in_synpred49_SelectExpr2223 = frozenset([1])
-    FOLLOW_LE_in_synpred50_SelectExpr2236 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_compare_lt_in_synpred50_SelectExpr2239 = frozenset([1])
-    FOLLOW_LT_in_synpred51_SelectExpr2252 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_expr_in_synpred51_SelectExpr2255 = frozenset([1])
-    FOLLOW_set_in_synpred53_SelectExpr2277 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_mul_div_mod_in_synpred53_SelectExpr2285 = frozenset([1])
-    FOLLOW_set_in_synpred56_SelectExpr2298 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_pow_in_synpred56_SelectExpr2313 = frozenset([1])
-    FOLLOW_POW_in_synpred57_SelectExpr2326 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_arithmetic_unary_in_synpred57_SelectExpr2329 = frozenset([1])
-    FOLLOW_atom_in_synpred60_SelectExpr2372 = frozenset([49])
-    FOLLOW_LIST_BEGIN_in_synpred60_SelectExpr2374 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
-    FOLLOW_parameter_in_synpred60_SelectExpr2376 = frozenset([50])
-    FOLLOW_LIST_END_in_synpred60_SelectExpr2378 = frozenset([1])
+    FOLLOW_OR_in_synpred42_SelectExpr2104 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_xor_in_synpred42_SelectExpr2108 = frozenset([1])
+    FOLLOW_XOR_in_synpred43_SelectExpr2121 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_and_in_synpred43_SelectExpr2124 = frozenset([1])
+    FOLLOW_AND_in_synpred44_SelectExpr2137 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_logic_not_in_synpred44_SelectExpr2140 = frozenset([1])
+    FOLLOW_IN_in_synpred46_SelectExpr2176 = frozenset([46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_atom_in_synpred46_SelectExpr2179 = frozenset([1])
+    FOLLOW_EQ_in_synpred47_SelectExpr2192 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_ne_in_synpred47_SelectExpr2195 = frozenset([1])
+    FOLLOW_NE_in_synpred48_SelectExpr2208 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_ge_in_synpred48_SelectExpr2211 = frozenset([1])
+    FOLLOW_GE_in_synpred49_SelectExpr2224 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_gt_in_synpred49_SelectExpr2227 = frozenset([1])
+    FOLLOW_GT_in_synpred50_SelectExpr2240 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_le_in_synpred50_SelectExpr2243 = frozenset([1])
+    FOLLOW_LE_in_synpred51_SelectExpr2256 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_compare_lt_in_synpred51_SelectExpr2259 = frozenset([1])
+    FOLLOW_LT_in_synpred52_SelectExpr2272 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_expr_in_synpred52_SelectExpr2275 = frozenset([1])
+    FOLLOW_set_in_synpred54_SelectExpr2297 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_mul_div_mod_in_synpred54_SelectExpr2305 = frozenset([1])
+    FOLLOW_set_in_synpred57_SelectExpr2318 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_pow_in_synpred57_SelectExpr2333 = frozenset([1])
+    FOLLOW_POW_in_synpred58_SelectExpr2346 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_arithmetic_unary_in_synpred58_SelectExpr2349 = frozenset([1])
+    FOLLOW_atom_in_synpred61_SelectExpr2392 = frozenset([49])
+    FOLLOW_LIST_BEGIN_in_synpred61_SelectExpr2394 = frozenset([29, 39, 40, 46, 49, 57, 74, 96, 98, 99, 100, 101, 104, 107])
+    FOLLOW_parameter_in_synpred61_SelectExpr2396 = frozenset([50])
+    FOLLOW_LIST_END_in_synpred61_SelectExpr2398 = frozenset([1])
 
 
 

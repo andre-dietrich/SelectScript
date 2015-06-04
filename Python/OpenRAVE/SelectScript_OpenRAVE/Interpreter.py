@@ -2,7 +2,10 @@ import operator, threading
 import numpy as np
 import ssFunction
 from openravepy import *
+
+import SelectScript
 import SelectScript.Interpreter
+
 
 class Interpreter(SelectScript.Interpreter):
     def __init__(self):
@@ -131,8 +134,8 @@ class Interpreter(SelectScript.Interpreter):
         # remove bodies
         for elem in newEnv.GetBodies():
             if not elem.GetName() in ids:
-                print elem.GetName()
-                print newEnv.Remove( newEnv.GetKinBody(elem.GetName()) )
+                #print elem.GetName()
+                newEnv.Remove( newEnv.GetKinBody(elem.GetName()) )
                 
         return newEnv
     
@@ -170,6 +173,7 @@ class Interpreter(SelectScript.Interpreter):
         ogMap.SendCommand('SetTranslation %f %f %f' % (pos[0], pos[1], z_pos))
         ogMap.SendCommand('SetSize %i %f %i %f 1 %f' % (size[0]+1, grid_size, size[1]+1, grid_size, height) )
         render = ogMap.SendCommand('Scan')
+        
         return np.fromstring(render, dtype=int, count=-1, sep=' ').reshape(int(size[0]+1), int(size[1]+1))
     
     def evalAS_SensorRangeGrid(self, PARAMS, RESULTS):
@@ -185,7 +189,8 @@ class Interpreter(SelectScript.Interpreter):
         ogMap.SendCommand('SetSize %i %i %f' %(size[0]+1, size[1]+1, grid_size) )
     
         render = ogMap.SendCommand('Scan')
-        return np.fromstring(render, dtype=int, count=-1, sep=' ').reshape(int(size[0]+1), int(size[1]+1))
+        #return (render, pos[0], pos[1], grid_size, size[0], size[1])
+        return np.fromstring(render, dtype=float, count=-1, sep=' ').reshape(int(size[0]+1), int(size[1]+1))
 
     def _calcSize(self, env, grid_size):
         envmin = envmax = []
@@ -213,8 +218,8 @@ class Interpreter(SelectScript.Interpreter):
                     relation = f[1]
                     result = self.eval(f, elem, FROM_n)
                     
-                    if f[0] == SelectScript.types['phrase']:
-                        pp = [[SelectScript.types['this'], '']]
+                    if f[0] == SelectScript.SelectScript.types['phrase']:
+                        pp = [[SelectScript.SelectScript.types['this'], '']]
                     else:
                         pp = f[2]
                                 

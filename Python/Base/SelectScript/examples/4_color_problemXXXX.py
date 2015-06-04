@@ -37,8 +37,12 @@ AS dict;
 
 bytecode = SelectScript.compile(problem, debug = True)
 
-ss = SelectScript.Interpreter()
+print bytecode
 
-for i, result in enumerate(ss.eval(bytecode)):
-    print "=========",i,"========="
-    pprint(result)
+
+
+#ss = SelectScript.Interpreter()
+
+#for i, result in enumerate(ss.eval(bytecode)):
+#    print "=========",i,"========="
+#    pprint(result)

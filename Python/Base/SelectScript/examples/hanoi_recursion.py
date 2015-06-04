@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import SelectScript
 import SelectScript.Interpreter
 
@@ -19,9 +21,10 @@ SELECT to([mov.this, tower], "move"+str(level))
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
               
-START WITH tower = [[3,2,1],[],[]], level= 1
-CONNECT BY tower = move( mov.this, tower ), level=level+1
-STOP WITH  level == 7 or ([] == move( mov.this, tower ))
+START WITH tower = [[3,2,1],[],[]], level=1
+CONNECT BY NO CYCLE
+        tower = move( mov.this, tower ), level=level+1
+STOP WITH level==7 or [] == move( mov.this, tower )
               
 AS dict; """
 
@@ -33,8 +36,5 @@ ss.addFunction('str', str)
 
 result = ss.eval(bytecode)
 
-#print result
-
-for step in result[0]:
-    print step
+pprint(result)
 

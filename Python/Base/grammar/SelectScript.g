@@ -76,7 +76,7 @@ def _elem(self, atom, params):
 	return [self.types['elem'], atom, params]
 	
 def _if(self, expr, params1, params2):
-    print expr, "---",params1, "---" ,params2
+    #print expr, "---",params1, "---" ,params2
     return [self.types['if'], expr, params1, params2]
 	
 def Simplify(self, prog) :
@@ -299,7 +299,7 @@ start_ returns[with_]
 ;
 
 connect_ returns[by]
-@init{by = [[],[0,0,0,None]]} :
+@init{by = [[],[0,0,0,0]]} :
 	^(CONNECT
 	      (CYCLE            { by[1][0] = 1;                       }    )?
 	      (UNIQUE           { by[1][1] = 1;                       }    )?

@@ -2,9 +2,9 @@ import SelectScript
 import SelectScript.Interpreter
 
 def put(x, y, number, sudoku):
-    if sudoku[x][y] == 0 and
-       not number in sudoku[x] and
-       not number in [l[y] for l in sudoku] and
+    if sudoku[x][y] == 0 and \
+       not number in sudoku[x] and \
+       not number in [l[y] for l in sudoku] and \
        not number in [sudoku[i][j] for i in range(x/3*3, x/3*3+3, 1) for j in range(y/3*3, y/3*3+3, 1) ]:
         sudoku[x][y] = number
         return sudoku
