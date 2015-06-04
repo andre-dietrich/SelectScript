@@ -106,6 +106,10 @@ additional helpers, that can be placed everywere, see the examples           #
 See the examples in the example folder, that shows how different problems can
 be solved with SelectScript, even without an underlying simulation environment.
 
+See the 4_color_problem for defining different kinds of problem expressions.
+See the if_print example for additional functionalities and logging.
+See the towers_of_hanoi for different kinds of recursive queries. 
+
 ## Contact
 
 If you change the code, improve this project, fix bugs, or just have comments,

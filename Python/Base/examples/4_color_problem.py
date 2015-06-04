@@ -53,10 +53,12 @@ print "-------------------------------------------------------------------------
 print "time:", t_end - t_start
 print "# results:", len(result)
 print "1. result:", result[0]
-
+# time: 5.05048203468
+# # results: 48
+# 1. result: {'a': 'red', 'c': 'blue', 'b': 'green', 'e': 'green', 'd': 'yellow', 'g': 'yellow', 'f': 'blue', 'h': 'red'}
 ####################################################################################
 ####################################################################################
-problem2 = """
+problem2 = """# encapsulate the neighbors into a nested SELECT-statement
 colors = ['red', 'green', 'blue', 'yellow'];
 
 SELECT a.this,   b.this,   c.this,   d.this,
@@ -87,9 +89,12 @@ print "-------------------------------------------------------------------------
 print "time:", t_end - t_start
 print "# results:", len(result)
 print "1. result:", result[0]
+# time: 13.9889478683
+# # results: 48
+# 1. result: {'a': 'red', 'c': 'blue', 'b': 'green', 'e': 'green', 'd': 'yellow', 'g': 'yellow', 'f': 'blue', 'h': 'red'}
 ####################################################################################
 ####################################################################################
-problem3 = """
+problem3 = """# making it a bit nicer for the eye
 colors = ['red', 'green', 'blue', 'yellow'];
 
 neighbours = [[a.this, b.this], [a.this, c.this], [a.this, d.this], [a.this, e.this],
@@ -117,10 +122,13 @@ print "-------------------------------------------------------------------------
 print "time:", t_end - t_start
 print "# results:", len(result)
 print "1. result:", result[0]
-
+# time: 14.1401050091
+# # results: 48
+# 1. result: {'a': 'red', 'c': 'blue', 'b': 'green', 'e': 'green', 'd': 'yellow', 'g': 'yellow', 'f': 'blue', 'h': 'red'}
 ####################################################################################
 ####################################################################################
-problem4 = """
+problem4 = """# probably even nicer, but much slower due to the application of internal eval
+# see the where-clause ... use with caution
 colors     = ['red', 'green', 'blue', 'yellow'];
 
 neighbours = [["a", "b"], ["a", "c"], ["a", "d"], ["a", "e"],
@@ -137,9 +145,9 @@ WHERE  [] == SELECT this
              AS list
 AS dict; """
 
-#def get(obj, n):
-#    return obj[n]
-#ss.addFunction('get', get)
+def get(obj, n):
+    return obj[n]
+ss.addFunction('get', get)
 
 bytecode = SelectScript.compile(problem4)
 t_start = time()
@@ -152,38 +160,6 @@ print "-------------------------------------------------------------------------
 print "time:", t_end - t_start
 print "# results:", len(result)
 print "1. result:", result[0]
-
-####################################################################################
-####################################################################################
-problem5 = """
-colors     = ['red', 'green', 'blue', 'yellow'];
-
-neighbours = [[a.this, b.this], [a.this, c.this], [a.this, d.this], [a.this, e.this],
-              [a.this, f.this], [b.this, c.this], [b.this, d.this], [b.this, f.this],
-              [b.this, g.this], [c.this, d.this], [c.this, g.this], [c.this, h.this],
-              [d.this, e.this], [d.this, h.this], [e.this, f.this], [e.this, h.this],
-              [f.this, g.this], [g.this, h.this]];
-
-SELECT a.this,   b.this,   c.this,   d.this,   e.this,   f.this,   g.this,   h.this
-FROM   a=colors, b=colors, c=colors, d=colors, e=colors, f=colors, g=colors, h=colors            
-WHERE  [] == SELECT this 
-             FROM neighbours
-             WHERE eval(this[0]+".this;") == eval(this[1]+".this;")
-             AS list
-AS dict; """
-
-#def get(obj, n):
-#    return obj[n]
-#ss.addFunction('get', get)
-
-bytecode = SelectScript.compile(problem4)
-t_start = time()
-result  = ss.eval(bytecode)
-t_end   = time()
-
-print "----------------------------------------------------------------------------"
-print problem5
-print "----------------------------------------------------------------------------"
-print "time:", t_end - t_start
-print "# results:", len(result)
-print "1. result:", result[0]
+# time: 1552.77478504
+# # results: 48
+# 1. result: {'a': u'red', 'c': 'blue', 'b': 'green', 'e': 'green', 'd': 'yellow', 'g': 'yellow', 'f': 'blue', 'h': 'red'}
