@@ -1,4 +1,4 @@
-# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectExpr.g 2015-06-04 17:55:52
+# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectExpr.g 2015-06-10 17:47:28
 
 import sys
 from antlr3 import *
@@ -13,17 +13,18 @@ VAL=6
 VAR=5
 LIST_BEGIN=49
 ELSE=14
-PHRASE=104
+PHRASE=105
 IF=46
 CYCLE=81
+GRAPH=84
 SUB=40
 IN=31
 STOP=78
-MAXIMUM=86
+MAXIMUM=87
 DOT=15
 WHERE=62
 AS=73
-LINE_COMMENT=95
+LINE_COMMENT=96
 POS=9
 FCT=4
 POW=44
@@ -40,19 +41,19 @@ G=64
 H=61
 I=30
 CONNECT=76
-J=105
-K=106
+J=106
+K=107
 ASSIGN=32
 L=55
 M=58
 N=20
-COMMENT=94
+COMMENT=95
 O=24
 P=66
 ORDER=63
 GROUP=67
 Q=82
-ASC=87
+ASC=88
 R=25
 S=53
 T=28
@@ -62,28 +63,28 @@ W=60
 BY=72
 X=23
 Y=71
-Z=84
-CHARACTER=102
+Z=85
+CHARACTER=103
 SQ=47
 SELECT=57
 DIV=42
 NEG=10
-MEMORIZE=85
+MEMORIZE=86
 ELEMENT=8
 LIST_END=50
 LE=35
-STRING=96
+STRING=97
 ADD=39
 LT=37
 FROM=59
 DQ=48
-SPECIAL=103
-DESC=88
-INTEGER=98
+SPECIAL=104
+DESC=89
+INTEGER=99
 MUL=41
-NEWLINE=92
+NEWLINE=93
 UNIQUE=83
-TRUE=100
+TRUE=101
 EQ=33
 NOT=29
 AND=22
@@ -93,11 +94,11 @@ END=17
 HAVING=69
 LIST=7
 NO=80
-FLOAT=99
-AS_VALUE=90
+FLOAT=100
+AS_VALUE=91
 AGE_END=52
-AS_DICT=91
-WS=93
+AS_DICT=92
+WS=94
 EOF=-1
 GE=36
 AGE=11
@@ -108,13 +109,13 @@ STMT_SELECT=12
 COLON=18
 TIME=75
 GT=38
-DIGIT=97
+DIGIT=98
 WITH=79
 T__108=108
-T__107=107
 START=77
-FALSE=101
-AS_LIST=89
+FALSE=102
+T__109=109
+AS_LIST=90
 
 
 class SelectExprLexer(Lexer):
@@ -145,11 +146,11 @@ class SelectExprLexer(Lexer):
 
 
 
-    # $ANTLR start "T__107"
-    def mT__107(self, ):
+    # $ANTLR start "T__108"
+    def mT__108(self, ):
 
         try:
-            _type = T__107
+            _type = T__108
             _channel = DEFAULT_CHANNEL
 
             # SelectExpr.g:7:8: ( '(' )
@@ -166,15 +167,15 @@ class SelectExprLexer(Lexer):
 
             pass
 
-    # $ANTLR end "T__107"
+    # $ANTLR end "T__108"
 
 
 
-    # $ANTLR start "T__108"
-    def mT__108(self, ):
+    # $ANTLR start "T__109"
+    def mT__109(self, ):
 
         try:
-            _type = T__108
+            _type = T__109
             _channel = DEFAULT_CHANNEL
 
             # SelectExpr.g:8:8: ( ')' )
@@ -191,7 +192,7 @@ class SelectExprLexer(Lexer):
 
             pass
 
-    # $ANTLR end "T__108"
+    # $ANTLR end "T__109"
 
 
 
@@ -1413,6 +1414,35 @@ class SelectExprLexer(Lexer):
 
 
 
+    # $ANTLR start "GRAPH"
+    def mGRAPH(self, ):
+
+        try:
+            _type = GRAPH
+            _channel = DEFAULT_CHANNEL
+
+            # SelectExpr.g:98:9: ( G R A P H )
+            # SelectExpr.g:98:11: G R A P H
+            pass 
+            self.mG()
+            self.mR()
+            self.mA()
+            self.mP()
+            self.mH()
+
+
+
+            self._state.type = _type
+            self._state.channel = _channel
+
+        finally:
+
+            pass
+
+    # $ANTLR end "GRAPH"
+
+
+
     # $ANTLR start "MEMORIZE"
     def mMEMORIZE(self, ):
 
@@ -1420,8 +1450,8 @@ class SelectExprLexer(Lexer):
             _type = MEMORIZE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:98:9: ( M E M O R I Z E )
-            # SelectExpr.g:98:11: M E M O R I Z E
+            # SelectExpr.g:99:9: ( M E M O R I Z E )
+            # SelectExpr.g:99:11: M E M O R I Z E
             pass 
             self.mM()
             self.mE()
@@ -1452,8 +1482,8 @@ class SelectExprLexer(Lexer):
             _type = MAXIMUM
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:99:9: ( M A X I M U M )
-            # SelectExpr.g:99:11: M A X I M U M
+            # SelectExpr.g:100:9: ( M A X I M U M )
+            # SelectExpr.g:100:11: M A X I M U M
             pass 
             self.mM()
             self.mA()
@@ -1483,20 +1513,20 @@ class SelectExprLexer(Lexer):
             _type = ASC
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:101:8: ( A S C ( E N D I N G )? )
-            # SelectExpr.g:101:10: A S C ( E N D I N G )?
+            # SelectExpr.g:102:8: ( A S C ( E N D I N G )? )
+            # SelectExpr.g:102:10: A S C ( E N D I N G )?
             pass 
             self.mA()
             self.mS()
             self.mC()
-            # SelectExpr.g:101:16: ( E N D I N G )?
+            # SelectExpr.g:102:16: ( E N D I N G )?
             alt1 = 2
             LA1_0 = self.input.LA(1)
 
             if (LA1_0 == 69 or LA1_0 == 101) :
                 alt1 = 1
             if alt1 == 1:
-                # SelectExpr.g:101:17: E N D I N G
+                # SelectExpr.g:102:17: E N D I N G
                 pass 
                 self.mE()
                 self.mN()
@@ -1528,21 +1558,21 @@ class SelectExprLexer(Lexer):
             _type = DESC
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:102:8: ( D E S C ( E N D I N G )? )
-            # SelectExpr.g:102:10: D E S C ( E N D I N G )?
+            # SelectExpr.g:103:8: ( D E S C ( E N D I N G )? )
+            # SelectExpr.g:103:10: D E S C ( E N D I N G )?
             pass 
             self.mD()
             self.mE()
             self.mS()
             self.mC()
-            # SelectExpr.g:102:18: ( E N D I N G )?
+            # SelectExpr.g:103:18: ( E N D I N G )?
             alt2 = 2
             LA2_0 = self.input.LA(1)
 
             if (LA2_0 == 69 or LA2_0 == 101) :
                 alt2 = 1
             if alt2 == 1:
-                # SelectExpr.g:102:19: E N D I N G
+                # SelectExpr.g:103:19: E N D I N G
                 pass 
                 self.mE()
                 self.mN()
@@ -1574,8 +1604,8 @@ class SelectExprLexer(Lexer):
             _type = AS_LIST
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:104:9: ( L I S T )
-            # SelectExpr.g:104:11: L I S T
+            # SelectExpr.g:105:9: ( L I S T )
+            # SelectExpr.g:105:11: L I S T
             pass 
             self.mL()
             self.mI()
@@ -1602,20 +1632,20 @@ class SelectExprLexer(Lexer):
             _type = AS_VALUE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:105:9: ( V A L ( U E )? )
-            # SelectExpr.g:105:11: V A L ( U E )?
+            # SelectExpr.g:106:9: ( V A L ( U E )? )
+            # SelectExpr.g:106:11: V A L ( U E )?
             pass 
             self.mV()
             self.mA()
             self.mL()
-            # SelectExpr.g:105:17: ( U E )?
+            # SelectExpr.g:106:17: ( U E )?
             alt3 = 2
             LA3_0 = self.input.LA(1)
 
             if (LA3_0 == 85 or LA3_0 == 117) :
                 alt3 = 1
             if alt3 == 1:
-                # SelectExpr.g:105:18: U E
+                # SelectExpr.g:106:18: U E
                 pass 
                 self.mU()
                 self.mE()
@@ -1643,21 +1673,21 @@ class SelectExprLexer(Lexer):
             _type = AS_DICT
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:106:9: ( D I C T ( I O N A R Y )? )
-            # SelectExpr.g:106:11: D I C T ( I O N A R Y )?
+            # SelectExpr.g:107:9: ( D I C T ( I O N A R Y )? )
+            # SelectExpr.g:107:11: D I C T ( I O N A R Y )?
             pass 
             self.mD()
             self.mI()
             self.mC()
             self.mT()
-            # SelectExpr.g:106:19: ( I O N A R Y )?
+            # SelectExpr.g:107:19: ( I O N A R Y )?
             alt4 = 2
             LA4_0 = self.input.LA(1)
 
             if (LA4_0 == 73 or LA4_0 == 105) :
                 alt4 = 1
             if alt4 == 1:
-                # SelectExpr.g:106:20: I O N A R Y
+                # SelectExpr.g:107:20: I O N A R Y
                 pass 
                 self.mI()
                 self.mO()
@@ -1689,20 +1719,20 @@ class SelectExprLexer(Lexer):
             _type = NEWLINE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:108:9: ( ( ( '\\r' )? '\\n' ) )
-            # SelectExpr.g:108:11: ( ( '\\r' )? '\\n' )
+            # SelectExpr.g:109:9: ( ( ( '\\r' )? '\\n' ) )
+            # SelectExpr.g:109:11: ( ( '\\r' )? '\\n' )
             pass 
-            # SelectExpr.g:108:11: ( ( '\\r' )? '\\n' )
-            # SelectExpr.g:108:12: ( '\\r' )? '\\n'
+            # SelectExpr.g:109:11: ( ( '\\r' )? '\\n' )
+            # SelectExpr.g:109:12: ( '\\r' )? '\\n'
             pass 
-            # SelectExpr.g:108:12: ( '\\r' )?
+            # SelectExpr.g:109:12: ( '\\r' )?
             alt5 = 2
             LA5_0 = self.input.LA(1)
 
             if (LA5_0 == 13) :
                 alt5 = 1
             if alt5 == 1:
-                # SelectExpr.g:108:12: '\\r'
+                # SelectExpr.g:109:12: '\\r'
                 pass 
                 self.match(13)
 
@@ -1736,10 +1766,10 @@ class SelectExprLexer(Lexer):
             _type = WS
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:109:4: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
-            # SelectExpr.g:109:6: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            # SelectExpr.g:110:4: ( ( ' ' | '\\t' | '\\n' | '\\r' )+ )
+            # SelectExpr.g:110:6: ( ' ' | '\\t' | '\\n' | '\\r' )+
             pass 
-            # SelectExpr.g:109:6: ( ' ' | '\\t' | '\\n' | '\\r' )+
+            # SelectExpr.g:110:6: ( ' ' | '\\t' | '\\n' | '\\r' )+
             cnt6 = 0
             while True: #loop6
                 alt6 = 2
@@ -1793,11 +1823,11 @@ class SelectExprLexer(Lexer):
             _type = COMMENT
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:111:9: ( '/*' ( . )* '*/' )
-            # SelectExpr.g:111:11: '/*' ( . )* '*/'
+            # SelectExpr.g:112:9: ( '/*' ( . )* '*/' )
+            # SelectExpr.g:112:11: '/*' ( . )* '*/'
             pass 
             self.match("/*")
-            # SelectExpr.g:111:16: ( . )*
+            # SelectExpr.g:112:16: ( . )*
             while True: #loop7
                 alt7 = 2
                 LA7_0 = self.input.LA(1)
@@ -1816,7 +1846,7 @@ class SelectExprLexer(Lexer):
 
 
                 if alt7 == 1:
-                    # SelectExpr.g:111:16: .
+                    # SelectExpr.g:112:16: .
                     pass 
                     self.matchAny()
 
@@ -1848,11 +1878,11 @@ class SelectExprLexer(Lexer):
             _type = LINE_COMMENT
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:112:14: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            # SelectExpr.g:112:16: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            # SelectExpr.g:113:14: ( '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            # SelectExpr.g:113:16: '#' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             pass 
             self.match(35)
-            # SelectExpr.g:112:20: (~ ( '\\n' | '\\r' ) )*
+            # SelectExpr.g:113:20: (~ ( '\\n' | '\\r' ) )*
             while True: #loop8
                 alt8 = 2
                 LA8_0 = self.input.LA(1)
@@ -1862,7 +1892,7 @@ class SelectExprLexer(Lexer):
 
 
                 if alt8 == 1:
-                    # SelectExpr.g:112:20: ~ ( '\\n' | '\\r' )
+                    # SelectExpr.g:113:20: ~ ( '\\n' | '\\r' )
                     pass 
                     if (0 <= self.input.LA(1) <= 9) or (11 <= self.input.LA(1) <= 12) or (14 <= self.input.LA(1) <= 65535):
                         self.input.consume()
@@ -1875,14 +1905,14 @@ class SelectExprLexer(Lexer):
 
                 else:
                     break #loop8
-            # SelectExpr.g:112:34: ( '\\r' )?
+            # SelectExpr.g:113:34: ( '\\r' )?
             alt9 = 2
             LA9_0 = self.input.LA(1)
 
             if (LA9_0 == 13) :
                 alt9 = 1
             if alt9 == 1:
-                # SelectExpr.g:112:34: '\\r'
+                # SelectExpr.g:113:34: '\\r'
                 pass 
                 self.match(13)
 
@@ -1913,7 +1943,7 @@ class SelectExprLexer(Lexer):
             _type = STRING
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:114:9: ( DQ (~ ( DQ ) )* DQ | SQ (~ ( SQ ) )* SQ )
+            # SelectExpr.g:115:9: ( DQ (~ ( DQ ) )* DQ | SQ (~ ( SQ ) )* SQ )
             alt12 = 2
             LA12_0 = self.input.LA(1)
 
@@ -1927,10 +1957,10 @@ class SelectExprLexer(Lexer):
                 raise nvae
 
             if alt12 == 1:
-                # SelectExpr.g:114:11: DQ (~ ( DQ ) )* DQ
+                # SelectExpr.g:115:11: DQ (~ ( DQ ) )* DQ
                 pass 
                 self.mDQ()
-                # SelectExpr.g:114:14: (~ ( DQ ) )*
+                # SelectExpr.g:115:14: (~ ( DQ ) )*
                 while True: #loop10
                     alt10 = 2
                     LA10_0 = self.input.LA(1)
@@ -1940,7 +1970,7 @@ class SelectExprLexer(Lexer):
 
 
                     if alt10 == 1:
-                        # SelectExpr.g:114:15: ~ ( DQ )
+                        # SelectExpr.g:115:15: ~ ( DQ )
                         pass 
                         if (0 <= self.input.LA(1) <= 33) or (35 <= self.input.LA(1) <= 65535):
                             self.input.consume()
@@ -1957,10 +1987,10 @@ class SelectExprLexer(Lexer):
 
 
             elif alt12 == 2:
-                # SelectExpr.g:114:28: SQ (~ ( SQ ) )* SQ
+                # SelectExpr.g:115:28: SQ (~ ( SQ ) )* SQ
                 pass 
                 self.mSQ()
-                # SelectExpr.g:114:31: (~ ( SQ ) )*
+                # SelectExpr.g:115:31: (~ ( SQ ) )*
                 while True: #loop11
                     alt11 = 2
                     LA11_0 = self.input.LA(1)
@@ -1970,7 +2000,7 @@ class SelectExprLexer(Lexer):
 
 
                     if alt11 == 1:
-                        # SelectExpr.g:114:32: ~ ( SQ )
+                        # SelectExpr.g:115:32: ~ ( SQ )
                         pass 
                         if (0 <= self.input.LA(1) <= 38) or (40 <= self.input.LA(1) <= 65535):
                             self.input.consume()
@@ -2004,10 +2034,10 @@ class SelectExprLexer(Lexer):
             _type = INTEGER
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:115:9: ( ( DIGIT )+ )
-            # SelectExpr.g:115:11: ( DIGIT )+
+            # SelectExpr.g:116:9: ( ( DIGIT )+ )
+            # SelectExpr.g:116:11: ( DIGIT )+
             pass 
-            # SelectExpr.g:115:11: ( DIGIT )+
+            # SelectExpr.g:116:11: ( DIGIT )+
             cnt13 = 0
             while True: #loop13
                 alt13 = 2
@@ -2018,7 +2048,7 @@ class SelectExprLexer(Lexer):
 
 
                 if alt13 == 1:
-                    # SelectExpr.g:115:11: DIGIT
+                    # SelectExpr.g:116:11: DIGIT
                     pass 
                     self.mDIGIT()
 
@@ -2052,10 +2082,10 @@ class SelectExprLexer(Lexer):
             _type = FLOAT
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:116:8: ( ( DIGIT )* DOT ( DIGIT )* )
-            # SelectExpr.g:116:10: ( DIGIT )* DOT ( DIGIT )*
+            # SelectExpr.g:117:8: ( ( DIGIT )* DOT ( DIGIT )* )
+            # SelectExpr.g:117:10: ( DIGIT )* DOT ( DIGIT )*
             pass 
-            # SelectExpr.g:116:10: ( DIGIT )*
+            # SelectExpr.g:117:10: ( DIGIT )*
             while True: #loop14
                 alt14 = 2
                 LA14_0 = self.input.LA(1)
@@ -2065,7 +2095,7 @@ class SelectExprLexer(Lexer):
 
 
                 if alt14 == 1:
-                    # SelectExpr.g:116:10: DIGIT
+                    # SelectExpr.g:117:10: DIGIT
                     pass 
                     self.mDIGIT()
 
@@ -2073,7 +2103,7 @@ class SelectExprLexer(Lexer):
                 else:
                     break #loop14
             self.mDOT()
-            # SelectExpr.g:116:21: ( DIGIT )*
+            # SelectExpr.g:117:21: ( DIGIT )*
             while True: #loop15
                 alt15 = 2
                 LA15_0 = self.input.LA(1)
@@ -2083,7 +2113,7 @@ class SelectExprLexer(Lexer):
 
 
                 if alt15 == 1:
-                    # SelectExpr.g:116:21: DIGIT
+                    # SelectExpr.g:117:21: DIGIT
                     pass 
                     self.mDIGIT()
 
@@ -2111,8 +2141,8 @@ class SelectExprLexer(Lexer):
             _type = TRUE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:117:7: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
-            # SelectExpr.g:117:9: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
+            # SelectExpr.g:118:7: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
+            # SelectExpr.g:118:9: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
             pass 
             if self.input.LA(1) == 84 or self.input.LA(1) == 116:
                 self.input.consume()
@@ -2163,8 +2193,8 @@ class SelectExprLexer(Lexer):
             _type = FALSE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:118:8: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
-            # SelectExpr.g:118:10: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
+            # SelectExpr.g:119:8: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
+            # SelectExpr.g:119:10: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
             pass 
             if self.input.LA(1) == 70 or self.input.LA(1) == 102:
                 self.input.consume()
@@ -2222,8 +2252,8 @@ class SelectExprLexer(Lexer):
             _type = PHRASE
             _channel = DEFAULT_CHANNEL
 
-            # SelectExpr.g:120:8: ( ( CHARACTER | SPECIAL ) ( DIGIT | CHARACTER | SPECIAL )* )
-            # SelectExpr.g:120:10: ( CHARACTER | SPECIAL ) ( DIGIT | CHARACTER | SPECIAL )*
+            # SelectExpr.g:121:8: ( ( CHARACTER | SPECIAL ) ( DIGIT | CHARACTER | SPECIAL )* )
+            # SelectExpr.g:121:10: ( CHARACTER | SPECIAL ) ( DIGIT | CHARACTER | SPECIAL )*
             pass 
             if (65 <= self.input.LA(1) <= 90) or self.input.LA(1) == 95 or (97 <= self.input.LA(1) <= 122):
                 self.input.consume()
@@ -2232,7 +2262,7 @@ class SelectExprLexer(Lexer):
                 self.recover(mse)
                 raise mse
 
-            # SelectExpr.g:120:32: ( DIGIT | CHARACTER | SPECIAL )*
+            # SelectExpr.g:121:32: ( DIGIT | CHARACTER | SPECIAL )*
             while True: #loop16
                 alt16 = 2
                 LA16_0 = self.input.LA(1)
@@ -2273,8 +2303,8 @@ class SelectExprLexer(Lexer):
     def mDIGIT(self, ):
 
         try:
-            # SelectExpr.g:122:20: ( '0' .. '9' )
-            # SelectExpr.g:122:22: '0' .. '9'
+            # SelectExpr.g:123:20: ( '0' .. '9' )
+            # SelectExpr.g:123:22: '0' .. '9'
             pass 
             self.matchRange(48, 57)
 
@@ -2293,8 +2323,8 @@ class SelectExprLexer(Lexer):
     def mCHARACTER(self, ):
 
         try:
-            # SelectExpr.g:123:20: ( ( 'a' .. 'z' | 'A' .. 'Z' ) )
-            # SelectExpr.g:123:22: ( 'a' .. 'z' | 'A' .. 'Z' )
+            # SelectExpr.g:124:20: ( ( 'a' .. 'z' | 'A' .. 'Z' ) )
+            # SelectExpr.g:124:22: ( 'a' .. 'z' | 'A' .. 'Z' )
             pass 
             if (65 <= self.input.LA(1) <= 90) or (97 <= self.input.LA(1) <= 122):
                 self.input.consume()
@@ -2319,8 +2349,8 @@ class SelectExprLexer(Lexer):
     def mSPECIAL(self, ):
 
         try:
-            # SelectExpr.g:124:20: ( '_' )
-            # SelectExpr.g:124:22: '_'
+            # SelectExpr.g:125:20: ( '_' )
+            # SelectExpr.g:125:22: '_'
             pass 
             self.match(95)
 
@@ -2339,8 +2369,8 @@ class SelectExprLexer(Lexer):
     def mA(self, ):
 
         try:
-            # SelectExpr.g:126:12: ( ( 'A' | 'a' ) )
-            # SelectExpr.g:126:14: ( 'A' | 'a' )
+            # SelectExpr.g:127:12: ( ( 'A' | 'a' ) )
+            # SelectExpr.g:127:14: ( 'A' | 'a' )
             pass 
             if self.input.LA(1) == 65 or self.input.LA(1) == 97:
                 self.input.consume()
@@ -2365,8 +2395,8 @@ class SelectExprLexer(Lexer):
     def mN(self, ):
 
         try:
-            # SelectExpr.g:126:12: ( ( 'N' | 'n' ) )
-            # SelectExpr.g:126:14: ( 'N' | 'n' )
+            # SelectExpr.g:127:12: ( ( 'N' | 'n' ) )
+            # SelectExpr.g:127:14: ( 'N' | 'n' )
             pass 
             if self.input.LA(1) == 78 or self.input.LA(1) == 110:
                 self.input.consume()
@@ -2391,8 +2421,8 @@ class SelectExprLexer(Lexer):
     def mB(self, ):
 
         try:
-            # SelectExpr.g:127:12: ( ( 'B' | 'b' ) )
-            # SelectExpr.g:127:14: ( 'B' | 'b' )
+            # SelectExpr.g:128:12: ( ( 'B' | 'b' ) )
+            # SelectExpr.g:128:14: ( 'B' | 'b' )
             pass 
             if self.input.LA(1) == 66 or self.input.LA(1) == 98:
                 self.input.consume()
@@ -2417,8 +2447,8 @@ class SelectExprLexer(Lexer):
     def mO(self, ):
 
         try:
-            # SelectExpr.g:127:12: ( ( 'O' | 'o' ) )
-            # SelectExpr.g:127:14: ( 'O' | 'o' )
+            # SelectExpr.g:128:12: ( ( 'O' | 'o' ) )
+            # SelectExpr.g:128:14: ( 'O' | 'o' )
             pass 
             if self.input.LA(1) == 79 or self.input.LA(1) == 111:
                 self.input.consume()
@@ -2443,8 +2473,8 @@ class SelectExprLexer(Lexer):
     def mC(self, ):
 
         try:
-            # SelectExpr.g:128:12: ( ( 'C' | 'c' ) )
-            # SelectExpr.g:128:14: ( 'C' | 'c' )
+            # SelectExpr.g:129:12: ( ( 'C' | 'c' ) )
+            # SelectExpr.g:129:14: ( 'C' | 'c' )
             pass 
             if self.input.LA(1) == 67 or self.input.LA(1) == 99:
                 self.input.consume()
@@ -2469,8 +2499,8 @@ class SelectExprLexer(Lexer):
     def mP(self, ):
 
         try:
-            # SelectExpr.g:128:12: ( ( 'P' | 'p' ) )
-            # SelectExpr.g:128:14: ( 'P' | 'p' )
+            # SelectExpr.g:129:12: ( ( 'P' | 'p' ) )
+            # SelectExpr.g:129:14: ( 'P' | 'p' )
             pass 
             if self.input.LA(1) == 80 or self.input.LA(1) == 112:
                 self.input.consume()
@@ -2495,8 +2525,8 @@ class SelectExprLexer(Lexer):
     def mD(self, ):
 
         try:
-            # SelectExpr.g:129:12: ( ( 'D' | 'd' ) )
-            # SelectExpr.g:129:14: ( 'D' | 'd' )
+            # SelectExpr.g:130:12: ( ( 'D' | 'd' ) )
+            # SelectExpr.g:130:14: ( 'D' | 'd' )
             pass 
             if self.input.LA(1) == 68 or self.input.LA(1) == 100:
                 self.input.consume()
@@ -2521,8 +2551,8 @@ class SelectExprLexer(Lexer):
     def mQ(self, ):
 
         try:
-            # SelectExpr.g:129:12: ( ( 'Q' | 'q' ) )
-            # SelectExpr.g:129:14: ( 'Q' | 'q' )
+            # SelectExpr.g:130:12: ( ( 'Q' | 'q' ) )
+            # SelectExpr.g:130:14: ( 'Q' | 'q' )
             pass 
             if self.input.LA(1) == 81 or self.input.LA(1) == 113:
                 self.input.consume()
@@ -2547,8 +2577,8 @@ class SelectExprLexer(Lexer):
     def mE(self, ):
 
         try:
-            # SelectExpr.g:130:12: ( ( 'E' | 'e' ) )
-            # SelectExpr.g:130:14: ( 'E' | 'e' )
+            # SelectExpr.g:131:12: ( ( 'E' | 'e' ) )
+            # SelectExpr.g:131:14: ( 'E' | 'e' )
             pass 
             if self.input.LA(1) == 69 or self.input.LA(1) == 101:
                 self.input.consume()
@@ -2573,8 +2603,8 @@ class SelectExprLexer(Lexer):
     def mR(self, ):
 
         try:
-            # SelectExpr.g:130:12: ( ( 'R' | 'r' ) )
-            # SelectExpr.g:130:14: ( 'R' | 'r' )
+            # SelectExpr.g:131:12: ( ( 'R' | 'r' ) )
+            # SelectExpr.g:131:14: ( 'R' | 'r' )
             pass 
             if self.input.LA(1) == 82 or self.input.LA(1) == 114:
                 self.input.consume()
@@ -2599,8 +2629,8 @@ class SelectExprLexer(Lexer):
     def mF(self, ):
 
         try:
-            # SelectExpr.g:131:12: ( ( 'F' | 'f' ) )
-            # SelectExpr.g:131:14: ( 'F' | 'f' )
+            # SelectExpr.g:132:12: ( ( 'F' | 'f' ) )
+            # SelectExpr.g:132:14: ( 'F' | 'f' )
             pass 
             if self.input.LA(1) == 70 or self.input.LA(1) == 102:
                 self.input.consume()
@@ -2625,8 +2655,8 @@ class SelectExprLexer(Lexer):
     def mS(self, ):
 
         try:
-            # SelectExpr.g:131:12: ( ( 'S' | 's' ) )
-            # SelectExpr.g:131:14: ( 'S' | 's' )
+            # SelectExpr.g:132:12: ( ( 'S' | 's' ) )
+            # SelectExpr.g:132:14: ( 'S' | 's' )
             pass 
             if self.input.LA(1) == 83 or self.input.LA(1) == 115:
                 self.input.consume()
@@ -2651,8 +2681,8 @@ class SelectExprLexer(Lexer):
     def mG(self, ):
 
         try:
-            # SelectExpr.g:132:12: ( ( 'G' | 'g' ) )
-            # SelectExpr.g:132:14: ( 'G' | 'g' )
+            # SelectExpr.g:133:12: ( ( 'G' | 'g' ) )
+            # SelectExpr.g:133:14: ( 'G' | 'g' )
             pass 
             if self.input.LA(1) == 71 or self.input.LA(1) == 103:
                 self.input.consume()
@@ -2677,8 +2707,8 @@ class SelectExprLexer(Lexer):
     def mT(self, ):
 
         try:
-            # SelectExpr.g:132:12: ( ( 'T' | 't' ) )
-            # SelectExpr.g:132:14: ( 'T' | 't' )
+            # SelectExpr.g:133:12: ( ( 'T' | 't' ) )
+            # SelectExpr.g:133:14: ( 'T' | 't' )
             pass 
             if self.input.LA(1) == 84 or self.input.LA(1) == 116:
                 self.input.consume()
@@ -2703,8 +2733,8 @@ class SelectExprLexer(Lexer):
     def mH(self, ):
 
         try:
-            # SelectExpr.g:133:12: ( ( 'H' | 'h' ) )
-            # SelectExpr.g:133:14: ( 'H' | 'h' )
+            # SelectExpr.g:134:12: ( ( 'H' | 'h' ) )
+            # SelectExpr.g:134:14: ( 'H' | 'h' )
             pass 
             if self.input.LA(1) == 72 or self.input.LA(1) == 104:
                 self.input.consume()
@@ -2729,8 +2759,8 @@ class SelectExprLexer(Lexer):
     def mU(self, ):
 
         try:
-            # SelectExpr.g:133:12: ( ( 'U' | 'u' ) )
-            # SelectExpr.g:133:14: ( 'U' | 'u' )
+            # SelectExpr.g:134:12: ( ( 'U' | 'u' ) )
+            # SelectExpr.g:134:14: ( 'U' | 'u' )
             pass 
             if self.input.LA(1) == 85 or self.input.LA(1) == 117:
                 self.input.consume()
@@ -2755,8 +2785,8 @@ class SelectExprLexer(Lexer):
     def mI(self, ):
 
         try:
-            # SelectExpr.g:134:12: ( ( 'I' | 'i' ) )
-            # SelectExpr.g:134:14: ( 'I' | 'i' )
+            # SelectExpr.g:135:12: ( ( 'I' | 'i' ) )
+            # SelectExpr.g:135:14: ( 'I' | 'i' )
             pass 
             if self.input.LA(1) == 73 or self.input.LA(1) == 105:
                 self.input.consume()
@@ -2781,8 +2811,8 @@ class SelectExprLexer(Lexer):
     def mV(self, ):
 
         try:
-            # SelectExpr.g:134:12: ( ( 'V' | 'v' ) )
-            # SelectExpr.g:134:14: ( 'V' | 'v' )
+            # SelectExpr.g:135:12: ( ( 'V' | 'v' ) )
+            # SelectExpr.g:135:14: ( 'V' | 'v' )
             pass 
             if self.input.LA(1) == 86 or self.input.LA(1) == 118:
                 self.input.consume()
@@ -2807,8 +2837,8 @@ class SelectExprLexer(Lexer):
     def mJ(self, ):
 
         try:
-            # SelectExpr.g:135:12: ( ( 'J' | 'j' ) )
-            # SelectExpr.g:135:14: ( 'J' | 'j' )
+            # SelectExpr.g:136:12: ( ( 'J' | 'j' ) )
+            # SelectExpr.g:136:14: ( 'J' | 'j' )
             pass 
             if self.input.LA(1) == 74 or self.input.LA(1) == 106:
                 self.input.consume()
@@ -2833,8 +2863,8 @@ class SelectExprLexer(Lexer):
     def mW(self, ):
 
         try:
-            # SelectExpr.g:135:12: ( ( 'W' | 'w' ) )
-            # SelectExpr.g:135:14: ( 'W' | 'w' )
+            # SelectExpr.g:136:12: ( ( 'W' | 'w' ) )
+            # SelectExpr.g:136:14: ( 'W' | 'w' )
             pass 
             if self.input.LA(1) == 87 or self.input.LA(1) == 119:
                 self.input.consume()
@@ -2859,8 +2889,8 @@ class SelectExprLexer(Lexer):
     def mK(self, ):
 
         try:
-            # SelectExpr.g:136:12: ( ( 'K' | 'k' ) )
-            # SelectExpr.g:136:14: ( 'K' | 'k' )
+            # SelectExpr.g:137:12: ( ( 'K' | 'k' ) )
+            # SelectExpr.g:137:14: ( 'K' | 'k' )
             pass 
             if self.input.LA(1) == 75 or self.input.LA(1) == 107:
                 self.input.consume()
@@ -2885,8 +2915,8 @@ class SelectExprLexer(Lexer):
     def mX(self, ):
 
         try:
-            # SelectExpr.g:136:12: ( ( 'X' | 'x' ) )
-            # SelectExpr.g:136:14: ( 'X' | 'x' )
+            # SelectExpr.g:137:12: ( ( 'X' | 'x' ) )
+            # SelectExpr.g:137:14: ( 'X' | 'x' )
             pass 
             if self.input.LA(1) == 88 or self.input.LA(1) == 120:
                 self.input.consume()
@@ -2911,8 +2941,8 @@ class SelectExprLexer(Lexer):
     def mL(self, ):
 
         try:
-            # SelectExpr.g:137:12: ( ( 'L' | 'l' ) )
-            # SelectExpr.g:137:14: ( 'L' | 'l' )
+            # SelectExpr.g:138:12: ( ( 'L' | 'l' ) )
+            # SelectExpr.g:138:14: ( 'L' | 'l' )
             pass 
             if self.input.LA(1) == 76 or self.input.LA(1) == 108:
                 self.input.consume()
@@ -2937,8 +2967,8 @@ class SelectExprLexer(Lexer):
     def mY(self, ):
 
         try:
-            # SelectExpr.g:137:12: ( ( 'Y' | 'y' ) )
-            # SelectExpr.g:137:14: ( 'Y' | 'y' )
+            # SelectExpr.g:138:12: ( ( 'Y' | 'y' ) )
+            # SelectExpr.g:138:14: ( 'Y' | 'y' )
             pass 
             if self.input.LA(1) == 89 or self.input.LA(1) == 121:
                 self.input.consume()
@@ -2963,8 +2993,8 @@ class SelectExprLexer(Lexer):
     def mM(self, ):
 
         try:
-            # SelectExpr.g:138:12: ( ( 'M' | 'm' ) )
-            # SelectExpr.g:138:14: ( 'M' | 'm' )
+            # SelectExpr.g:139:12: ( ( 'M' | 'm' ) )
+            # SelectExpr.g:139:14: ( 'M' | 'm' )
             pass 
             if self.input.LA(1) == 77 or self.input.LA(1) == 109:
                 self.input.consume()
@@ -2989,8 +3019,8 @@ class SelectExprLexer(Lexer):
     def mZ(self, ):
 
         try:
-            # SelectExpr.g:138:12: ( ( 'Z' | 'z' ) )
-            # SelectExpr.g:138:14: ( 'Z' | 'z' )
+            # SelectExpr.g:139:12: ( ( 'Z' | 'z' ) )
+            # SelectExpr.g:139:14: ( 'Z' | 'z' )
             pass 
             if self.input.LA(1) == 90 or self.input.LA(1) == 122:
                 self.input.consume()
@@ -3012,19 +3042,19 @@ class SelectExprLexer(Lexer):
 
 
     def mTokens(self):
-        # SelectExpr.g:1:8: ( T__107 | T__108 | DOT | SEP | END | COLON | AND | XOR | OR | NOT | IN | ASSIGN | EQ | NE | LE | GE | LT | GT | ADD | SUB | MUL | DIV | MOD | POW | IF | SQ | DQ | LIST_BEGIN | LIST_END | AGE_BEGIN | AGE_END | SELECT | FROM | WHERE | ORDER | GROUP | HAVING | BY | AS | THIS | TIME | CONNECT | START | STOP | WITH | NO | CYCLE | UNIQUE | MEMORIZE | MAXIMUM | ASC | DESC | AS_LIST | AS_VALUE | AS_DICT | NEWLINE | WS | COMMENT | LINE_COMMENT | STRING | INTEGER | FLOAT | TRUE | FALSE | PHRASE )
-        alt17 = 65
+        # SelectExpr.g:1:8: ( T__108 | T__109 | DOT | SEP | END | COLON | AND | XOR | OR | NOT | IN | ASSIGN | EQ | NE | LE | GE | LT | GT | ADD | SUB | MUL | DIV | MOD | POW | IF | SQ | DQ | LIST_BEGIN | LIST_END | AGE_BEGIN | AGE_END | SELECT | FROM | WHERE | ORDER | GROUP | HAVING | BY | AS | THIS | TIME | CONNECT | START | STOP | WITH | NO | CYCLE | UNIQUE | GRAPH | MEMORIZE | MAXIMUM | ASC | DESC | AS_LIST | AS_VALUE | AS_DICT | NEWLINE | WS | COMMENT | LINE_COMMENT | STRING | INTEGER | FLOAT | TRUE | FALSE | PHRASE )
+        alt17 = 66
         alt17 = self.dfa17.predict(self.input)
         if alt17 == 1:
-            # SelectExpr.g:1:10: T__107
+            # SelectExpr.g:1:10: T__108
             pass 
-            self.mT__107()
+            self.mT__108()
 
 
         elif alt17 == 2:
-            # SelectExpr.g:1:17: T__108
+            # SelectExpr.g:1:17: T__109
             pass 
-            self.mT__108()
+            self.mT__109()
 
 
         elif alt17 == 3:
@@ -3304,103 +3334,109 @@ class SelectExprLexer(Lexer):
 
 
         elif alt17 == 49:
-            # SelectExpr.g:1:249: MEMORIZE
+            # SelectExpr.g:1:249: GRAPH
+            pass 
+            self.mGRAPH()
+
+
+        elif alt17 == 50:
+            # SelectExpr.g:1:255: MEMORIZE
             pass 
             self.mMEMORIZE()
 
 
-        elif alt17 == 50:
-            # SelectExpr.g:1:258: MAXIMUM
+        elif alt17 == 51:
+            # SelectExpr.g:1:264: MAXIMUM
             pass 
             self.mMAXIMUM()
 
 
-        elif alt17 == 51:
-            # SelectExpr.g:1:266: ASC
+        elif alt17 == 52:
+            # SelectExpr.g:1:272: ASC
             pass 
             self.mASC()
 
 
-        elif alt17 == 52:
-            # SelectExpr.g:1:270: DESC
+        elif alt17 == 53:
+            # SelectExpr.g:1:276: DESC
             pass 
             self.mDESC()
 
 
-        elif alt17 == 53:
-            # SelectExpr.g:1:275: AS_LIST
+        elif alt17 == 54:
+            # SelectExpr.g:1:281: AS_LIST
             pass 
             self.mAS_LIST()
 
 
-        elif alt17 == 54:
-            # SelectExpr.g:1:283: AS_VALUE
+        elif alt17 == 55:
+            # SelectExpr.g:1:289: AS_VALUE
             pass 
             self.mAS_VALUE()
 
 
-        elif alt17 == 55:
-            # SelectExpr.g:1:292: AS_DICT
+        elif alt17 == 56:
+            # SelectExpr.g:1:298: AS_DICT
             pass 
             self.mAS_DICT()
 
 
-        elif alt17 == 56:
-            # SelectExpr.g:1:300: NEWLINE
+        elif alt17 == 57:
+            # SelectExpr.g:1:306: NEWLINE
             pass 
             self.mNEWLINE()
 
 
-        elif alt17 == 57:
-            # SelectExpr.g:1:308: WS
+        elif alt17 == 58:
+            # SelectExpr.g:1:314: WS
             pass 
             self.mWS()
 
 
-        elif alt17 == 58:
-            # SelectExpr.g:1:311: COMMENT
+        elif alt17 == 59:
+            # SelectExpr.g:1:317: COMMENT
             pass 
             self.mCOMMENT()
 
 
-        elif alt17 == 59:
-            # SelectExpr.g:1:319: LINE_COMMENT
+        elif alt17 == 60:
+            # SelectExpr.g:1:325: LINE_COMMENT
             pass 
             self.mLINE_COMMENT()
 
 
-        elif alt17 == 60:
-            # SelectExpr.g:1:332: STRING
+        elif alt17 == 61:
+            # SelectExpr.g:1:338: STRING
             pass 
             self.mSTRING()
 
 
-        elif alt17 == 61:
-            # SelectExpr.g:1:339: INTEGER
+        elif alt17 == 62:
+            # SelectExpr.g:1:345: INTEGER
             pass 
             self.mINTEGER()
 
 
-        elif alt17 == 62:
-            # SelectExpr.g:1:347: FLOAT
+        elif alt17 == 63:
+            # SelectExpr.g:1:353: FLOAT
             pass 
             self.mFLOAT()
 
 
-        elif alt17 == 63:
-            # SelectExpr.g:1:353: TRUE
+        elif alt17 == 64:
+            # SelectExpr.g:1:359: TRUE
             pass 
             self.mTRUE()
 
 
-        elif alt17 == 64:
-            # SelectExpr.g:1:358: FALSE
+        elif alt17 == 65:
+            # SelectExpr.g:1:364: FALSE
             pass 
             self.mFALSE()
 
 
-        elif alt17 == 65:
-            # SelectExpr.g:1:364: PHRASE
+        elif alt17 == 66:
+            # SelectExpr.g:1:370: PHRASE
             pass 
             self.mPHRASE()
 
@@ -3415,77 +3451,76 @@ class SelectExprLexer(Lexer):
     DFA17_eot = DFA.unpack(
         u"\3\uffff\1\57\3\uffff\5\56\1\71\1\uffff\1\73\1\75\3\uffff\1\77"
         u"\2\uffff\1\100\1\102\4\uffff\15\56\1\53\1\130\2\uffff\1\131\3\uffff"
-        u"\1\56\1\133\1\56\1\136\1\140\1\142\1\143\13\uffff\10\56\1\155\14"
-        u"\56\2\uffff\1\172\1\uffff\1\173\1\175\1\uffff\1\56\1\uffff\1\177"
-        u"\2\uffff\11\56\1\uffff\13\56\1\u0094\2\uffff\1\56\1\uffff\1\56"
-        u"\1\uffff\1\u0098\3\56\1\u009c\1\56\1\u009e\2\56\1\u00a1\1\u00a2"
-        u"\1\u00a3\5\56\1\u00a9\1\u00ab\1\u00ad\1\uffff\2\56\1\u00b0\1\uffff"
-        u"\1\u00b1\1\56\1\u00b3\1\uffff\1\u00b4\1\uffff\1\u00b5\1\56\3\uffff"
-        u"\1\56\1\u00b8\3\56\1\uffff\1\56\1\uffff\1\56\1\uffff\1\u0094\1"
-        u"\56\2\uffff\1\u00bf\3\uffff\1\u00c0\1\56\1\uffff\1\u00c2\5\56\2"
-        u"\uffff\1\u00c8\1\uffff\1\56\1\u00ca\3\56\1\uffff\1\u00ce\1\uffff"
-        u"\2\56\1\173\1\uffff\2\56\1\u00a9\1\u00ab"
+        u"\1\132\2\56\1\136\1\140\1\142\1\143\13\uffff\10\56\1\156\14\56"
+        u"\3\uffff\1\173\1\175\1\176\1\uffff\1\56\1\uffff\1\u0080\2\uffff"
+        u"\12\56\1\uffff\13\56\1\u0096\1\uffff\1\56\2\uffff\1\56\1\uffff"
+        u"\1\56\1\u009b\2\56\1\u009e\1\u009f\4\56\1\u00a4\1\u00a5\1\u00a6"
+        u"\5\56\1\u00ac\1\u00ae\1\u00b0\1\uffff\2\56\1\u00b3\1\u00b4\1\uffff"
+        u"\1\56\1\u00b6\2\uffff\1\u00b7\1\u00b8\1\u00b9\1\56\3\uffff\1\56"
+        u"\1\u00bc\3\56\1\uffff\1\56\1\uffff\1\56\1\uffff\1\u0096\1\56\2"
+        u"\uffff\1\u00c3\4\uffff\1\u00c4\1\56\1\uffff\1\u00c6\5\56\2\uffff"
+        u"\1\u00cc\1\uffff\1\56\1\u00ce\3\56\1\uffff\1\u00d2\1\uffff\2\56"
+        u"\1\173\1\uffff\2\56\1\u00ac\1\u00ae"
         )
 
     DFA17_eof = DFA.unpack(
-        u"\u00d3\uffff"
+        u"\u00d7\uffff"
         )
 
     DFA17_min = DFA.unpack(
         u"\1\11\2\uffff\1\60\3\uffff\1\116\1\117\1\122\1\117\1\106\1\75\1"
         u"\uffff\2\75\3\uffff\1\52\2\uffff\2\0\4\uffff\1\105\1\101\1\110"
         u"\1\122\1\101\1\131\1\110\1\117\1\116\1\101\1\105\1\111\1\101\1"
-        u"\12\1\11\2\uffff\1\56\3\uffff\1\104\1\60\1\122\4\60\13\uffff\1"
-        u"\101\2\114\1\117\1\105\1\124\1\117\1\126\1\60\1\125\1\115\1\111"
-        u"\1\116\1\103\1\111\1\115\1\130\1\103\2\123\1\114\2\uffff\1\60\1"
-        u"\uffff\2\60\1\uffff\1\105\1\uffff\1\60\2\uffff\1\120\1\122\1\105"
-        u"\1\123\1\115\1\122\1\110\1\125\1\111\1\uffff\2\105\1\123\1\116"
-        u"\1\114\1\121\1\117\1\111\1\124\1\103\1\124\1\60\2\uffff\1\116\1"
-        u"\uffff\1\122\1\uffff\1\60\1\124\1\103\1\105\1\60\1\105\1\60\1\120"
-        u"\1\116\3\60\2\105\1\125\1\122\1\115\3\60\1\uffff\1\105\1\104\1"
-        u"\60\1\uffff\1\60\1\124\1\60\1\uffff\1\60\1\uffff\1\60\1\107\3\uffff"
-        u"\1\103\1\60\1\105\1\111\1\125\1\uffff\1\117\1\uffff\1\116\1\uffff"
-        u"\1\60\1\111\2\uffff\1\60\3\uffff\1\60\1\124\1\uffff\1\60\1\132"
-        u"\1\115\1\116\1\104\1\116\2\uffff\1\60\1\uffff\1\105\1\60\1\101"
-        u"\1\111\1\107\1\uffff\1\60\1\uffff\1\122\1\116\1\60\1\uffff\1\131"
-        u"\1\107\2\60"
+        u"\12\1\11\2\uffff\1\56\3\uffff\1\60\1\104\1\122\4\60\13\uffff\1"
+        u"\101\2\114\1\117\1\124\1\105\1\101\1\126\1\60\1\125\1\115\1\111"
+        u"\1\116\1\103\1\111\1\115\1\130\1\123\1\103\1\123\1\114\3\uffff"
+        u"\3\60\1\uffff\1\105\1\uffff\1\60\2\uffff\1\122\1\120\1\105\1\123"
+        u"\1\115\1\110\1\122\1\120\1\125\1\111\1\uffff\2\105\1\123\1\116"
+        u"\1\114\1\121\1\117\1\111\1\103\2\124\1\60\1\uffff\1\116\2\uffff"
+        u"\1\122\1\uffff\1\124\1\60\1\103\1\105\2\60\1\105\1\110\1\120\1"
+        u"\116\3\60\2\105\1\125\1\122\1\115\3\60\1\uffff\1\105\1\104\2\60"
+        u"\1\uffff\1\124\1\60\2\uffff\3\60\1\107\3\uffff\1\103\1\60\1\105"
+        u"\1\111\1\125\1\uffff\1\116\1\uffff\1\117\1\uffff\1\60\1\111\2\uffff"
+        u"\1\60\4\uffff\1\60\1\124\1\uffff\1\60\1\132\1\115\1\104\2\116\2"
+        u"\uffff\1\60\1\uffff\1\105\1\60\1\111\1\101\1\107\1\uffff\1\60\1"
+        u"\uffff\1\116\1\122\1\60\1\uffff\1\107\1\131\2\60"
         )
 
     DFA17_max = DFA.unpack(
         u"\1\175\2\uffff\1\71\3\uffff\1\163\1\157\1\162\1\157\1\156\1\75"
         u"\1\uffff\2\75\3\uffff\1\52\2\uffff\2\uffff\4\uffff\1\164\1\162"
         u"\1\151\1\162\1\141\1\171\1\162\1\171\1\156\1\145\2\151\1\141\1"
-        u"\12\1\40\2\uffff\1\71\3\uffff\1\144\1\172\1\162\4\172\13\uffff"
-        u"\1\157\2\154\1\157\1\145\1\164\1\157\1\166\1\172\1\165\1\155\1"
-        u"\151\1\156\1\143\1\151\1\155\1\170\1\143\2\163\1\154\2\uffff\1"
-        u"\172\1\uffff\2\172\1\uffff\1\145\1\uffff\1\172\2\uffff\1\160\1"
-        u"\162\1\145\1\163\1\155\1\162\1\150\1\165\1\151\1\uffff\2\145\1"
-        u"\163\1\156\1\154\1\161\1\157\1\151\1\164\1\143\1\164\1\172\2\uffff"
-        u"\1\156\1\uffff\1\162\1\uffff\1\172\1\164\1\143\1\145\1\172\1\145"
-        u"\1\172\1\160\1\156\3\172\2\145\1\165\1\162\1\155\3\172\1\uffff"
-        u"\1\145\1\144\1\172\1\uffff\1\172\1\164\1\172\1\uffff\1\172\1\uffff"
-        u"\1\172\1\147\3\uffff\1\143\1\172\1\145\1\151\1\165\1\uffff\1\157"
-        u"\1\uffff\1\156\1\uffff\1\172\1\151\2\uffff\1\172\3\uffff\1\172"
-        u"\1\164\1\uffff\2\172\1\155\1\156\1\144\1\156\2\uffff\1\172\1\uffff"
-        u"\1\145\1\172\1\141\1\151\1\147\1\uffff\1\172\1\uffff\1\162\1\156"
-        u"\1\172\1\uffff\1\171\1\147\2\172"
+        u"\12\1\40\2\uffff\1\71\3\uffff\1\172\1\144\1\162\4\172\13\uffff"
+        u"\1\157\2\154\1\157\1\164\1\145\1\157\1\166\1\172\1\165\1\155\1"
+        u"\151\1\156\1\143\1\151\1\155\1\170\1\163\1\143\1\163\1\154\3\uffff"
+        u"\3\172\1\uffff\1\145\1\uffff\1\172\2\uffff\1\162\1\160\1\145\1"
+        u"\163\1\155\1\150\1\162\1\160\1\165\1\151\1\uffff\2\145\1\163\1"
+        u"\156\1\154\1\161\1\157\1\151\1\143\2\164\1\172\1\uffff\1\156\2"
+        u"\uffff\1\162\1\uffff\1\164\1\172\1\143\1\145\2\172\1\145\1\150"
+        u"\1\160\1\156\3\172\2\145\1\165\1\162\1\155\3\172\1\uffff\1\145"
+        u"\1\144\2\172\1\uffff\1\164\1\172\2\uffff\3\172\1\147\3\uffff\1"
+        u"\143\1\172\1\145\1\151\1\165\1\uffff\1\156\1\uffff\1\157\1\uffff"
+        u"\1\172\1\151\2\uffff\1\172\4\uffff\1\172\1\164\1\uffff\2\172\1"
+        u"\155\1\144\2\156\2\uffff\1\172\1\uffff\1\145\1\172\1\151\1\141"
+        u"\1\147\1\uffff\1\172\1\uffff\1\156\1\162\1\172\1\uffff\1\147\1"
+        u"\171\2\172"
         )
 
     DFA17_accept = DFA.unpack(
         u"\1\uffff\1\1\1\2\1\uffff\1\4\1\5\1\6\6\uffff\1\16\2\uffff\1\23"
         u"\1\24\1\25\1\uffff\1\27\1\30\2\uffff\1\34\1\35\1\36\1\37\17\uffff"
-        u"\1\71\1\73\1\uffff\1\101\1\3\1\76\7\uffff\1\15\1\14\1\17\1\21\1"
-        u"\20\1\22\1\72\1\26\1\32\1\74\1\33\25\uffff\1\70\1\75\1\uffff\1"
-        u"\47\2\uffff\1\11\1\uffff\1\56\1\uffff\1\31\1\13\11\uffff\1\46\14"
-        u"\uffff\1\7\1\63\1\uffff\1\10\1\uffff\1\12\24\uffff\1\66\3\uffff"
-        u"\1\54\3\uffff\1\41\1\uffff\1\55\2\uffff\1\77\1\51\1\50\5\uffff"
-        u"\1\67\1\uffff\1\64\1\uffff\1\65\2\uffff\1\43\1\53\1\uffff\1\100"
-        u"\1\42\1\44\2\uffff\1\57\6\uffff\1\40\1\45\1\uffff\1\60\5\uffff"
-        u"\1\52\1\uffff\1\62\3\uffff\1\61\4\uffff"
+        u"\1\72\1\74\1\uffff\1\102\1\3\1\77\7\uffff\1\15\1\14\1\17\1\21\1"
+        u"\20\1\22\1\73\1\26\1\32\1\75\1\33\25\uffff\1\71\1\76\1\47\3\uffff"
+        u"\1\11\1\uffff\1\56\1\uffff\1\13\1\31\12\uffff\1\46\14\uffff\1\64"
+        u"\1\uffff\1\7\1\10\1\uffff\1\12\25\uffff\1\67\4\uffff\1\54\2\uffff"
+        u"\1\41\1\55\4\uffff\1\100\1\51\1\50\5\uffff\1\65\1\uffff\1\70\1"
+        u"\uffff\1\66\2\uffff\1\43\1\53\1\uffff\1\101\1\42\1\61\1\44\2\uffff"
+        u"\1\57\6\uffff\1\40\1\45\1\uffff\1\60\5\uffff\1\52\1\uffff\1\63"
+        u"\3\uffff\1\62\4\uffff"
         )
 
     DFA17_special = DFA.unpack(
-        u"\26\uffff\1\1\1\0\u00bb\uffff"
+        u"\26\uffff\1\1\1\0\u00bf\uffff"
         )
 
             
@@ -3503,11 +3538,11 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u""),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\61\4\uffff\1\62\32\uffff\1\61\4\uffff\1\62"),
+        DFA.unpack(u"\1\62\4\uffff\1\61\32\uffff\1\62\4\uffff\1\61"),
         DFA.unpack(u"\1\63\37\uffff\1\63"),
         DFA.unpack(u"\1\64\37\uffff\1\64"),
         DFA.unpack(u"\1\65\37\uffff\1\65"),
-        DFA.unpack(u"\1\66\7\uffff\1\67\27\uffff\1\66\7\uffff\1\67"),
+        DFA.unpack(u"\1\67\7\uffff\1\66\27\uffff\1\67\7\uffff\1\66"),
         DFA.unpack(u"\1\70"),
         DFA.unpack(u""),
         DFA.unpack(u"\1\72"),
@@ -3526,7 +3561,7 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u""),
         DFA.unpack(u"\1\104\16\uffff\1\103\20\uffff\1\104\16\uffff\1\103"),
         DFA.unpack(u"\1\105\20\uffff\1\106\16\uffff\1\105\20\uffff\1\106"),
-        DFA.unpack(u"\1\107\1\110\36\uffff\1\107\1\110"),
+        DFA.unpack(u"\1\110\1\107\36\uffff\1\110\1\107"),
         DFA.unpack(u"\1\111\37\uffff\1\111"),
         DFA.unpack(u"\1\112\37\uffff\1\112"),
         DFA.unpack(u"\1\113\37\uffff\1\113"),
@@ -3535,7 +3570,7 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u"\1\117\11\uffff\1\120\25\uffff\1\117\11\uffff\1\120"),
         DFA.unpack(u"\1\121\37\uffff\1\121"),
         DFA.unpack(u"\1\123\3\uffff\1\122\33\uffff\1\123\3\uffff\1\122"),
-        DFA.unpack(u"\1\125\3\uffff\1\124\33\uffff\1\125\3\uffff\1\124"),
+        DFA.unpack(u"\1\124\3\uffff\1\125\33\uffff\1\124\3\uffff\1\125"),
         DFA.unpack(u"\1\126\37\uffff\1\126"),
         DFA.unpack(u"\1\127\37\uffff\1\127"),
         DFA.unpack(u"\1\52"),
@@ -3546,9 +3581,9 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u""),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\132\37\uffff\1\132"),
-        DFA.unpack(u"\12\56\7\uffff\2\56\1\134\27\56\4\uffff\1\56\1\uffff"
-        u"\2\56\1\134\27\56"),
+        DFA.unpack(u"\12\56\7\uffff\2\56\1\133\27\56\4\uffff\1\56\1\uffff"
+        u"\2\56\1\133\27\56"),
+        DFA.unpack(u"\1\134\37\uffff\1\134"),
         DFA.unpack(u"\1\135\37\uffff\1\135"),
         DFA.unpack(u"\12\56\7\uffff\3\56\1\137\26\56\4\uffff\1\56\1\uffff"
         u"\3\56\1\137\26\56"),
@@ -3567,16 +3602,15 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u""),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\145\15\uffff\1\144\21\uffff\1\145\15\uffff\1\144"),
+        DFA.unpack(u"\1\144\15\uffff\1\145\21\uffff\1\144\15\uffff\1\145"),
         DFA.unpack(u"\1\146\37\uffff\1\146"),
         DFA.unpack(u"\1\147\37\uffff\1\147"),
         DFA.unpack(u"\1\150\37\uffff\1\150"),
         DFA.unpack(u"\1\151\37\uffff\1\151"),
         DFA.unpack(u"\1\152\37\uffff\1\152"),
-        DFA.unpack(u"\1\153\37\uffff\1\153"),
-        DFA.unpack(u"\1\154\37\uffff\1\154"),
+        DFA.unpack(u"\1\153\15\uffff\1\154\21\uffff\1\153\15\uffff\1\154"),
+        DFA.unpack(u"\1\155\37\uffff\1\155"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\156\37\uffff\1\156"),
         DFA.unpack(u"\1\157\37\uffff\1\157"),
         DFA.unpack(u"\1\160\37\uffff\1\160"),
         DFA.unpack(u"\1\161\37\uffff\1\161"),
@@ -3588,20 +3622,20 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u"\1\167\37\uffff\1\167"),
         DFA.unpack(u"\1\170\37\uffff\1\170"),
         DFA.unpack(u"\1\171\37\uffff\1\171"),
+        DFA.unpack(u"\1\172\37\uffff\1\172"),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\4\56\1\174\25\56\4\uffff\1\56\1\uffff"
         u"\4\56\1\174\25\56"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\176\37\uffff\1\176"),
+        DFA.unpack(u"\1\177\37\uffff\1\177"),
         DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\u0080\37\uffff\1\u0080"),
         DFA.unpack(u"\1\u0081\37\uffff\1\u0081"),
         DFA.unpack(u"\1\u0082\37\uffff\1\u0082"),
         DFA.unpack(u"\1\u0083\37\uffff\1\u0083"),
@@ -3610,9 +3644,9 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u"\1\u0086\37\uffff\1\u0086"),
         DFA.unpack(u"\1\u0087\37\uffff\1\u0087"),
         DFA.unpack(u"\1\u0088\37\uffff\1\u0088"),
-        DFA.unpack(u""),
         DFA.unpack(u"\1\u0089\37\uffff\1\u0089"),
         DFA.unpack(u"\1\u008a\37\uffff\1\u008a"),
+        DFA.unpack(u""),
         DFA.unpack(u"\1\u008b\37\uffff\1\u008b"),
         DFA.unpack(u"\1\u008c\37\uffff\1\u008c"),
         DFA.unpack(u"\1\u008d\37\uffff\1\u008d"),
@@ -3622,97 +3656,102 @@ class SelectExprLexer(Lexer):
         DFA.unpack(u"\1\u0091\37\uffff\1\u0091"),
         DFA.unpack(u"\1\u0092\37\uffff\1\u0092"),
         DFA.unpack(u"\1\u0093\37\uffff\1\u0093"),
-        DFA.unpack(u"\12\56\7\uffff\24\56\1\u0095\5\56\4\uffff\1\56\1\uffff"
-        u"\24\56\1\u0095\5\56"),
+        DFA.unpack(u"\1\u0094\37\uffff\1\u0094"),
+        DFA.unpack(u"\1\u0095\37\uffff\1\u0095"),
+        DFA.unpack(u"\12\56\7\uffff\24\56\1\u0097\5\56\4\uffff\1\56\1\uffff"
+        u"\24\56\1\u0097\5\56"),
+        DFA.unpack(u""),
+        DFA.unpack(u"\1\u0098\37\uffff\1\u0098"),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\u0096\37\uffff\1\u0096"),
-        DFA.unpack(u""),
-        DFA.unpack(u"\1\u0097\37\uffff\1\u0097"),
-        DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u0099\37\uffff\1\u0099"),
+        DFA.unpack(u""),
         DFA.unpack(u"\1\u009a\37\uffff\1\u009a"),
-        DFA.unpack(u"\1\u009b\37\uffff\1\u009b"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u"\1\u009c\37\uffff\1\u009c"),
         DFA.unpack(u"\1\u009d\37\uffff\1\u009d"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\u009f\37\uffff\1\u009f"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00a0\37\uffff\1\u00a0"),
+        DFA.unpack(u"\1\u00a1\37\uffff\1\u00a1"),
+        DFA.unpack(u"\1\u00a2\37\uffff\1\u00a2"),
+        DFA.unpack(u"\1\u00a3\37\uffff\1\u00a3"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\u00a4\37\uffff\1\u00a4"),
-        DFA.unpack(u"\1\u00a5\37\uffff\1\u00a5"),
-        DFA.unpack(u"\1\u00a6\37\uffff\1\u00a6"),
         DFA.unpack(u"\1\u00a7\37\uffff\1\u00a7"),
         DFA.unpack(u"\1\u00a8\37\uffff\1\u00a8"),
-        DFA.unpack(u"\12\56\7\uffff\10\56\1\u00aa\21\56\4\uffff\1\56\1\uffff"
-        u"\10\56\1\u00aa\21\56"),
-        DFA.unpack(u"\12\56\7\uffff\4\56\1\u00ac\25\56\4\uffff\1\56\1\uffff"
-        u"\4\56\1\u00ac\25\56"),
+        DFA.unpack(u"\1\u00a9\37\uffff\1\u00a9"),
+        DFA.unpack(u"\1\u00aa\37\uffff\1\u00aa"),
+        DFA.unpack(u"\1\u00ab\37\uffff\1\u00ab"),
+        DFA.unpack(u"\12\56\7\uffff\4\56\1\u00ad\25\56\4\uffff\1\56\1\uffff"
+        u"\4\56\1\u00ad\25\56"),
+        DFA.unpack(u"\12\56\7\uffff\10\56\1\u00af\21\56\4\uffff\1\56\1\uffff"
+        u"\10\56\1\u00af\21\56"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\u00ae\37\uffff\1\u00ae"),
-        DFA.unpack(u"\1\u00af\37\uffff\1\u00af"),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u"\1\u00b1\37\uffff\1\u00b1"),
         DFA.unpack(u"\1\u00b2\37\uffff\1\u00b2"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
+        DFA.unpack(u"\1\u00b5\37\uffff\1\u00b5"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\u00b6\37\uffff\1\u00b6"),
         DFA.unpack(u""),
         DFA.unpack(u""),
-        DFA.unpack(u""),
-        DFA.unpack(u"\1\u00b7\37\uffff\1\u00b7"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\u00b9\37\uffff\1\u00b9"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00ba\37\uffff\1\u00ba"),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
         DFA.unpack(u"\1\u00bb\37\uffff\1\u00bb"),
-        DFA.unpack(u""),
-        DFA.unpack(u"\1\u00bc\37\uffff\1\u00bc"),
-        DFA.unpack(u""),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00bd\37\uffff\1\u00bd"),
-        DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00be\37\uffff\1\u00be"),
+        DFA.unpack(u"\1\u00bf\37\uffff\1\u00bf"),
         DFA.unpack(u""),
+        DFA.unpack(u"\1\u00c0\37\uffff\1\u00c0"),
         DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u""),
-        DFA.unpack(u""),
-        DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00c1\37\uffff\1\u00c1"),
         DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u"\1\u00c3\37\uffff\1\u00c3"),
-        DFA.unpack(u"\1\u00c4\37\uffff\1\u00c4"),
+        DFA.unpack(u"\1\u00c2\37\uffff\1\u00c2"),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00c5\37\uffff\1\u00c5"),
-        DFA.unpack(u"\1\u00c6\37\uffff\1\u00c6"),
+        DFA.unpack(u""),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00c7\37\uffff\1\u00c7"),
-        DFA.unpack(u""),
-        DFA.unpack(u""),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
-        DFA.unpack(u""),
+        DFA.unpack(u"\1\u00c8\37\uffff\1\u00c8"),
         DFA.unpack(u"\1\u00c9\37\uffff\1\u00c9"),
-        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u"\1\u00ca\37\uffff\1\u00ca"),
         DFA.unpack(u"\1\u00cb\37\uffff\1\u00cb"),
-        DFA.unpack(u"\1\u00cc\37\uffff\1\u00cc"),
-        DFA.unpack(u"\1\u00cd\37\uffff\1\u00cd"),
+        DFA.unpack(u""),
         DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
+        DFA.unpack(u"\1\u00cd\37\uffff\1\u00cd"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\1\u00cf\37\uffff\1\u00cf"),
         DFA.unpack(u"\1\u00d0\37\uffff\1\u00d0"),
+        DFA.unpack(u"\1\u00d1\37\uffff\1\u00d1"),
+        DFA.unpack(u""),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u""),
-        DFA.unpack(u"\1\u00d1\37\uffff\1\u00d1"),
-        DFA.unpack(u"\1\u00d2\37\uffff\1\u00d2"),
+        DFA.unpack(u"\1\u00d3\37\uffff\1\u00d3"),
+        DFA.unpack(u"\1\u00d4\37\uffff\1\u00d4"),
+        DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
+        DFA.unpack(u""),
+        DFA.unpack(u"\1\u00d5\37\uffff\1\u00d5"),
+        DFA.unpack(u"\1\u00d6\37\uffff\1\u00d6"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56"),
         DFA.unpack(u"\12\56\7\uffff\32\56\4\uffff\1\56\1\uffff\32\56")
     ]

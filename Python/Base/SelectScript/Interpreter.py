@@ -7,7 +7,80 @@ from SelectScript import SelectScript
 
 from copy import deepcopy
 from random import shuffle
- 
+
+import networkx as nx
+
+
+#def reconsturctDeep(graph, source="source", target="finish", cutoff=0):
+#    
+#    source = [[source]]
+#    target = [[target]]
+#    
+#    while len(source[0]) + len(target[0]) < cutoff + 2:
+#        new_source = []
+#        new_target = []
+#        
+#        print len(source[0]) + len(target[0])
+#        
+#        for source_path in iter(source):
+#            for target_path in iter(target):
+#                if source_path[-1] == target_path[0]:
+#                    yield source_path + target_path[1:]
+#                elif source_path[-1] in target_path[1:]:
+#                    yield source_path + target_path[1:]
+#                elif target_path[0] in source_path[:-1]: 
+#                    yield source_path + target_path[1:]
+#        
+#        for source_path in iter(source):
+#            for _, s in graph.out_edges_iter(source_path[-1]):
+#                if s not in source_path:
+#                    #print graph.node(s)
+#                    if graph.node[s]["level"] > graph.node[source_path[-1]]["level"]:
+#                        new_source.append(source_path + [s])
+#                    
+#        for target_path in iter(target):
+#            for e, _ in graph.in_edges_iter(target_path[0]):
+#                if e not in target_path:
+#                    #print graph.node(e)
+#                    if graph.node[e]["level"] < graph.node[target_path[0]]["level"]:
+#                        new_target.append([e] + target_path)
+#        
+#                
+#        source = new_source
+#        target = new_target
+
+
+def _all_simple_paths_ordered(graph, source, target, cutoff=None):
+    
+    print graph
+    
+    if cutoff is None:
+        cutoff = len(graph)-1
+    
+    tree = [[[source]], [[target]]]
+     
+    for i in range(cutoff):      
+        
+        tree1  = tree[i%2]
+        tree2  = tree[(i+1)%2]
+        temp   = []
+        leaves = {x[-1] for x in iter(tree1)} # only to reduce some effort        
+        for path in iter(tree2):
+            for s in iter(graph[path[-1]]):
+                if s not in path:
+                    if s in leaves:
+                        for _path in iter(tree1):
+                            if s == _path[-1]:
+                                if set(_path).intersection(path) == set():
+                                    if i % 2:
+                                        yield path + [x for x in reversed(_path)]
+                                    else:
+                                        yield _path + [x for x in reversed(path)]
+                    temp.append(path + [s])
+        
+        tree[(i+1)%2] = temp
+
+
 class Interpreter():
     
     def __init__(self):
@@ -181,13 +254,32 @@ class Interpreter():
             
             ## graph == MEMORIZE
             if RECURSION[3][2] > 0:
-                self.tree = {}
+                self.graph = nx.DiGraph()
                 self.evalRecursionDeep(prog, FROM_n, list(FROM), RECURSION[3][2])
+                #self.graph = self.graph.to_directed()
+                #return self.graph
                 
-                return self.reconsturctDeep(graph = self.tree,
-                                            max_iter = RECURSION[3][2],
-                                            max_results=RECURSION[3][3],
-                                            infinit=eq(RECURSION[3][3],0))
+                gen = _all_simple_paths_ordered(self.graph, "start", "finish", cutoff=RECURSION[3][2]+2)
+                if RECURSION[3][3] > 0:
+                    paths = []
+                    for _ in range(RECURSION[3][3]):
+                        try:
+                            paths.append(next(gen))
+                        except:
+                            break
+                else:
+                    paths = list(_all_simple_paths_ordered(self.graph, "start", "finish", cutoff=RECURSION[3][2]+2))
+                
+                return paths
+            
+            
+                
+            
+                #return self.reconsturctDeep(self.graph,  cutoff=RECURSION[3][2]+2)
+                #return self.reconsturctDeep(graph = self.tree,
+                #                            max_iter = RECURSION[3][2],
+                #                            max_results=RECURSION[3][3],
+                #                            infinit=eq(RECURSION[3][3],0))
                 
             if RECURSION[3][1]:
                 self.unique = set()
@@ -317,34 +409,23 @@ class Interpreter():
         for e in start_with:
             self.eval(e)
         
-        secondary_var_list = deepcopy(self.var_list)
+        self.graph.add_node('source')
+        self.graph.node['source']["select"] = None
+        self.graph.node['source']["memory"] = deepcopy(self.var_list)
+        self.graph.node['source']["level"]  = 0
         
-        for elem in FROM:
-            self.var_list = deepcopy(secondary_var_list)
-            
-            sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
-            hashID = str(hash(str(sub)))
-                
-            if not self.tree.has_key(hashID):
-                if self.eval(stop_with, elem, FROM_n):
-                    if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                        self.tree[hashID]=[True, sub, set([None]), 0, None]
-                else:
-                    if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                        self.tree[hashID] = [True, sub, set([None]), 0, None]
-                    else:
-                        self.tree[hashID] = [False, sub, set([None]), 0, None]
-                    
-                    self.var_list = deepcopy(secondary_var_list)
-                    for e in connect_by:
-                        self.eval(e, elem, FROM_n)
-                    self.tree[hashID][4] = deepcopy(self.var_list)
+        self.graph.add_node('finish')
+        self.graph.node['finish']["select"] = None
+        self.graph.node['finish']["memory"] = None
+        self.graph.node['finish']["level"]  = 99999999
         
-        for l in range(level-1):
+        
+        for l in range(level):
             
-            for source in self.tree.keys():  
+            for source in self.graph.nodes():
                 
-                [_, _, _, l_, mem_] = self.tree[source]
+                l_   = self.graph.node[source]["level"]
+                mem_ = self.graph.node[source]["memory"]
                 
                 if l_==l and mem_ != None:
                     
@@ -354,111 +435,136 @@ class Interpreter():
                         sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
                         hashID = str(hash(str(sub))) 
                     
-                        if not hashID in self.tree.keys():
+                        if not hashID in self.graph.nodes():
+                            
+                            self.graph.add_node(hashID)
+                            self.graph.node[hashID]["select"] = sub
+                            self.graph.node[hashID]["memory"] = None
+                            self.graph.node[hashID]["level"]  = l+1
+                            
+                            self.graph.add_edge(source, hashID)
+                            
                             if self.eval(stop_with, elem, FROM_n):
                                 if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                                    self.tree[hashID]=[True, sub, set([source]), l+1, None]
+                                    self.graph.add_edge(hashID, "finish")
                             else:
                                 self.var_list = deepcopy(mem_)
                                  
                                 if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                                    self.tree[hashID] = [True, sub, set([source]), l+1, None]
-                                else:
-                                    self.tree[hashID] = [False, sub, set([source]), l+1, None]
+                                    self.graph.add_edge(hashID, "finish")
                                 
                                 self.var_list = deepcopy(mem_)
                                 for e in connect_by:
                                     self.eval(e, elem, FROM_n)
-                                self.tree[hashID][4] = deepcopy(self.var_list)
+                                self.graph.node[hashID]["memory"] = deepcopy(self.var_list)
                    
                         else:
+                            
+                            self.graph.add_edge(source, hashID)
                             if self.eval(stop_with, elem, FROM_n):
-                                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                                    self.tree[hashID][2].add(source)
-                        
-                            else:
-                                if self.evalWhere([elem], FROM_n, prog[2])!=[]:
-                                    self.tree[hashID][2].add(source)
-                                else:
-                                    self.tree[hashID][2].add(source)
+                                self.graph.node[hashID]["memory"] = None
+                                
+                            if self.evalWhere([elem], FROM_n, prog[2])!=[]:
+                                self.graph.add_edge(hashID, "finish")
                             
         self.var_list = deepcopy(initial_var_list)
         
-    def reconsturctDeep(self, graph, max_iter, start=None, end=None, max_results=0, infinit=True):
-        result = []
-                    
-        if start == None:
-            start_nodes = []
-            end_nodes   = []
-                
-            for key in graph.keys():
-                if None in graph[key][2]:
-                    start_nodes.append(key)
-                if graph[key][0]:
-                    end_nodes.append(key)
-                                
-            for s in start_nodes:
-                for e in end_nodes:
-                    result += self.reconsturctDeep(graph, max_iter, [s], [e], max_results - len(result), infinit)
-                        
-            if result != []:
-                result_sub = []
-                for hashIDs in result:
-                    sub = []
-                    print " array",len(result_sub)
-                    for key in hashIDs:
-                        sub.append(graph[key][1])
-                    if not sub in result_sub: 
-                        result_sub.append(sub)
-                return result_sub
-                                
-        elif start[-1] == end[0]:
-            result.append(start + end[1:])
-            print "found1", len(result[-1]), max_results
-            max_results -= 1
-                    
-        elif len(start) + len(end) > max_iter:
-            pass
-                    
-        elif max_results <= 0 and not infinit:
-            pass
-                    
-        elif graph[start[-1]][3] > graph[end[0]][3]:
-            pass
-                    
-        else:
-            #E = list(graph[end[0]][2])
-            #shuffle(E)
-            for e in graph[end[0]][2]:
-                if e == None:
-                    continue
-                          
-                elif max_results <= 0 and not infinit:
-                    break
-                            
-                if graph[end[0]][3] < graph[e][3]:
-                    continue
-                            
-                if e == start[-1]:
-                    result.append(start + [e] + end)
-                    print "found2", len(result[-1]), max_results
-                    max_results -=1
-                    # print "found1", max_results
-                                
-                elif not e in end:
-                    #S = list(graph.keys())
-                    #shuffle(S)
-                    for s in graph.keys():
-                        if max_results <= 0 and not infinit:
-                            break
-                        if (start[-1] in graph[s][2]) and not (s in start):
-                            if graph[start[-1]][3] < graph[s][3]:
-                                #print "ddd"
-                                r = self.reconsturctDeep(graph, max_iter, start+[s], [e]+end, max_results, infinit)
-                                result += r
-                                max_results -= len(r)                       
-        return result
-
+#    def reconsturctDeep(self, graph, start=["source"], end=["finish"], cutoff=0, max_results=0, infinit=True):
+#        result = []
+#                    
+#        #if start == None:
+#        #    #start_nodes = []
+#        #    #end_nodes   = []
+#        #        
+#        #    for key in graph.keys():
+#        #        if None in graph[key][2]:
+#        #            start_nodes.append(key)
+#        #        if graph[key][0]:
+#        #            end_nodes.append(key)
+#        #                        
+#        #    for s in start_nodes:
+#        #        for e in end_nodes:
+#        #            result += self.reconsturctDeep(graph, [s], [e], cutoff, max_results - len(result), infinit)
+#        #                
+#        #    if result != []:
+#        #        result_sub = []
+#        #        for hashIDs in result:
+#        #            sub = []
+#        #            print " array",len(result_sub)
+#        #            for key in hashIDs:
+#        #                sub.append(graph[key][1])
+#        #            if not sub in result_sub: 
+#        #                result_sub.append(sub)
+#        #        return result_sub
+#        #                        
+#        
+#        if graph.has_edge(start[-1], end[0]):
+#            result.append(start + end[1:])
+#            #print "found1", len(result[-1]), max_results
+#        #    max_results -= 1
+#                    
+#        #elif len(start) + len(end) > cutoff:
+#        #    pass
+#                    
+#        #elif max_results <= 0 and not infinit:
+#        #    pass
+#                    
+#        #elif graph[start[-1]][3] > graph[end[0]][3]:
+#        #    pass
+#                    
+#        else:
+#            #E = list(graph[end[0]][2])
+#            #shuffle(E)
+#            for e in graph[end[0]].keys():
+#                #if e == None:
+#                #    continue
+#                          
+#                #elif max_results <= 0 and not infinit:
+#                #    break
+#                            
+#                #if graph[end[0]][3] < graph[e][3]:
+#                #    continue
+#                            
+#                if e == start[-1]:
+#                    result.append(start + [e] + end)
+#                    print "found2", len(result[-1]), max_results
+#                    #max_results -=1
+#                    # print "found1", max_results
+#                                
+#                elif not e in end:
+#                    #S = list(graph.keys())
+#                    #shuffle(S)
+#                    for s, _ in graph.edges():
+#                        #if max_results <= 0 and not infinit:
+#                        #    break
+#                        if (start[-1] in graph[s][2]) and not (s in start):
+#                            if graph[start[-1]][3] < graph[s][3]:
+#                                #print "ddd"
+#                                r = self.reconsturctDeep(graph, max_iter, start+[s], [e]+end, max_results, infinit)
+#                                result += r
+#                                max_results -= len(r)                       
+#        return result
+        
+#    def reconsturctDeep(self, graph, start=["source"], end=["finish"], cutoff=0, max_results=0, infinit=True):
+#        result = []
+#        
+#        print graph.node[start[-1]]["level"], graph.node[end[0]]["level"]
+#        
+#        if graph.node[start[-1]]["level"]+1 > graph.node[end[0]]["level"]:
+#            pass
+#        
+#        elif len(start) + len(end) < cutoff:
+#            max_results += 1
+#            for s in graph[start[-1]].iterkeys():
+#                if graph.has_edge(s, end[0]):
+#                    result.append(start + [s] + end)
+#
+#                elif not s in end:
+#                    #print max_results
+#                    for edge in graph.edges_iter():
+#                        if (edge[1] == end[0]) and not (edge[0] in end):
+#                            result += self.reconsturctDeep(graph, start+[s], [edge[0]]+end, cutoff)                   
+#        return result
 
     def evalRecursion(self, prog, FROM_n, FROM, cycle=None):
         #print "Start recursion"

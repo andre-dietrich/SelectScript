@@ -299,12 +299,13 @@ start_ returns[with_]
 ;
 
 connect_ returns[by]
-@init{by = [[],[0,0,0,0]]} :
+@init{by = [[],[0,0,0,0,0]]} :
 	^(CONNECT
 	      (CYCLE            { by[1][0] = 1;                       }    )?
 	      (UNIQUE           { by[1][1] = 1;                       }    )?
-	      (MEMORIZE I1=INTEGER { by[1][2] = int(I1.getText()); }    )? 
-	      (MAXIMUM  I2=INTEGER { by[1][3] = int(I2.getText()); }    )?
+	      (GRAPH            { by[1][4] = 1;                       }    )?
+	      (MEMORIZE I1=INTEGER { by[1][2] = int(I1.getText()); }       )? 
+	      (MAXIMUM  I2=INTEGER { by[1][3] = int(I2.getText()); }       )?
 	      (e=expr           { by[0].append(e);                    }    )+
 	 )
 ;

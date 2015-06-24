@@ -95,6 +95,7 @@ WITH   : W I T H ;
 NO      : N O ;
 CYCLE   : C Y C L E ;
 UNIQUE  : U N I Q U E ;
+GRAPH   : G R A P H ;
 MEMORIZE: M E M O R I Z E ;
 MAXIMUM : M A X I M U M ;
 
@@ -168,7 +169,7 @@ where_ : WHERE^ expr
 start_ : START^ WITH! expr (SEP! expr)*
 ;
 
-connect_ : CONNECT^ BY! (NO! CYCLE)? (UNIQUE)? (MEMORIZE INTEGER)? (MAXIMUM INTEGER)? expr (SEP! expr)*  
+connect_ : CONNECT^ BY! (NO! CYCLE)? (UNIQUE)? (GRAPH)? (MEMORIZE INTEGER)? (MAXIMUM INTEGER)? expr (SEP! expr)*  
 ;
 
 stop_ : STOP^ WITH! expr
