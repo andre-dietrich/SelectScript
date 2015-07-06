@@ -12,8 +12,7 @@ setup(
     url = "https://pypi.python.org/pypi/SelectScript/0.2",
     packages=['SelectScript'],
     long_description=open('README.md').read(),
-    install_requires=['antlr_python_runtime'],
-    #dependency_links = [],
+    install_requires=['antlr_python_runtime', 'networkx'],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
