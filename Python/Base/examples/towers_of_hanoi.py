@@ -5,12 +5,9 @@ import SelectScript
 import SelectScript.Interpreter
 
 def move(step, towers):
-    if towers == [] or towers[step[0]] == []:
+    if not towers or not towers[step[0]]:
         pass
-    elif towers[step[1]] == []:
-        towers[step[1]].append( towers[step[0]].pop() )
-        return towers
-    elif towers[step[1]][-1] > towers[step[0]][-1]:
+    elif not towers[step[1]] or towers[step[1]][-1] > towers[step[0]][-1]:
         towers[step[1]].append( towers[step[0]].pop() )
         return towers
     return []
@@ -52,15 +49,15 @@ print "result:", result
 ####################################################################################
 problem2 = """# Basic recursive query
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT mov.this
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]], level=1                # the local level variable
 CONNECT BY tower = move(mov.this, tower), level=level+1    # is required to prevent
 STOP WITH  level==7 or []==move(mov.this, tower)           # an infinite recursion
-              
+
 AS list; """
 
 bytecode = SelectScript.compile(problem2)
@@ -81,16 +78,16 @@ problem3 = """# Recursive query with no cycles allowed ... reduces the search sp
 # because one moves can be applied a couple of times, the tower is included as
 # an additional result parameter
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT mov.this, tower
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]], level=1
 CONNECT BY NO CYCLE
            tower = move( mov.this, tower ), level=level+1
 STOP WITH  level==7 or [] == move( mov.this, tower )
-              
+
 AS dict; """
 
 bytecode = SelectScript.compile(problem3)
@@ -117,16 +114,16 @@ print "result:", result
 problem4 = """# a result can only appear once in a search, note the changed SELECT-statement
 # the "to" function is used to format/name the titles in the dictionary
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT to([mov.this, tower], "config"+str(level))
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]], level=1
 CONNECT BY UNIQUE
            tower = move( mov.this, tower ), level=level+1
 STOP WITH  level==7 or [] == move( mov.this, tower )
-              
+
 AS dict; """
 
 bytecode = SelectScript.compile(problem4)
@@ -151,16 +148,16 @@ print "result:", result
 ####################################################################################
 problem5 = """# both options can also be applied in combination
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT to([mov.this, tower], "config"+str(level))
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]], level=1
 CONNECT BY NO CYCLE UNIQUE
            tower = move( mov.this, tower ), level=level+1
 STOP WITH  level==7 or [] == move( mov.this, tower )
-              
+
 AS dict; """
 
 bytecode = SelectScript.compile(problem5)
@@ -186,16 +183,16 @@ print "result:", result
 problem6 = """# The memorize option generates a graph structure in the background
 # with a certain depth, which can speed-up a query ...
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT mov.this, tower
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]]
-CONNECT BY MEMORIZE 7
+CONNECT BY MEMORIZE 
            tower = move( mov.this, tower )
 STOP WITH  [] == move( mov.this, tower )
-              
+
 AS dict; """
 
 bytecode= SelectScript.compile(problem6)
@@ -220,16 +217,16 @@ print "result:", result
 ####################################################################################
 problem7 = """# stop at a certain number of results... note the changed graph-size
 moves  = [[0,1], [0,2], [1,0], [1,2], [2,0], [2,1]];
-              
+
 SELECT mov.this, tower
 FROM mov=moves
 WHERE [[],[],[3,2,1]] == move( mov.this, tower )
-              
+
 START WITH tower = [[3,2,1],[],[]]
 CONNECT BY MEMORIZE 10 MAXIMUM 3
            tower = move( mov.this, tower )
 STOP WITH  [] == move( mov.this, tower )
-              
+
 AS dict; """
 
 bytecode= SelectScript.compile(problem7)

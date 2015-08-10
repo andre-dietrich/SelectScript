@@ -1,4 +1,4 @@
-# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2015-06-24 08:19:13
+# $ANTLR 3.1.3 Mar 18, 2009 10:09:25 SelectScript.g 2015-08-10 19:05:46
 
 import sys
 from antlr3 import *
@@ -172,6 +172,17 @@ class SelectScript(TreeParser):
             transition = self.DFA2_transition
             )
 
+        self.dfa10 = self.DFA10(
+            self, 10,
+            eot = self.DFA10_eot,
+            eof = self.DFA10_eof,
+            min = self.DFA10_min,
+            max = self.DFA10_max,
+            accept = self.DFA10_accept,
+            special = self.DFA10_special,
+            transition = self.DFA10_transition
+            )
+
         self.dfa33 = self.DFA33(
             self, 33,
             eot = self.DFA33_eot,
@@ -201,7 +212,7 @@ class SelectScript(TreeParser):
                 'lt'  : 'lt',  'le'  : 'le',
                 'eq'  : 'eq',  'ne'  : 'ne',
                 'ge'  : 'ge',  'gt'  : 'gt' }
-                
+
     simplify_ops = {'or':  operator.or_,	'xor':operator.xor,
     		'and': operator.and_,	'not': operator.not_,
     		'eq':  operator.eq,	'ne':  operator.ne,
@@ -218,9 +229,9 @@ class SelectScript(TreeParser):
              'phrase': 6, 'eval': 7,
              'elem':   8, 'id':   9,
              'if'  : 10 }
-             
+
     asTypes = {'dict' :'d', 'list' :'l', 'value':'v'}
-    			
+
     def _fct(self, name, params):
     	return [self.types['fct'], name, params]
 
@@ -229,31 +240,31 @@ class SelectScript(TreeParser):
 
     def _val(self, value) :
     	return [self.types['val'], value]
-    	
+
     def _list(self, l) :
     	return [self.types['list'], l]
-    	
+
     def _sel(self, s, f, w, g, h, o, a, rec) :
     	return [self.types['sel'], s, f, w, g, h, o, a, rec]
-    	
+
     def _this(self, name='') :
     	return [self.types['this'], name]
-    	
+
     def _phrase(self, name) :
     	return [self.types['phrase'], name]
-    	
+
     def _eval(self, string):
     	return [self.types['eval'], string]
-    	
+
     def _elem(self, atom, params):
     	return [self.types['elem'], atom, params]
-    	
+
     def _if(self, expr, params1, params2):
         #print expr, "---",params1, "---" ,params2
         return [self.types['if'], expr, params1, params2]
-    	
+
     def Simplify(self, prog) :
-    	
+
     	if prog == []:
     		pass
     	# program
@@ -279,7 +290,7 @@ class SelectScript(TreeParser):
     	# select
     	elif prog[0] == self.types['sel']:
     		S, F, W, G, H, O, A, R = prog[1:]
-    		
+
     		S = [self.Simplify(expr) for expr in S]
     		F = [self.Simplify(expr) for expr in F]
     		W =  self.Simplify(W)
@@ -288,15 +299,15 @@ class SelectScript(TreeParser):
     		if O != []:
     			O = [[self.Simplify(expr[0]), expr[1]] for expr in O]
     		A[1] = [self.Simplify(expr) for expr in A[1]]
-    		
+
     		R[0] = [self.Simplify(expr) for expr in R[0]]
     		R[1] = [self.Simplify(expr) for expr in R[1]]
     		R[2] = [self.Simplify(expr) for expr in R[2]]
-    		
+
     		prog = self._sel(S, F, W, G, H, O, A)
-    	
+
     	return prog
-    	
+
     def compile(self, source, debug=False) :
     	char_stream = antlr3.ANTLRStringStream(source)
     	lexer = SelectExprLexer(char_stream)
@@ -312,14 +323,14 @@ class SelectScript(TreeParser):
     	self.__init__(nodes)
     	if debug:
     		return self.eval()
-    	
+
     	return self.Simplify(self.eval())
 
     def prettyPrint(self, prog, depth=0):
-    	
-    	if prog == []: 
+
+    	if prog == []:
     		return
-    	
+
     	treE = "   "*depth
 
     	if isinstance(prog[0], list):
@@ -327,58 +338,58 @@ class SelectScript(TreeParser):
     			print treE, "["
     			self.prettyPrint( stmt, depth+1 )
     			print treE, "]"
-    	
+
     	elif prog[0] == self.types['fct']:
     		print treE, "[ func,", prog[1], "[ "
     		for param in prog[2]:
     			self.prettyPrint( param, depth+1 )
     		print treE, "]"
-    	
+
     	elif prog[0] == self.types['val']:
     		print treE, "[ val,", prog[1], "]"
-    		
+
     	elif prog[0] == self.types['this']:
     		print treE, "[ this,", prog[1], "]"
-    		
+
     	elif prog[0] == self.types['var']:
     		print treE, "[ var,", prog[1], ", age, ["
     		self.prettyPrint( prog[2], depth+1 )
     		print treE, "] ]"
-    		
+
     	elif prog[0] == self.types['list']:
     		print treE, "[ list, ["
     		self.prettyPrint( prog[1], depth+1 )
     		print treE, "]"
-    		
+
     	elif prog[0] == self.types['phrase']:
     		print treE, "[ phrase, ", prog[1], "]"
-    		
+
     	elif prog[0] == self.types['sel']:
     		print treE, "[ SELECT-statement, "
     		treE += "   "
-    		
+
     		print treE, "[ select,",
     		self.prettyPrint( prog[1], depth+2 )
-    		
+
     		print treE, "[ from, ",
     		self.prettyPrint( prog[2], depth+2 )
-    		
+
     		if prog[3] != []:
     			print treE, "[ where, ",
     			self.prettyPrint( [prog[3]], depth+2 )
-    			
+
     		if prog[4] != []:
     			print treE, "[ group by, ",
     			self.prettyPrint( prog[4], depth+2 )
-    		
+
     		if prog[6] != []:
     			print treE, "[ order by, ",
     			self.prettyPrint( prog[6], depth+2 )
-    			
+
     		if prog[7] != []:
     			print treE, "[ as,", prog[7][0], # "]"
     			self.prettyPrint( prog[7][1], depth+2 )
-    			
+
     		if prog[8] != [[],[],[]]:
     			print treE, "[ start with,",
     			self.prettyPrint( prog[8][0], depth+2 )
@@ -405,7 +416,7 @@ class SelectScript(TreeParser):
                 # SelectScript.g:247:25: (p= prog )
                 # SelectScript.g:248:5: p= prog
                 pass 
-                self._state.following.append(self.FOLLOW_prog_in_eval74)
+                self._state.following.append(self.FOLLOW_prog_in_eval72)
                 p = self.prog()
 
                 self._state.following.pop()
@@ -455,7 +466,7 @@ class SelectScript(TreeParser):
                     if alt1 == 1:
                         # SelectScript.g:253:3: stmt= statement
                         pass 
-                        self._state.following.append(self.FOLLOW_statement_in_prog96)
+                        self._state.following.append(self.FOLLOW_statement_in_prog94)
                         stmt = self.statement()
 
                         self._state.following.pop()
@@ -509,7 +520,7 @@ class SelectScript(TreeParser):
                 if alt2 == 1:
                     # SelectScript.g:257:2: s= statement_select
                     pass 
-                    self._state.following.append(self.FOLLOW_statement_select_in_statement117)
+                    self._state.following.append(self.FOLLOW_statement_select_in_statement113)
                     s = self.statement_select()
 
                     self._state.following.pop()
@@ -521,7 +532,7 @@ class SelectScript(TreeParser):
                 elif alt2 == 2:
                     # SelectScript.g:258:4: e= expr
                     pass 
-                    self._state.following.append(self.FOLLOW_expr_in_statement127)
+                    self._state.following.append(self.FOLLOW_expr_in_statement123)
                     e = self.expr()
 
                     self._state.following.pop()
@@ -575,14 +586,14 @@ class SelectScript(TreeParser):
                 # SelectScript.g:264:1: ( ^( STMT_SELECT s= select_ f= from_ (w= where_ )? (g= group_ (h= having_ )? )? (o= order_ )? (a= as_ )? ( (rec_start= start_ )? rec_connect= connect_ rec_stop= stop_ )? ) )
                 # SelectScript.g:265:2: ^( STMT_SELECT s= select_ f= from_ (w= where_ )? (g= group_ (h= having_ )? )? (o= order_ )? (a= as_ )? ( (rec_start= start_ )? rec_connect= connect_ rec_stop= stop_ )? )
                 pass 
-                self.match(self.input, STMT_SELECT, self.FOLLOW_STMT_SELECT_in_statement_select156)
+                self.match(self.input, STMT_SELECT, self.FOLLOW_STMT_SELECT_in_statement_select150)
 
                 self.match(self.input, DOWN, None)
-                self._state.following.append(self.FOLLOW_select__in_statement_select160)
+                self._state.following.append(self.FOLLOW_select__in_statement_select154)
                 s = self.select_()
 
                 self._state.following.pop()
-                self._state.following.append(self.FOLLOW_from__in_statement_select164)
+                self._state.following.append(self.FOLLOW_from__in_statement_select158)
                 f = self.from_()
 
                 self._state.following.pop()
@@ -595,7 +606,7 @@ class SelectScript(TreeParser):
                 if alt3 == 1:
                     # SelectScript.g:265:36: w= where_
                     pass 
-                    self._state.following.append(self.FOLLOW_where__in_statement_select170)
+                    self._state.following.append(self.FOLLOW_where__in_statement_select164)
                     w = self.where_()
 
                     self._state.following.pop()
@@ -611,7 +622,7 @@ class SelectScript(TreeParser):
                 if alt5 == 1:
                     # SelectScript.g:265:50: g= group_ (h= having_ )?
                     pass 
-                    self._state.following.append(self.FOLLOW_group__in_statement_select179)
+                    self._state.following.append(self.FOLLOW_group__in_statement_select173)
                     g = self.group_()
 
                     self._state.following.pop()
@@ -624,7 +635,7 @@ class SelectScript(TreeParser):
                     if alt4 == 1:
                         # SelectScript.g:265:60: h= having_
                         pass 
-                        self._state.following.append(self.FOLLOW_having__in_statement_select184)
+                        self._state.following.append(self.FOLLOW_having__in_statement_select178)
                         h = self.having_()
 
                         self._state.following.pop()
@@ -643,7 +654,7 @@ class SelectScript(TreeParser):
                 if alt6 == 1:
                     # SelectScript.g:265:76: o= order_
                     pass 
-                    self._state.following.append(self.FOLLOW_order__in_statement_select194)
+                    self._state.following.append(self.FOLLOW_order__in_statement_select188)
                     o = self.order_()
 
                     self._state.following.pop()
@@ -659,7 +670,7 @@ class SelectScript(TreeParser):
                 if alt7 == 1:
                     # SelectScript.g:265:90: a= as_
                     pass 
-                    self._state.following.append(self.FOLLOW_as__in_statement_select203)
+                    self._state.following.append(self.FOLLOW_as__in_statement_select197)
                     a = self.as_()
 
                     self._state.following.pop()
@@ -684,18 +695,18 @@ class SelectScript(TreeParser):
                     if alt8 == 1:
                         # SelectScript.g:265:101: rec_start= start_
                         pass 
-                        self._state.following.append(self.FOLLOW_start__in_statement_select212)
+                        self._state.following.append(self.FOLLOW_start__in_statement_select206)
                         rec_start = self.start_()
 
                         self._state.following.pop()
 
 
 
-                    self._state.following.append(self.FOLLOW_connect__in_statement_select218)
+                    self._state.following.append(self.FOLLOW_connect__in_statement_select212)
                     rec_connect = self.connect_()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_stop__in_statement_select222)
+                    self._state.following.append(self.FOLLOW_stop__in_statement_select216)
                     rec_stop = self.stop_()
 
                     self._state.following.pop()
@@ -723,7 +734,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "select_"
-    # SelectScript.g:268:1: select_ returns [types] : ^( SELECT (type= PHRASE | f= function | t= this_ )* ) ;
+    # SelectScript.g:268:1: select_ returns [types] : ^( SELECT (type= PHRASE | f= function | t= this_ | e= expr )* ) ;
     def select_(self, ):
 
         types = None
@@ -733,32 +744,27 @@ class SelectScript(TreeParser):
 
         t = None
 
+        e = None
+
 
         types = []
         try:
             try:
-                # SelectScript.g:269:19: ( ^( SELECT (type= PHRASE | f= function | t= this_ )* ) )
-                # SelectScript.g:270:2: ^( SELECT (type= PHRASE | f= function | t= this_ )* )
+                # SelectScript.g:269:19: ( ^( SELECT (type= PHRASE | f= function | t= this_ | e= expr )* ) )
+                # SelectScript.g:270:2: ^( SELECT (type= PHRASE | f= function | t= this_ | e= expr )* )
                 pass 
-                self.match(self.input, SELECT, self.FOLLOW_SELECT_in_select_246)
+                self.match(self.input, SELECT, self.FOLLOW_SELECT_in_select_240)
 
                 if self.input.LA(1) == DOWN:
                     self.match(self.input, DOWN, None)
-                    # SelectScript.g:271:3: (type= PHRASE | f= function | t= this_ )*
+                    # SelectScript.g:271:3: (type= PHRASE | f= function | t= this_ | e= expr )*
                     while True: #loop10
-                        alt10 = 4
-                        LA10 = self.input.LA(1)
-                        if LA10 == PHRASE:
-                            alt10 = 1
-                        elif LA10 == FCT:
-                            alt10 = 2
-                        elif LA10 == THIS:
-                            alt10 = 3
-
+                        alt10 = 5
+                        alt10 = self.dfa10.predict(self.input)
                         if alt10 == 1:
                             # SelectScript.g:272:3: type= PHRASE
                             pass 
-                            type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_select_257)
+                            type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_select_250)
                             if self._state.backtracking == 0:
                                 types.append( self._phrase (type.getText()) ); 
 
@@ -767,7 +773,7 @@ class SelectScript(TreeParser):
                         elif alt10 == 2:
                             # SelectScript.g:273:5: f= function
                             pass 
-                            self._state.following.append(self.FOLLOW_function_in_select_269)
+                            self._state.following.append(self.FOLLOW_function_in_select_262)
                             f = self.function()
 
                             self._state.following.pop()
@@ -779,12 +785,24 @@ class SelectScript(TreeParser):
                         elif alt10 == 3:
                             # SelectScript.g:274:5: t= this_
                             pass 
-                            self._state.following.append(self.FOLLOW_this__in_select_281)
+                            self._state.following.append(self.FOLLOW_this__in_select_273)
                             t = self.this_()
 
                             self._state.following.pop()
                             if self._state.backtracking == 0:
                                 types.append( t ); 
+
+
+
+                        elif alt10 == 4:
+                            # SelectScript.g:275:5: e= expr
+                            pass 
+                            self._state.following.append(self.FOLLOW_expr_in_select_286)
+                            e = self.expr()
+
+                            self._state.following.pop()
+                            if self._state.backtracking == 0:
+                                types.append( e ); 
 
 
 
@@ -809,7 +827,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "from_"
-    # SelectScript.g:279:1: from_ returns [env] : ^( FROM (e= expr )+ ) ;
+    # SelectScript.g:280:1: from_ returns [env] : ^( FROM (e= expr )+ ) ;
     def from_(self, ):
 
         env = None
@@ -820,13 +838,13 @@ class SelectScript(TreeParser):
         env=[]; 
         try:
             try:
-                # SelectScript.g:280:17: ( ^( FROM (e= expr )+ ) )
-                # SelectScript.g:281:2: ^( FROM (e= expr )+ )
+                # SelectScript.g:281:17: ( ^( FROM (e= expr )+ ) )
+                # SelectScript.g:282:2: ^( FROM (e= expr )+ )
                 pass 
-                self.match(self.input, FROM, self.FOLLOW_FROM_in_from_310)
+                self.match(self.input, FROM, self.FOLLOW_FROM_in_from_318)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:281:9: (e= expr )+
+                # SelectScript.g:282:9: (e= expr )+
                 cnt11 = 0
                 while True: #loop11
                     alt11 = 2
@@ -837,9 +855,9 @@ class SelectScript(TreeParser):
 
 
                     if alt11 == 1:
-                        # SelectScript.g:281:10: e= expr
+                        # SelectScript.g:282:10: e= expr
                         pass 
-                        self._state.following.append(self.FOLLOW_expr_in_from_315)
+                        self._state.following.append(self.FOLLOW_expr_in_from_323)
                         e = self.expr()
 
                         self._state.following.pop()
@@ -877,7 +895,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "as_"
-    # SelectScript.g:284:1: as_ returns [rep] : ( ^( AS AS_DICT ) | ^( AS AS_LIST ) | ^( AS AS_VALUE ) | ^( AS v= PHRASE (p= parameter )? ) );
+    # SelectScript.g:285:1: as_ returns [rep] : ( ^( AS AS_DICT ) | ^( AS AS_LIST ) | ^( AS AS_VALUE ) | ^( AS v= PHRASE (p= parameter )? ) );
     def as_(self, ):
 
         rep = None
@@ -889,7 +907,7 @@ class SelectScript(TreeParser):
         p=[]; 
         try:
             try:
-                # SelectScript.g:285:15: ( ^( AS AS_DICT ) | ^( AS AS_LIST ) | ^( AS AS_VALUE ) | ^( AS v= PHRASE (p= parameter )? ) )
+                # SelectScript.g:286:15: ( ^( AS AS_DICT ) | ^( AS AS_LIST ) | ^( AS AS_VALUE ) | ^( AS v= PHRASE (p= parameter )? ) )
                 alt13 = 4
                 LA13_0 = self.input.LA(1)
 
@@ -931,12 +949,12 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt13 == 1:
-                    # SelectScript.g:286:2: ^( AS AS_DICT )
+                    # SelectScript.g:287:2: ^( AS AS_DICT )
                     pass 
-                    self.match(self.input, AS, self.FOLLOW_AS_in_as_339)
+                    self.match(self.input, AS, self.FOLLOW_AS_in_as_346)
 
                     self.match(self.input, DOWN, None)
-                    self.match(self.input, AS_DICT, self.FOLLOW_AS_DICT_in_as_341)
+                    self.match(self.input, AS_DICT, self.FOLLOW_AS_DICT_in_as_348)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -945,12 +963,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt13 == 2:
-                    # SelectScript.g:287:4: ^( AS AS_LIST )
+                    # SelectScript.g:288:4: ^( AS AS_LIST )
                     pass 
-                    self.match(self.input, AS, self.FOLLOW_AS_in_as_353)
+                    self.match(self.input, AS, self.FOLLOW_AS_in_as_360)
 
                     self.match(self.input, DOWN, None)
-                    self.match(self.input, AS_LIST, self.FOLLOW_AS_LIST_in_as_355)
+                    self.match(self.input, AS_LIST, self.FOLLOW_AS_LIST_in_as_362)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -959,12 +977,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt13 == 3:
-                    # SelectScript.g:288:4: ^( AS AS_VALUE )
+                    # SelectScript.g:289:4: ^( AS AS_VALUE )
                     pass 
-                    self.match(self.input, AS, self.FOLLOW_AS_in_as_367)
+                    self.match(self.input, AS, self.FOLLOW_AS_in_as_374)
 
                     self.match(self.input, DOWN, None)
-                    self.match(self.input, AS_VALUE, self.FOLLOW_AS_VALUE_in_as_369)
+                    self.match(self.input, AS_VALUE, self.FOLLOW_AS_VALUE_in_as_376)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -973,13 +991,13 @@ class SelectScript(TreeParser):
 
 
                 elif alt13 == 4:
-                    # SelectScript.g:289:4: ^( AS v= PHRASE (p= parameter )? )
+                    # SelectScript.g:290:4: ^( AS v= PHRASE (p= parameter )? )
                     pass 
-                    self.match(self.input, AS, self.FOLLOW_AS_in_as_381)
+                    self.match(self.input, AS, self.FOLLOW_AS_in_as_387)
 
                     self.match(self.input, DOWN, None)
-                    v=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_as_385)
-                    # SelectScript.g:289:18: (p= parameter )?
+                    v=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_as_391)
+                    # SelectScript.g:290:18: (p= parameter )?
                     alt12 = 2
                     LA12_0 = self.input.LA(1)
 
@@ -988,12 +1006,12 @@ class SelectScript(TreeParser):
                     elif (LA12_0 == 3) :
                         LA12_2 = self.input.LA(2)
 
-                        if (self.synpred17_SelectScript()) :
+                        if (self.synpred18_SelectScript()) :
                             alt12 = 1
                     if alt12 == 1:
-                        # SelectScript.g:289:20: p= parameter
+                        # SelectScript.g:290:20: p= parameter
                         pass 
-                        self._state.following.append(self.FOLLOW_parameter_in_as_391)
+                        self._state.following.append(self.FOLLOW_parameter_in_as_397)
                         p = self.parameter()
 
                         self._state.following.pop()
@@ -1020,7 +1038,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "where_"
-    # SelectScript.g:292:1: where_ returns [stack] : ^( WHERE e= expr ) ;
+    # SelectScript.g:293:1: where_ returns [stack] : ^( WHERE e= expr ) ;
     def where_(self, ):
 
         stack = None
@@ -1030,13 +1048,13 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:292:24: ( ^( WHERE e= expr ) )
-                # SelectScript.g:293:2: ^( WHERE e= expr )
+                # SelectScript.g:293:24: ( ^( WHERE e= expr ) )
+                # SelectScript.g:294:2: ^( WHERE e= expr )
                 pass 
-                self.match(self.input, WHERE, self.FOLLOW_WHERE_in_where_414)
+                self.match(self.input, WHERE, self.FOLLOW_WHERE_in_where_419)
 
                 self.match(self.input, DOWN, None)
-                self._state.following.append(self.FOLLOW_expr_in_where_418)
+                self._state.following.append(self.FOLLOW_expr_in_where_423)
                 e = self.expr()
 
                 self._state.following.pop()
@@ -1061,7 +1079,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "start_"
-    # SelectScript.g:296:1: start_ returns [with_] : ^( START (e= expr )+ ) ;
+    # SelectScript.g:297:1: start_ returns [with_] : ^( START (e= expr )+ ) ;
     def start_(self, ):
 
         with_ = None
@@ -1072,13 +1090,13 @@ class SelectScript(TreeParser):
         with_ = []
         try:
             try:
-                # SelectScript.g:297:19: ( ^( START (e= expr )+ ) )
-                # SelectScript.g:298:2: ^( START (e= expr )+ )
+                # SelectScript.g:298:19: ( ^( START (e= expr )+ ) )
+                # SelectScript.g:299:2: ^( START (e= expr )+ )
                 pass 
-                self.match(self.input, START, self.FOLLOW_START_in_start_440)
+                self.match(self.input, START, self.FOLLOW_START_in_start_444)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:298:10: (e= expr )+
+                # SelectScript.g:299:10: (e= expr )+
                 cnt14 = 0
                 while True: #loop14
                     alt14 = 2
@@ -1089,9 +1107,9 @@ class SelectScript(TreeParser):
 
 
                     if alt14 == 1:
-                        # SelectScript.g:298:11: e= expr
+                        # SelectScript.g:299:11: e= expr
                         pass 
-                        self._state.following.append(self.FOLLOW_expr_in_start_445)
+                        self._state.following.append(self.FOLLOW_expr_in_start_449)
                         e = self.expr()
 
                         self._state.following.pop()
@@ -1129,7 +1147,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "connect_"
-    # SelectScript.g:301:1: connect_ returns [by] : ^( CONNECT ( CYCLE )? ( UNIQUE )? ( GRAPH )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) ;
+    # SelectScript.g:302:1: connect_ returns [by] : ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE (I1= INTEGER )? )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) ;
     def connect_(self, ):
 
         by = None
@@ -1139,98 +1157,97 @@ class SelectScript(TreeParser):
         e = None
 
 
-        by = [[],[0,0,0,0,0]]
+        by = [[],[0,0,0,0]]
         try:
             try:
-                # SelectScript.g:302:30: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( GRAPH )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
-                # SelectScript.g:303:2: ^( CONNECT ( CYCLE )? ( UNIQUE )? ( GRAPH )? ( MEMORIZE I1= INTEGER )? ( MAXIMUM I2= INTEGER )? (e= expr )+ )
+                # SelectScript.g:303:28: ( ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE (I1= INTEGER )? )? ( MAXIMUM I2= INTEGER )? (e= expr )+ ) )
+                # SelectScript.g:304:2: ^( CONNECT ( CYCLE )? ( UNIQUE )? ( MEMORIZE (I1= INTEGER )? )? ( MAXIMUM I2= INTEGER )? (e= expr )+ )
                 pass 
-                self.match(self.input, CONNECT, self.FOLLOW_CONNECT_in_connect_469)
+                self.match(self.input, CONNECT, self.FOLLOW_CONNECT_in_connect_473)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:304:8: ( CYCLE )?
+                # SelectScript.g:305:8: ( CYCLE )?
                 alt15 = 2
                 LA15_0 = self.input.LA(1)
 
                 if (LA15_0 == CYCLE) :
                     alt15 = 1
                 if alt15 == 1:
-                    # SelectScript.g:304:9: CYCLE
+                    # SelectScript.g:305:9: CYCLE
                     pass 
-                    self.match(self.input, CYCLE, self.FOLLOW_CYCLE_in_connect_479)
+                    self.match(self.input, CYCLE, self.FOLLOW_CYCLE_in_connect_483)
                     if self._state.backtracking == 0:
                         by[1][0] = 1;                       
 
 
 
 
-                # SelectScript.g:305:8: ( UNIQUE )?
+                # SelectScript.g:306:8: ( UNIQUE )?
                 alt16 = 2
                 LA16_0 = self.input.LA(1)
 
                 if (LA16_0 == UNIQUE) :
                     alt16 = 1
                 if alt16 == 1:
-                    # SelectScript.g:305:9: UNIQUE
+                    # SelectScript.g:306:9: UNIQUE
                     pass 
-                    self.match(self.input, UNIQUE, self.FOLLOW_UNIQUE_in_connect_508)
+                    self.match(self.input, UNIQUE, self.FOLLOW_UNIQUE_in_connect_512)
                     if self._state.backtracking == 0:
                         by[1][1] = 1;                       
 
 
 
 
-                # SelectScript.g:306:8: ( GRAPH )?
-                alt17 = 2
-                LA17_0 = self.input.LA(1)
-
-                if (LA17_0 == GRAPH) :
-                    alt17 = 1
-                if alt17 == 1:
-                    # SelectScript.g:306:9: GRAPH
-                    pass 
-                    self.match(self.input, GRAPH, self.FOLLOW_GRAPH_in_connect_536)
-                    if self._state.backtracking == 0:
-                        by[1][4] = 1;                       
-
-
-
-
-                # SelectScript.g:307:8: ( MEMORIZE I1= INTEGER )?
+                # SelectScript.g:308:5: ( MEMORIZE (I1= INTEGER )? )?
                 alt18 = 2
                 LA18_0 = self.input.LA(1)
 
                 if (LA18_0 == MEMORIZE) :
                     alt18 = 1
                 if alt18 == 1:
-                    # SelectScript.g:307:9: MEMORIZE I1= INTEGER
+                    # SelectScript.g:308:6: MEMORIZE (I1= INTEGER )?
                     pass 
-                    self.match(self.input, MEMORIZE, self.FOLLOW_MEMORIZE_in_connect_565)
-                    I1=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_connect_569)
+                    self.match(self.input, MEMORIZE, self.FOLLOW_MEMORIZE_in_connect_538)
                     if self._state.backtracking == 0:
-                        by[1][2] = int(I1.getText()); 
+                        by[1][2] = 1; 
+
+                    # SelectScript.g:309:9: (I1= INTEGER )?
+                    alt17 = 2
+                    LA17_0 = self.input.LA(1)
+
+                    if (LA17_0 == INTEGER) :
+                        alt17 = 1
+                    if alt17 == 1:
+                        # SelectScript.g:309:10: I1= INTEGER
+                        pass 
+                        I1=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_connect_553)
+                        if self._state.backtracking == 0:
+                            by[1][2] = int(I1.getText()); 
 
 
 
 
-                # SelectScript.g:308:8: ( MAXIMUM I2= INTEGER )?
+
+
+
+                # SelectScript.g:311:5: ( MAXIMUM I2= INTEGER )?
                 alt19 = 2
                 LA19_0 = self.input.LA(1)
 
                 if (LA19_0 == MAXIMUM) :
                     alt19 = 1
                 if alt19 == 1:
-                    # SelectScript.g:308:9: MAXIMUM I2= INTEGER
+                    # SelectScript.g:311:6: MAXIMUM I2= INTEGER
                     pass 
-                    self.match(self.input, MAXIMUM, self.FOLLOW_MAXIMUM_in_connect_591)
-                    I2=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_connect_596)
+                    self.match(self.input, MAXIMUM, self.FOLLOW_MAXIMUM_in_connect_570)
+                    I2=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_connect_575)
                     if self._state.backtracking == 0:
-                        by[1][3] = int(I2.getText()); 
+                        by[1][3] = int(I2.getText());    
 
 
 
 
-                # SelectScript.g:309:8: (e= expr )+
+                # SelectScript.g:312:8: (e= expr )+
                 cnt20 = 0
                 while True: #loop20
                     alt20 = 2
@@ -1241,9 +1258,9 @@ class SelectScript(TreeParser):
 
 
                     if alt20 == 1:
-                        # SelectScript.g:309:9: e= expr
+                        # SelectScript.g:312:9: e= expr
                         pass 
-                        self._state.following.append(self.FOLLOW_expr_in_connect_619)
+                        self._state.following.append(self.FOLLOW_expr_in_connect_595)
                         e = self.expr()
 
                         self._state.following.pop()
@@ -1281,7 +1298,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "stop_"
-    # SelectScript.g:313:1: stop_ returns [with_] : ^( STOP (e= expr ) ) ;
+    # SelectScript.g:316:1: stop_ returns [with_] : ^( STOP (e= expr ) ) ;
     def stop_(self, ):
 
         with_ = None
@@ -1292,16 +1309,16 @@ class SelectScript(TreeParser):
         with_ = []
         try:
             try:
-                # SelectScript.g:314:19: ( ^( STOP (e= expr ) ) )
-                # SelectScript.g:315:2: ^( STOP (e= expr ) )
+                # SelectScript.g:317:19: ( ^( STOP (e= expr ) ) )
+                # SelectScript.g:318:2: ^( STOP (e= expr ) )
                 pass 
-                self.match(self.input, STOP, self.FOLLOW_STOP_in_stop_659)
+                self.match(self.input, STOP, self.FOLLOW_STOP_in_stop_635)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:315:9: (e= expr )
-                # SelectScript.g:315:10: e= expr
+                # SelectScript.g:318:9: (e= expr )
+                # SelectScript.g:318:10: e= expr
                 pass 
-                self._state.following.append(self.FOLLOW_expr_in_stop_664)
+                self._state.following.append(self.FOLLOW_expr_in_stop_640)
                 e = self.expr()
 
                 self._state.following.pop()
@@ -1329,7 +1346,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "group_"
-    # SelectScript.g:318:1: group_ returns [by] : ^( GROUP (type= PHRASE | f= function )+ ) ;
+    # SelectScript.g:321:1: group_ returns [by] : ^( GROUP (type= PHRASE | f= function )+ ) ;
     def group_(self, ):
 
         by = None
@@ -1341,13 +1358,13 @@ class SelectScript(TreeParser):
         by = []
         try:
             try:
-                # SelectScript.g:319:16: ( ^( GROUP (type= PHRASE | f= function )+ ) )
-                # SelectScript.g:320:2: ^( GROUP (type= PHRASE | f= function )+ )
+                # SelectScript.g:322:16: ( ^( GROUP (type= PHRASE | f= function )+ ) )
+                # SelectScript.g:323:2: ^( GROUP (type= PHRASE | f= function )+ )
                 pass 
-                self.match(self.input, GROUP, self.FOLLOW_GROUP_in_group_688)
+                self.match(self.input, GROUP, self.FOLLOW_GROUP_in_group_664)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:321:3: (type= PHRASE | f= function )+
+                # SelectScript.g:324:3: (type= PHRASE | f= function )+
                 cnt21 = 0
                 while True: #loop21
                     alt21 = 3
@@ -1360,18 +1377,18 @@ class SelectScript(TreeParser):
 
 
                     if alt21 == 1:
-                        # SelectScript.g:321:5: type= PHRASE
+                        # SelectScript.g:324:5: type= PHRASE
                         pass 
-                        type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_group_697)
+                        type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_group_672)
                         if self._state.backtracking == 0:
                             by.append( self._phrase ( type.getText() ) ); 
 
 
 
                     elif alt21 == 2:
-                        # SelectScript.g:322:5: f= function
+                        # SelectScript.g:325:5: f= function
                         pass 
-                        self._state.following.append(self.FOLLOW_function_in_group_708)
+                        self._state.following.append(self.FOLLOW_function_in_group_683)
                         f = self.function()
 
                         self._state.following.pop()
@@ -1409,7 +1426,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "having_"
-    # SelectScript.g:327:1: having_ returns [stack] : ^( HAVING e= expr ) ;
+    # SelectScript.g:330:1: having_ returns [stack] : ^( HAVING e= expr ) ;
     def having_(self, ):
 
         stack = None
@@ -1419,13 +1436,13 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:327:25: ( ^( HAVING e= expr ) )
-                # SelectScript.g:328:2: ^( HAVING e= expr )
+                # SelectScript.g:330:25: ( ^( HAVING e= expr ) )
+                # SelectScript.g:331:2: ^( HAVING e= expr )
                 pass 
-                self.match(self.input, HAVING, self.FOLLOW_HAVING_in_having_733)
+                self.match(self.input, HAVING, self.FOLLOW_HAVING_in_having_708)
 
                 self.match(self.input, DOWN, None)
-                self._state.following.append(self.FOLLOW_expr_in_having_737)
+                self._state.following.append(self.FOLLOW_expr_in_having_712)
                 e = self.expr()
 
                 self._state.following.pop()
@@ -1450,7 +1467,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "order_"
-    # SelectScript.g:331:1: order_ returns [by] : ^( ORDER (type= PHRASE | f= function dir= direction_ )+ ) ;
+    # SelectScript.g:334:1: order_ returns [by] : ^( ORDER (type= PHRASE | f= function dir= direction_ )+ ) ;
     def order_(self, ):
 
         by = None
@@ -1464,13 +1481,13 @@ class SelectScript(TreeParser):
         by = []
         try:
             try:
-                # SelectScript.g:332:16: ( ^( ORDER (type= PHRASE | f= function dir= direction_ )+ ) )
-                # SelectScript.g:333:2: ^( ORDER (type= PHRASE | f= function dir= direction_ )+ )
+                # SelectScript.g:335:16: ( ^( ORDER (type= PHRASE | f= function dir= direction_ )+ ) )
+                # SelectScript.g:336:2: ^( ORDER (type= PHRASE | f= function dir= direction_ )+ )
                 pass 
-                self.match(self.input, ORDER, self.FOLLOW_ORDER_in_order_760)
+                self.match(self.input, ORDER, self.FOLLOW_ORDER_in_order_734)
 
                 self.match(self.input, DOWN, None)
-                # SelectScript.g:334:3: (type= PHRASE | f= function dir= direction_ )+
+                # SelectScript.g:337:3: (type= PHRASE | f= function dir= direction_ )+
                 cnt22 = 0
                 while True: #loop22
                     alt22 = 3
@@ -1483,22 +1500,22 @@ class SelectScript(TreeParser):
 
 
                     if alt22 == 1:
-                        # SelectScript.g:335:5: type= PHRASE
+                        # SelectScript.g:338:5: type= PHRASE
                         pass 
-                        type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_order_774)
+                        type=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_order_746)
                         if self._state.backtracking == 0:
                             by.append( [ self._phrase ( type.getText()), dir ]); 
 
 
 
                     elif alt22 == 2:
-                        # SelectScript.g:336:5: f= function dir= direction_
+                        # SelectScript.g:339:5: f= function dir= direction_
                         pass 
-                        self._state.following.append(self.FOLLOW_function_in_order_786)
+                        self._state.following.append(self.FOLLOW_function_in_order_758)
                         f = self.function()
 
                         self._state.following.pop()
-                        self._state.following.append(self.FOLLOW_direction__in_order_790)
+                        self._state.following.append(self.FOLLOW_direction__in_order_762)
                         dir = self.direction_()
 
                         self._state.following.pop()
@@ -1536,7 +1553,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "direction_"
-    # SelectScript.g:341:1: direction_ returns [dir] : ( ASC | DESC )? ;
+    # SelectScript.g:344:1: direction_ returns [dir] : ( ASC | DESC )? ;
     def direction_(self, ):
 
         dir = None
@@ -1544,10 +1561,10 @@ class SelectScript(TreeParser):
         dir = 0
         try:
             try:
-                # SelectScript.g:342:16: ( ( ASC | DESC )? )
-                # SelectScript.g:343:2: ( ASC | DESC )?
+                # SelectScript.g:345:16: ( ( ASC | DESC )? )
+                # SelectScript.g:346:2: ( ASC | DESC )?
                 pass 
-                # SelectScript.g:343:2: ( ASC | DESC )?
+                # SelectScript.g:346:2: ( ASC | DESC )?
                 alt23 = 3
                 LA23_0 = self.input.LA(1)
 
@@ -1556,18 +1573,18 @@ class SelectScript(TreeParser):
                 elif (LA23_0 == DESC) :
                     alt23 = 2
                 if alt23 == 1:
-                    # SelectScript.g:343:4: ASC
+                    # SelectScript.g:346:4: ASC
                     pass 
-                    self.match(self.input, ASC, self.FOLLOW_ASC_in_direction_820)
+                    self.match(self.input, ASC, self.FOLLOW_ASC_in_direction_792)
                     if self._state.backtracking == 0:
                         dir=0; 
 
 
 
                 elif alt23 == 2:
-                    # SelectScript.g:344:4: DESC
+                    # SelectScript.g:347:4: DESC
                     pass 
-                    self.match(self.input, DESC, self.FOLLOW_DESC_in_direction_828)
+                    self.match(self.input, DESC, self.FOLLOW_DESC_in_direction_800)
                     if self._state.backtracking == 0:
                         dir=1; 
 
@@ -1590,7 +1607,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "expr"
-    # SelectScript.g:348:1: expr returns [val] : (a= assign_expr | l= logic_expr | c= compare_expr | a= arithmetic_expr | i= if_statement | a= atom );
+    # SelectScript.g:351:1: expr returns [val] : (a= assign_expr | l= logic_expr | c= compare_expr | a= arithmetic_expr | i= if_statement | a= atom );
     def expr(self, ):
 
         val = None
@@ -1606,7 +1623,7 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:348:20: (a= assign_expr | l= logic_expr | c= compare_expr | a= arithmetic_expr | i= if_statement | a= atom )
+                # SelectScript.g:351:20: (a= assign_expr | l= logic_expr | c= compare_expr | a= arithmetic_expr | i= if_statement | a= atom )
                 alt24 = 6
                 LA24 = self.input.LA(1)
                 if LA24 == ASSIGN:
@@ -1630,9 +1647,9 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt24 == 1:
-                    # SelectScript.g:349:2: a= assign_expr
+                    # SelectScript.g:352:2: a= assign_expr
                     pass 
-                    self._state.following.append(self.FOLLOW_assign_expr_in_expr852)
+                    self._state.following.append(self.FOLLOW_assign_expr_in_expr824)
                     a = self.assign_expr()
 
                     self._state.following.pop()
@@ -1642,9 +1659,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt24 == 2:
-                    # SelectScript.g:350:4: l= logic_expr
+                    # SelectScript.g:353:4: l= logic_expr
                     pass 
-                    self._state.following.append(self.FOLLOW_logic_expr_in_expr866)
+                    self._state.following.append(self.FOLLOW_logic_expr_in_expr837)
                     l = self.logic_expr()
 
                     self._state.following.pop()
@@ -1654,9 +1671,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt24 == 3:
-                    # SelectScript.g:351:4: c= compare_expr
+                    # SelectScript.g:354:4: c= compare_expr
                     pass 
-                    self._state.following.append(self.FOLLOW_compare_expr_in_expr879)
+                    self._state.following.append(self.FOLLOW_compare_expr_in_expr850)
                     c = self.compare_expr()
 
                     self._state.following.pop()
@@ -1666,9 +1683,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt24 == 4:
-                    # SelectScript.g:352:4: a= arithmetic_expr
+                    # SelectScript.g:355:4: a= arithmetic_expr
                     pass 
-                    self._state.following.append(self.FOLLOW_arithmetic_expr_in_expr891)
+                    self._state.following.append(self.FOLLOW_arithmetic_expr_in_expr862)
                     a = self.arithmetic_expr()
 
                     self._state.following.pop()
@@ -1678,9 +1695,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt24 == 5:
-                    # SelectScript.g:353:4: i= if_statement
+                    # SelectScript.g:356:4: i= if_statement
                     pass 
-                    self._state.following.append(self.FOLLOW_if_statement_in_expr902)
+                    self._state.following.append(self.FOLLOW_if_statement_in_expr873)
                     i = self.if_statement()
 
                     self._state.following.pop()
@@ -1690,9 +1707,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt24 == 6:
-                    # SelectScript.g:354:4: a= atom
+                    # SelectScript.g:357:4: a= atom
                     pass 
-                    self._state.following.append(self.FOLLOW_atom_in_expr916)
+                    self._state.following.append(self.FOLLOW_atom_in_expr887)
                     a = self.atom()
 
                     self._state.following.pop()
@@ -1714,7 +1731,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "age"
-    # SelectScript.g:357:1: age returns [a] : ^( AGE (t= expr )? ) ;
+    # SelectScript.g:360:1: age returns [a] : ^( AGE (t= expr )? ) ;
     def age(self, ):
 
         a = None
@@ -1725,23 +1742,23 @@ class SelectScript(TreeParser):
         a=self._val(0); 
         try:
             try:
-                # SelectScript.g:358:25: ( ^( AGE (t= expr )? ) )
-                # SelectScript.g:359:2: ^( AGE (t= expr )? )
+                # SelectScript.g:361:25: ( ^( AGE (t= expr )? ) )
+                # SelectScript.g:362:2: ^( AGE (t= expr )? )
                 pass 
-                self.match(self.input, AGE, self.FOLLOW_AGE_in_age944)
+                self.match(self.input, AGE, self.FOLLOW_AGE_in_age914)
 
                 if self.input.LA(1) == DOWN:
                     self.match(self.input, DOWN, None)
-                    # SelectScript.g:359:8: (t= expr )?
+                    # SelectScript.g:362:8: (t= expr )?
                     alt25 = 2
                     LA25_0 = self.input.LA(1)
 
                     if ((FCT <= LA25_0 <= NEG) or LA25_0 == STMT_SELECT or LA25_0 == AND or (XOR <= LA25_0 <= OR) or LA25_0 == NOT or (IN <= LA25_0 <= POW) or LA25_0 == IF or LA25_0 == THIS or LA25_0 == 108) :
                         alt25 = 1
                     if alt25 == 1:
-                        # SelectScript.g:359:9: t= expr
+                        # SelectScript.g:362:9: t= expr
                         pass 
-                        self._state.following.append(self.FOLLOW_expr_in_age949)
+                        self._state.following.append(self.FOLLOW_expr_in_age919)
                         t = self.expr()
 
                         self._state.following.pop()
@@ -1770,7 +1787,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "if_statement"
-    # SelectScript.g:362:1: if_statement returns [e] : ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? ) ;
+    # SelectScript.g:365:1: if_statement returns [e] : ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? ) ;
     def if_statement(self, ):
 
         e = None
@@ -1785,47 +1802,47 @@ class SelectScript(TreeParser):
         if_=self._val( True ); th=self._val( True ); el=self._val( False ); 
         try:
             try:
-                # SelectScript.g:363:77: ( ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? ) )
-                # SelectScript.g:364:5: ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? )
+                # SelectScript.g:366:77: ( ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? ) )
+                # SelectScript.g:367:5: ^( IF if_= expr ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )? )
                 pass 
-                self.match(self.input, IF, self.FOLLOW_IF_in_if_statement976)
+                self.match(self.input, IF, self.FOLLOW_IF_in_if_statement945)
 
                 self.match(self.input, DOWN, None)
-                self._state.following.append(self.FOLLOW_expr_in_if_statement980)
+                self._state.following.append(self.FOLLOW_expr_in_if_statement949)
                 if_ = self.expr()
 
                 self._state.following.pop()
-                # SelectScript.g:364:19: ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )?
+                # SelectScript.g:367:19: ( ^( THEN th= parameter ( ^( ELSE el= parameter ) )? ) )?
                 alt27 = 2
                 LA27_0 = self.input.LA(1)
 
                 if (LA27_0 == THEN) :
                     alt27 = 1
                 if alt27 == 1:
-                    # SelectScript.g:364:20: ^( THEN th= parameter ( ^( ELSE el= parameter ) )? )
+                    # SelectScript.g:367:20: ^( THEN th= parameter ( ^( ELSE el= parameter ) )? )
                     pass 
-                    self.match(self.input, THEN, self.FOLLOW_THEN_in_if_statement984)
+                    self.match(self.input, THEN, self.FOLLOW_THEN_in_if_statement953)
 
                     if self.input.LA(1) == DOWN:
                         self.match(self.input, DOWN, None)
-                        self._state.following.append(self.FOLLOW_parameter_in_if_statement988)
+                        self._state.following.append(self.FOLLOW_parameter_in_if_statement957)
                         th = self.parameter()
 
                         self._state.following.pop()
-                        # SelectScript.g:364:40: ( ^( ELSE el= parameter ) )?
+                        # SelectScript.g:367:40: ( ^( ELSE el= parameter ) )?
                         alt26 = 2
                         LA26_0 = self.input.LA(1)
 
                         if (LA26_0 == ELSE) :
                             alt26 = 1
                         if alt26 == 1:
-                            # SelectScript.g:364:41: ^( ELSE el= parameter )
+                            # SelectScript.g:367:41: ^( ELSE el= parameter )
                             pass 
-                            self.match(self.input, ELSE, self.FOLLOW_ELSE_in_if_statement992)
+                            self.match(self.input, ELSE, self.FOLLOW_ELSE_in_if_statement961)
 
                             if self.input.LA(1) == DOWN:
                                 self.match(self.input, DOWN, None)
-                                self._state.following.append(self.FOLLOW_parameter_in_if_statement996)
+                                self._state.following.append(self.FOLLOW_parameter_in_if_statement965)
                                 el = self.parameter()
 
                                 self._state.following.pop()
@@ -1862,7 +1879,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "assign_expr"
-    # SelectScript.g:368:1: assign_expr returns [stack] : ^( ASSIGN v= PHRASE e= expr (a= age )? ) ;
+    # SelectScript.g:371:1: assign_expr returns [stack] : ^( ASSIGN v= PHRASE e= expr (a= age )? ) ;
     def assign_expr(self, ):
 
         stack = None
@@ -1876,27 +1893,27 @@ class SelectScript(TreeParser):
         a = self._val(0); 
         try:
             try:
-                # SelectScript.g:369:27: ( ^( ASSIGN v= PHRASE e= expr (a= age )? ) )
-                # SelectScript.g:370:2: ^( ASSIGN v= PHRASE e= expr (a= age )? )
+                # SelectScript.g:372:27: ( ^( ASSIGN v= PHRASE e= expr (a= age )? ) )
+                # SelectScript.g:373:2: ^( ASSIGN v= PHRASE e= expr (a= age )? )
                 pass 
-                self.match(self.input, ASSIGN, self.FOLLOW_ASSIGN_in_assign_expr1025)
+                self.match(self.input, ASSIGN, self.FOLLOW_ASSIGN_in_assign_expr993)
 
                 self.match(self.input, DOWN, None)
-                v=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_assign_expr1029)
-                self._state.following.append(self.FOLLOW_expr_in_assign_expr1033)
+                v=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_assign_expr997)
+                self._state.following.append(self.FOLLOW_expr_in_assign_expr1001)
                 e = self.expr()
 
                 self._state.following.pop()
-                # SelectScript.g:370:27: (a= age )?
+                # SelectScript.g:373:27: (a= age )?
                 alt28 = 2
                 LA28_0 = self.input.LA(1)
 
                 if (LA28_0 == AGE) :
                     alt28 = 1
                 if alt28 == 1:
-                    # SelectScript.g:370:28: a= age
+                    # SelectScript.g:373:28: a= age
                     pass 
-                    self._state.following.append(self.FOLLOW_age_in_assign_expr1038)
+                    self._state.following.append(self.FOLLOW_age_in_assign_expr1006)
                     a = self.age()
 
                     self._state.following.pop()
@@ -1924,7 +1941,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "logic_expr"
-    # SelectScript.g:373:1: logic_expr returns [stack] : ( ^( OR e1= expr e2= expr ) | ^( XOR e1= expr e2= expr ) | ^( AND e1= expr e2= expr ) | ^( NOT e= expr ) );
+    # SelectScript.g:376:1: logic_expr returns [stack] : ( ^( OR e1= expr e2= expr ) | ^( XOR e1= expr e2= expr ) | ^( AND e1= expr e2= expr ) | ^( NOT e= expr ) );
     def logic_expr(self, ):
 
         stack = None
@@ -1938,7 +1955,7 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:373:28: ( ^( OR e1= expr e2= expr ) | ^( XOR e1= expr e2= expr ) | ^( AND e1= expr e2= expr ) | ^( NOT e= expr ) )
+                # SelectScript.g:376:28: ( ^( OR e1= expr e2= expr ) | ^( XOR e1= expr e2= expr ) | ^( AND e1= expr e2= expr ) | ^( NOT e= expr ) )
                 alt29 = 4
                 LA29 = self.input.LA(1)
                 if LA29 == OR:
@@ -1958,9 +1975,51 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt29 == 1:
-                    # SelectScript.g:374:2: ^( OR e1= expr e2= expr )
+                    # SelectScript.g:377:2: ^( OR e1= expr e2= expr )
                     pass 
-                    self.match(self.input, OR, self.FOLLOW_OR_in_logic_expr1059)
+                    self.match(self.input, OR, self.FOLLOW_OR_in_logic_expr1026)
+
+                    self.match(self.input, DOWN, None)
+                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1030)
+                    e1 = self.expr()
+
+                    self._state.following.pop()
+                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1034)
+                    e2 = self.expr()
+
+                    self._state.following.pop()
+
+                    self.match(self.input, UP, None)
+                    if self._state.backtracking == 0:
+                        stack = self._fct('or',  [e1, e2]); 
+
+
+
+                elif alt29 == 2:
+                    # SelectScript.g:378:4: ^( XOR e1= expr e2= expr )
+                    pass 
+                    self.match(self.input, XOR, self.FOLLOW_XOR_in_logic_expr1043)
+
+                    self.match(self.input, DOWN, None)
+                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1047)
+                    e1 = self.expr()
+
+                    self._state.following.pop()
+                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1051)
+                    e2 = self.expr()
+
+                    self._state.following.pop()
+
+                    self.match(self.input, UP, None)
+                    if self._state.backtracking == 0:
+                        stack = self._fct('xor', [e1, e2]); 
+
+
+
+                elif alt29 == 3:
+                    # SelectScript.g:379:4: ^( AND e1= expr e2= expr )
+                    pass 
+                    self.match(self.input, AND, self.FOLLOW_AND_in_logic_expr1059)
 
                     self.match(self.input, DOWN, None)
                     self._state.following.append(self.FOLLOW_expr_in_logic_expr1063)
@@ -1974,59 +2033,17 @@ class SelectScript(TreeParser):
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
-                        stack = self._fct('or',  [e1, e2]); 
-
-
-
-                elif alt29 == 2:
-                    # SelectScript.g:375:4: ^( XOR e1= expr e2= expr )
-                    pass 
-                    self.match(self.input, XOR, self.FOLLOW_XOR_in_logic_expr1076)
-
-                    self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1080)
-                    e1 = self.expr()
-
-                    self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1084)
-                    e2 = self.expr()
-
-                    self._state.following.pop()
-
-                    self.match(self.input, UP, None)
-                    if self._state.backtracking == 0:
-                        stack = self._fct('xor', [e1, e2]); 
-
-
-
-                elif alt29 == 3:
-                    # SelectScript.g:376:4: ^( AND e1= expr e2= expr )
-                    pass 
-                    self.match(self.input, AND, self.FOLLOW_AND_in_logic_expr1093)
-
-                    self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1097)
-                    e1 = self.expr()
-
-                    self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1101)
-                    e2 = self.expr()
-
-                    self._state.following.pop()
-
-                    self.match(self.input, UP, None)
-                    if self._state.backtracking == 0:
                         stack = self._fct('and', [e1, e2]); 
 
 
 
                 elif alt29 == 4:
-                    # SelectScript.g:377:4: ^( NOT e= expr )
+                    # SelectScript.g:380:4: ^( NOT e= expr )
                     pass 
-                    self.match(self.input, NOT, self.FOLLOW_NOT_in_logic_expr1109)
+                    self.match(self.input, NOT, self.FOLLOW_NOT_in_logic_expr1075)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1113)
+                    self._state.following.append(self.FOLLOW_expr_in_logic_expr1079)
                     e = self.expr()
 
                     self._state.following.pop()
@@ -2050,7 +2067,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "compare_expr"
-    # SelectScript.g:380:1: compare_expr returns [stack] : ( ^( IN e1= expr e2= expr ) | ^( EQ e1= expr e2= expr ) | ^( NE e1= expr e2= expr ) | ^( GE e1= expr e2= expr ) | ^( GT e1= expr e2= expr ) | ^( LE e1= expr e2= expr ) | ^( LT e1= expr e2= expr ) );
+    # SelectScript.g:383:1: compare_expr returns [stack] : ( ^( IN e1= expr e2= expr ) | ^( EQ e1= expr e2= expr ) | ^( NE e1= expr e2= expr ) | ^( GE e1= expr e2= expr ) | ^( GT e1= expr e2= expr ) | ^( LE e1= expr e2= expr ) | ^( LT e1= expr e2= expr ) );
     def compare_expr(self, ):
 
         stack = None
@@ -2062,7 +2079,7 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:380:29: ( ^( IN e1= expr e2= expr ) | ^( EQ e1= expr e2= expr ) | ^( NE e1= expr e2= expr ) | ^( GE e1= expr e2= expr ) | ^( GT e1= expr e2= expr ) | ^( LE e1= expr e2= expr ) | ^( LT e1= expr e2= expr ) )
+                # SelectScript.g:383:29: ( ^( IN e1= expr e2= expr ) | ^( EQ e1= expr e2= expr ) | ^( NE e1= expr e2= expr ) | ^( GE e1= expr e2= expr ) | ^( GT e1= expr e2= expr ) | ^( LE e1= expr e2= expr ) | ^( LT e1= expr e2= expr ) )
                 alt30 = 7
                 LA30 = self.input.LA(1)
                 if LA30 == IN:
@@ -2088,16 +2105,16 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt30 == 1:
-                    # SelectScript.g:381:2: ^( IN e1= expr e2= expr )
+                    # SelectScript.g:384:2: ^( IN e1= expr e2= expr )
                     pass 
-                    self.match(self.input, IN, self.FOLLOW_IN_in_compare_expr1132)
+                    self.match(self.input, IN, self.FOLLOW_IN_in_compare_expr1097)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1136)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1101)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1140)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1105)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2109,16 +2126,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 2:
-                    # SelectScript.g:382:4: ^( EQ e1= expr e2= expr )
+                    # SelectScript.g:385:4: ^( EQ e1= expr e2= expr )
                     pass 
-                    self.match(self.input, EQ, self.FOLLOW_EQ_in_compare_expr1149)
+                    self.match(self.input, EQ, self.FOLLOW_EQ_in_compare_expr1114)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1153)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1118)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1157)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1122)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2130,16 +2147,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 3:
-                    # SelectScript.g:383:4: ^( NE e1= expr e2= expr )
+                    # SelectScript.g:386:4: ^( NE e1= expr e2= expr )
                     pass 
-                    self.match(self.input, NE, self.FOLLOW_NE_in_compare_expr1166)
+                    self.match(self.input, NE, self.FOLLOW_NE_in_compare_expr1131)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1170)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1135)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1174)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1139)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2151,16 +2168,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 4:
-                    # SelectScript.g:384:4: ^( GE e1= expr e2= expr )
+                    # SelectScript.g:387:4: ^( GE e1= expr e2= expr )
                     pass 
-                    self.match(self.input, GE, self.FOLLOW_GE_in_compare_expr1183)
+                    self.match(self.input, GE, self.FOLLOW_GE_in_compare_expr1148)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1187)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1152)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1191)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1156)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2172,16 +2189,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 5:
-                    # SelectScript.g:385:4: ^( GT e1= expr e2= expr )
+                    # SelectScript.g:388:4: ^( GT e1= expr e2= expr )
                     pass 
-                    self.match(self.input, GT, self.FOLLOW_GT_in_compare_expr1200)
+                    self.match(self.input, GT, self.FOLLOW_GT_in_compare_expr1165)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1204)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1169)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1208)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1173)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2193,16 +2210,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 6:
-                    # SelectScript.g:386:4: ^( LE e1= expr e2= expr )
+                    # SelectScript.g:389:4: ^( LE e1= expr e2= expr )
                     pass 
-                    self.match(self.input, LE, self.FOLLOW_LE_in_compare_expr1217)
+                    self.match(self.input, LE, self.FOLLOW_LE_in_compare_expr1182)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1221)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1186)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1225)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1190)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2214,16 +2231,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt30 == 7:
-                    # SelectScript.g:387:4: ^( LT e1= expr e2= expr )
+                    # SelectScript.g:390:4: ^( LT e1= expr e2= expr )
                     pass 
-                    self.match(self.input, LT, self.FOLLOW_LT_in_compare_expr1234)
+                    self.match(self.input, LT, self.FOLLOW_LT_in_compare_expr1199)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1238)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1203)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1242)
+                    self._state.following.append(self.FOLLOW_expr_in_compare_expr1207)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2247,7 +2264,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "arithmetic_expr"
-    # SelectScript.g:390:1: arithmetic_expr returns [stack] : ( ^( MUL e1= expr e2= expr ) | ^( DIV e1= expr e2= expr ) | ^( MOD e1= expr e2= expr ) | ^( SUB e1= expr e2= expr ) | ^( ADD e1= expr e2= expr ) | ^( POW e1= expr e2= expr ) | ^( NEG e= expr ) | ^( POS e= expr ) | ^( ELEMENT a= atom p= parameter ) );
+    # SelectScript.g:393:1: arithmetic_expr returns [stack] : ( ^( MUL e1= expr e2= expr ) | ^( DIV e1= expr e2= expr ) | ^( MOD e1= expr e2= expr ) | ^( SUB e1= expr e2= expr ) | ^( ADD e1= expr e2= expr ) | ^( POW e1= expr e2= expr ) | ^( NEG e= expr ) | ^( POS e= expr ) | ^( ELEMENT a= atom p= parameter ) );
     def arithmetic_expr(self, ):
 
         stack = None
@@ -2265,7 +2282,7 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:390:32: ( ^( MUL e1= expr e2= expr ) | ^( DIV e1= expr e2= expr ) | ^( MOD e1= expr e2= expr ) | ^( SUB e1= expr e2= expr ) | ^( ADD e1= expr e2= expr ) | ^( POW e1= expr e2= expr ) | ^( NEG e= expr ) | ^( POS e= expr ) | ^( ELEMENT a= atom p= parameter ) )
+                # SelectScript.g:393:32: ( ^( MUL e1= expr e2= expr ) | ^( DIV e1= expr e2= expr ) | ^( MOD e1= expr e2= expr ) | ^( SUB e1= expr e2= expr ) | ^( ADD e1= expr e2= expr ) | ^( POW e1= expr e2= expr ) | ^( NEG e= expr ) | ^( POS e= expr ) | ^( ELEMENT a= atom p= parameter ) )
                 alt31 = 9
                 LA31 = self.input.LA(1)
                 if LA31 == MUL:
@@ -2295,16 +2312,16 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt31 == 1:
-                    # SelectScript.g:391:2: ^( MUL e1= expr e2= expr )
+                    # SelectScript.g:394:2: ^( MUL e1= expr e2= expr )
                     pass 
-                    self.match(self.input, MUL, self.FOLLOW_MUL_in_arithmetic_expr1260)
+                    self.match(self.input, MUL, self.FOLLOW_MUL_in_arithmetic_expr1224)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1264)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1228)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1268)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1232)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2316,16 +2333,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 2:
-                    # SelectScript.g:392:3: ^( DIV e1= expr e2= expr )
+                    # SelectScript.g:395:3: ^( DIV e1= expr e2= expr )
                     pass 
-                    self.match(self.input, DIV, self.FOLLOW_DIV_in_arithmetic_expr1276)
+                    self.match(self.input, DIV, self.FOLLOW_DIV_in_arithmetic_expr1240)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1280)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1244)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1284)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1248)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2337,16 +2354,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 3:
-                    # SelectScript.g:393:3: ^( MOD e1= expr e2= expr )
+                    # SelectScript.g:396:3: ^( MOD e1= expr e2= expr )
                     pass 
-                    self.match(self.input, MOD, self.FOLLOW_MOD_in_arithmetic_expr1292)
+                    self.match(self.input, MOD, self.FOLLOW_MOD_in_arithmetic_expr1256)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1296)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1260)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1300)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1264)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2358,16 +2375,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 4:
-                    # SelectScript.g:394:3: ^( SUB e1= expr e2= expr )
+                    # SelectScript.g:397:3: ^( SUB e1= expr e2= expr )
                     pass 
-                    self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_expr1308)
+                    self.match(self.input, SUB, self.FOLLOW_SUB_in_arithmetic_expr1272)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1312)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1276)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1316)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1280)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2379,16 +2396,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 5:
-                    # SelectScript.g:395:3: ^( ADD e1= expr e2= expr )
+                    # SelectScript.g:398:3: ^( ADD e1= expr e2= expr )
                     pass 
-                    self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_expr1324)
+                    self.match(self.input, ADD, self.FOLLOW_ADD_in_arithmetic_expr1288)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1328)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1292)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1332)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1296)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2400,16 +2417,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 6:
-                    # SelectScript.g:396:3: ^( POW e1= expr e2= expr )
+                    # SelectScript.g:399:3: ^( POW e1= expr e2= expr )
                     pass 
-                    self.match(self.input, POW, self.FOLLOW_POW_in_arithmetic_expr1340)
+                    self.match(self.input, POW, self.FOLLOW_POW_in_arithmetic_expr1304)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1344)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1308)
                     e1 = self.expr()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1348)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1312)
                     e2 = self.expr()
 
                     self._state.following.pop()
@@ -2421,12 +2438,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 7:
-                    # SelectScript.g:397:3: ^( NEG e= expr )
+                    # SelectScript.g:400:3: ^( NEG e= expr )
                     pass 
-                    self.match(self.input, NEG, self.FOLLOW_NEG_in_arithmetic_expr1356)
+                    self.match(self.input, NEG, self.FOLLOW_NEG_in_arithmetic_expr1320)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1360)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1324)
                     e = self.expr()
 
                     self._state.following.pop()
@@ -2438,12 +2455,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 8:
-                    # SelectScript.g:398:3: ^( POS e= expr )
+                    # SelectScript.g:401:3: ^( POS e= expr )
                     pass 
-                    self.match(self.input, POS, self.FOLLOW_POS_in_arithmetic_expr1369)
+                    self.match(self.input, POS, self.FOLLOW_POS_in_arithmetic_expr1333)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1373)
+                    self._state.following.append(self.FOLLOW_expr_in_arithmetic_expr1337)
                     e = self.expr()
 
                     self._state.following.pop()
@@ -2455,16 +2472,16 @@ class SelectScript(TreeParser):
 
 
                 elif alt31 == 9:
-                    # SelectScript.g:399:3: ^( ELEMENT a= atom p= parameter )
+                    # SelectScript.g:402:3: ^( ELEMENT a= atom p= parameter )
                     pass 
-                    self.match(self.input, ELEMENT, self.FOLLOW_ELEMENT_in_arithmetic_expr1382)
+                    self.match(self.input, ELEMENT, self.FOLLOW_ELEMENT_in_arithmetic_expr1346)
 
                     self.match(self.input, DOWN, None)
-                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_expr1386)
+                    self._state.following.append(self.FOLLOW_atom_in_arithmetic_expr1350)
                     a = self.atom()
 
                     self._state.following.pop()
-                    self._state.following.append(self.FOLLOW_parameter_in_arithmetic_expr1390)
+                    self._state.following.append(self.FOLLOW_parameter_in_arithmetic_expr1354)
                     p = self.parameter()
 
                     self._state.following.pop()
@@ -2488,7 +2505,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "atom"
-    # SelectScript.g:402:1: atom returns [stack] : (val= value | var= variable | fct= function | '(' e= expr ')' | s= statement_select );
+    # SelectScript.g:405:1: atom returns [stack] : (val= value | var= variable | fct= function | '(' e= expr ')' | s= statement_select );
     def atom(self, ):
 
         stack = None
@@ -2506,7 +2523,7 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:402:22: (val= value | var= variable | fct= function | '(' e= expr ')' | s= statement_select )
+                # SelectScript.g:405:22: (val= value | var= variable | fct= function | '(' e= expr ')' | s= statement_select )
                 alt32 = 5
                 LA32 = self.input.LA(1)
                 if LA32 == VAL or LA32 == LIST or LA32 == THIS:
@@ -2528,9 +2545,9 @@ class SelectScript(TreeParser):
                     raise nvae
 
                 if alt32 == 1:
-                    # SelectScript.g:403:2: val= value
+                    # SelectScript.g:406:2: val= value
                     pass 
-                    self._state.following.append(self.FOLLOW_value_in_atom1411)
+                    self._state.following.append(self.FOLLOW_value_in_atom1375)
                     val = self.value()
 
                     self._state.following.pop()
@@ -2540,9 +2557,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt32 == 2:
-                    # SelectScript.g:404:4: var= variable
+                    # SelectScript.g:407:4: var= variable
                     pass 
-                    self._state.following.append(self.FOLLOW_variable_in_atom1424)
+                    self._state.following.append(self.FOLLOW_variable_in_atom1388)
                     var = self.variable()
 
                     self._state.following.pop()
@@ -2552,9 +2569,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt32 == 3:
-                    # SelectScript.g:405:4: fct= function
+                    # SelectScript.g:408:4: fct= function
                     pass 
-                    self._state.following.append(self.FOLLOW_function_in_atom1436)
+                    self._state.following.append(self.FOLLOW_function_in_atom1400)
                     fct = self.function()
 
                     self._state.following.pop()
@@ -2564,23 +2581,23 @@ class SelectScript(TreeParser):
 
 
                 elif alt32 == 4:
-                    # SelectScript.g:406:4: '(' e= expr ')'
+                    # SelectScript.g:409:4: '(' e= expr ')'
                     pass 
-                    self.match(self.input, 108, self.FOLLOW_108_in_atom1444)
-                    self._state.following.append(self.FOLLOW_expr_in_atom1448)
+                    self.match(self.input, 108, self.FOLLOW_108_in_atom1408)
+                    self._state.following.append(self.FOLLOW_expr_in_atom1412)
                     e = self.expr()
 
                     self._state.following.pop()
-                    self.match(self.input, 109, self.FOLLOW_109_in_atom1450)
+                    self.match(self.input, 109, self.FOLLOW_109_in_atom1414)
                     if self._state.backtracking == 0:
                         stack = e  
 
 
 
                 elif alt32 == 5:
-                    # SelectScript.g:407:4: s= statement_select
+                    # SelectScript.g:410:4: s= statement_select
                     pass 
-                    self._state.following.append(self.FOLLOW_statement_select_in_atom1460)
+                    self._state.following.append(self.FOLLOW_statement_select_in_atom1424)
                     s = self.statement_select()
 
                     self._state.following.pop()
@@ -2602,7 +2619,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "value"
-    # SelectScript.g:410:1: value returns [val] : ( ^( VAL STRING ) | ^( VAL INTEGER ) | ^( VAL FLOAT ) | ^( VAL TRUE ) | ^( VAL FALSE ) | t= this_ | l= list_ );
+    # SelectScript.g:413:1: value returns [val] : ( ^( VAL STRING ) | ^( VAL INTEGER ) | ^( VAL FLOAT ) | ^( VAL TRUE ) | ^( VAL FALSE ) | t= this_ | l= list_ );
     def value(self, ):
 
         val = None
@@ -2617,16 +2634,16 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:410:21: ( ^( VAL STRING ) | ^( VAL INTEGER ) | ^( VAL FLOAT ) | ^( VAL TRUE ) | ^( VAL FALSE ) | t= this_ | l= list_ )
+                # SelectScript.g:413:21: ( ^( VAL STRING ) | ^( VAL INTEGER ) | ^( VAL FLOAT ) | ^( VAL TRUE ) | ^( VAL FALSE ) | t= this_ | l= list_ )
                 alt33 = 7
                 alt33 = self.dfa33.predict(self.input)
                 if alt33 == 1:
-                    # SelectScript.g:411:4: ^( VAL STRING )
+                    # SelectScript.g:414:4: ^( VAL STRING )
                     pass 
-                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1480)
+                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1444)
 
                     self.match(self.input, DOWN, None)
-                    STRING1=self.match(self.input, STRING, self.FOLLOW_STRING_in_value1482)
+                    STRING1=self.match(self.input, STRING, self.FOLLOW_STRING_in_value1446)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -2635,12 +2652,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 2:
-                    # SelectScript.g:412:4: ^( VAL INTEGER )
+                    # SelectScript.g:415:4: ^( VAL INTEGER )
                     pass 
-                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1492)
+                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1456)
 
                     self.match(self.input, DOWN, None)
-                    INTEGER2=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_value1494)
+                    INTEGER2=self.match(self.input, INTEGER, self.FOLLOW_INTEGER_in_value1458)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -2649,12 +2666,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 3:
-                    # SelectScript.g:413:4: ^( VAL FLOAT )
+                    # SelectScript.g:416:4: ^( VAL FLOAT )
                     pass 
-                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1504)
+                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1468)
 
                     self.match(self.input, DOWN, None)
-                    FLOAT3=self.match(self.input, FLOAT, self.FOLLOW_FLOAT_in_value1506)
+                    FLOAT3=self.match(self.input, FLOAT, self.FOLLOW_FLOAT_in_value1470)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -2663,12 +2680,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 4:
-                    # SelectScript.g:414:4: ^( VAL TRUE )
+                    # SelectScript.g:417:4: ^( VAL TRUE )
                     pass 
-                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1516)
+                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1480)
 
                     self.match(self.input, DOWN, None)
-                    self.match(self.input, TRUE, self.FOLLOW_TRUE_in_value1518)
+                    self.match(self.input, TRUE, self.FOLLOW_TRUE_in_value1482)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -2677,12 +2694,12 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 5:
-                    # SelectScript.g:415:4: ^( VAL FALSE )
+                    # SelectScript.g:418:4: ^( VAL FALSE )
                     pass 
-                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1528)
+                    self.match(self.input, VAL, self.FOLLOW_VAL_in_value1492)
 
                     self.match(self.input, DOWN, None)
-                    self.match(self.input, FALSE, self.FOLLOW_FALSE_in_value1530)
+                    self.match(self.input, FALSE, self.FOLLOW_FALSE_in_value1494)
 
                     self.match(self.input, UP, None)
                     if self._state.backtracking == 0:
@@ -2691,9 +2708,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 6:
-                    # SelectScript.g:416:4: t= this_
+                    # SelectScript.g:419:4: t= this_
                     pass 
-                    self._state.following.append(self.FOLLOW_this__in_value1541)
+                    self._state.following.append(self.FOLLOW_this__in_value1505)
                     t = self.this_()
 
                     self._state.following.pop()
@@ -2703,9 +2720,9 @@ class SelectScript(TreeParser):
 
 
                 elif alt33 == 7:
-                    # SelectScript.g:417:4: l= list_
+                    # SelectScript.g:420:4: l= list_
                     pass 
-                    self._state.following.append(self.FOLLOW_list__in_value1551)
+                    self._state.following.append(self.FOLLOW_list__in_value1515)
                     l = self.list_()
 
                     self._state.following.pop()
@@ -2727,7 +2744,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "this_"
-    # SelectScript.g:420:1: this_ returns [p] : ^( THIS ( PHRASE )? ) ;
+    # SelectScript.g:423:1: this_ returns [p] : ^( THIS ( PHRASE )? ) ;
     def this_(self, ):
 
         p = None
@@ -2737,23 +2754,23 @@ class SelectScript(TreeParser):
         p=self._this(); 
         try:
             try:
-                # SelectScript.g:421:26: ( ^( THIS ( PHRASE )? ) )
-                # SelectScript.g:422:2: ^( THIS ( PHRASE )? )
+                # SelectScript.g:424:26: ( ^( THIS ( PHRASE )? ) )
+                # SelectScript.g:425:2: ^( THIS ( PHRASE )? )
                 pass 
-                self.match(self.input, THIS, self.FOLLOW_THIS_in_this_1573)
+                self.match(self.input, THIS, self.FOLLOW_THIS_in_this_1537)
 
                 if self.input.LA(1) == DOWN:
                     self.match(self.input, DOWN, None)
-                    # SelectScript.g:422:9: ( PHRASE )?
+                    # SelectScript.g:425:9: ( PHRASE )?
                     alt34 = 2
                     LA34_0 = self.input.LA(1)
 
                     if (LA34_0 == PHRASE) :
                         alt34 = 1
                     if alt34 == 1:
-                        # SelectScript.g:422:10: PHRASE
+                        # SelectScript.g:425:10: PHRASE
                         pass 
-                        PHRASE4=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_this_1576)
+                        PHRASE4=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_this_1540)
                         if self._state.backtracking == 0:
                             p=self._this(PHRASE4.getText()); 
 
@@ -2779,7 +2796,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "list_"
-    # SelectScript.g:425:1: list_ returns [l] : ^( LIST (e= expr )* ) ;
+    # SelectScript.g:428:1: list_ returns [l] : ^( LIST (e= expr )* ) ;
     def list_(self, ):
 
         l = None
@@ -2790,14 +2807,14 @@ class SelectScript(TreeParser):
         l = [] 
         try:
             try:
-                # SelectScript.g:426:17: ( ^( LIST (e= expr )* ) )
-                # SelectScript.g:427:2: ^( LIST (e= expr )* )
+                # SelectScript.g:429:17: ( ^( LIST (e= expr )* ) )
+                # SelectScript.g:430:2: ^( LIST (e= expr )* )
                 pass 
-                self.match(self.input, LIST, self.FOLLOW_LIST_in_list_1600)
+                self.match(self.input, LIST, self.FOLLOW_LIST_in_list_1564)
 
                 if self.input.LA(1) == DOWN:
                     self.match(self.input, DOWN, None)
-                    # SelectScript.g:427:9: (e= expr )*
+                    # SelectScript.g:430:9: (e= expr )*
                     while True: #loop35
                         alt35 = 2
                         LA35_0 = self.input.LA(1)
@@ -2807,9 +2824,9 @@ class SelectScript(TreeParser):
 
 
                         if alt35 == 1:
-                            # SelectScript.g:427:11: e= expr
+                            # SelectScript.g:430:11: e= expr
                             pass 
-                            self._state.following.append(self.FOLLOW_expr_in_list_1606)
+                            self._state.following.append(self.FOLLOW_expr_in_list_1570)
                             e = self.expr()
 
                             self._state.following.pop()
@@ -2839,7 +2856,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "variable"
-    # SelectScript.g:430:1: variable returns [var] : ^( VAR PHRASE (a= age )? ) ;
+    # SelectScript.g:433:1: variable returns [var] : ^( VAR PHRASE (a= age )? ) ;
     def variable(self, ):
 
         var = None
@@ -2851,23 +2868,23 @@ class SelectScript(TreeParser):
         a = self._val(0); 
         try:
             try:
-                # SelectScript.g:431:27: ( ^( VAR PHRASE (a= age )? ) )
-                # SelectScript.g:432:2: ^( VAR PHRASE (a= age )? )
+                # SelectScript.g:434:27: ( ^( VAR PHRASE (a= age )? ) )
+                # SelectScript.g:435:2: ^( VAR PHRASE (a= age )? )
                 pass 
-                self.match(self.input, VAR, self.FOLLOW_VAR_in_variable1630)
+                self.match(self.input, VAR, self.FOLLOW_VAR_in_variable1594)
 
                 self.match(self.input, DOWN, None)
-                PHRASE5=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_variable1632)
-                # SelectScript.g:432:15: (a= age )?
+                PHRASE5=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_variable1596)
+                # SelectScript.g:435:15: (a= age )?
                 alt36 = 2
                 LA36_0 = self.input.LA(1)
 
                 if (LA36_0 == AGE) :
                     alt36 = 1
                 if alt36 == 1:
-                    # SelectScript.g:432:16: a= age
+                    # SelectScript.g:435:16: a= age
                     pass 
-                    self._state.following.append(self.FOLLOW_age_in_variable1637)
+                    self._state.following.append(self.FOLLOW_age_in_variable1601)
                     a = self.age()
 
                     self._state.following.pop()
@@ -2895,7 +2912,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "function"
-    # SelectScript.g:435:1: function returns [stack] : ^( FCT PHRASE (params= parameter )? ) ;
+    # SelectScript.g:438:1: function returns [stack] : ^( FCT PHRASE (params= parameter )? ) ;
     def function(self, ):
 
         stack = None
@@ -2906,14 +2923,14 @@ class SelectScript(TreeParser):
 
         try:
             try:
-                # SelectScript.g:435:26: ( ^( FCT PHRASE (params= parameter )? ) )
-                # SelectScript.g:436:2: ^( FCT PHRASE (params= parameter )? )
+                # SelectScript.g:438:26: ( ^( FCT PHRASE (params= parameter )? ) )
+                # SelectScript.g:439:2: ^( FCT PHRASE (params= parameter )? )
                 pass 
-                self.match(self.input, FCT, self.FOLLOW_FCT_in_function1657)
+                self.match(self.input, FCT, self.FOLLOW_FCT_in_function1621)
 
                 self.match(self.input, DOWN, None)
-                PHRASE6=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_function1659)
-                # SelectScript.g:436:21: (params= parameter )?
+                PHRASE6=self.match(self.input, PHRASE, self.FOLLOW_PHRASE_in_function1623)
+                # SelectScript.g:439:21: (params= parameter )?
                 alt37 = 2
                 LA37_0 = self.input.LA(1)
 
@@ -2922,12 +2939,12 @@ class SelectScript(TreeParser):
                 elif (LA37_0 == 3) :
                     LA37_2 = self.input.LA(2)
 
-                    if (self.synpred70_SelectScript()) :
+                    if (self.synpred71_SelectScript()) :
                         alt37 = 1
                 if alt37 == 1:
                     # SelectScript.g:0:0: params= parameter
                     pass 
-                    self._state.following.append(self.FOLLOW_parameter_in_function1663)
+                    self._state.following.append(self.FOLLOW_parameter_in_function1627)
                     params = self.parameter()
 
                     self._state.following.pop()
@@ -2955,7 +2972,7 @@ class SelectScript(TreeParser):
 
 
     # $ANTLR start "parameter"
-    # SelectScript.g:440:1: parameter returns [stack] : (e= expr )* ;
+    # SelectScript.g:443:1: parameter returns [stack] : (e= expr )* ;
     def parameter(self, ):
 
         stack = None
@@ -2966,10 +2983,10 @@ class SelectScript(TreeParser):
         stack = []
         try:
             try:
-                # SelectScript.g:441:19: ( (e= expr )* )
-                # SelectScript.g:442:2: (e= expr )*
+                # SelectScript.g:444:19: ( (e= expr )* )
+                # SelectScript.g:445:2: (e= expr )*
                 pass 
-                # SelectScript.g:442:2: (e= expr )*
+                # SelectScript.g:445:2: (e= expr )*
                 while True: #loop38
                     alt38 = 2
                     LA38_0 = self.input.LA(1)
@@ -2979,9 +2996,9 @@ class SelectScript(TreeParser):
 
 
                     if alt38 == 1:
-                        # SelectScript.g:442:3: e= expr
+                        # SelectScript.g:445:3: e= expr
                         pass 
-                        self._state.following.append(self.FOLLOW_expr_in_parameter1689)
+                        self._state.following.append(self.FOLLOW_expr_in_parameter1653)
                         e = self.expr()
 
                         self._state.following.pop()
@@ -3011,7 +3028,7 @@ class SelectScript(TreeParser):
         # SelectScript.g:257:2: (s= statement_select )
         # SelectScript.g:257:2: s= statement_select
         pass 
-        self._state.following.append(self.FOLLOW_statement_select_in_synpred2_SelectScript117)
+        self._state.following.append(self.FOLLOW_statement_select_in_synpred2_SelectScript113)
         s = self.statement_select()
 
         self._state.following.pop()
@@ -3021,44 +3038,128 @@ class SelectScript(TreeParser):
 
 
 
-    # $ANTLR start "synpred17_SelectScript"
-    def synpred17_SelectScript_fragment(self, ):
-        # SelectScript.g:289:20: (p= parameter )
-        # SelectScript.g:289:20: p= parameter
+    # $ANTLR start "synpred11_SelectScript"
+    def synpred11_SelectScript_fragment(self, ):
+        # SelectScript.g:273:5: (f= function )
+        # SelectScript.g:273:5: f= function
         pass 
-        self._state.following.append(self.FOLLOW_parameter_in_synpred17_SelectScript391)
+        self._state.following.append(self.FOLLOW_function_in_synpred11_SelectScript262)
+        f = self.function()
+
+        self._state.following.pop()
+
+
+    # $ANTLR end "synpred11_SelectScript"
+
+
+
+    # $ANTLR start "synpred12_SelectScript"
+    def synpred12_SelectScript_fragment(self, ):
+        # SelectScript.g:274:5: (t= this_ )
+        # SelectScript.g:274:5: t= this_
+        pass 
+        self._state.following.append(self.FOLLOW_this__in_synpred12_SelectScript273)
+        t = self.this_()
+
+        self._state.following.pop()
+
+
+    # $ANTLR end "synpred12_SelectScript"
+
+
+
+    # $ANTLR start "synpred13_SelectScript"
+    def synpred13_SelectScript_fragment(self, ):
+        # SelectScript.g:275:5: (e= expr )
+        # SelectScript.g:275:5: e= expr
+        pass 
+        self._state.following.append(self.FOLLOW_expr_in_synpred13_SelectScript286)
+        e = self.expr()
+
+        self._state.following.pop()
+
+
+    # $ANTLR end "synpred13_SelectScript"
+
+
+
+    # $ANTLR start "synpred18_SelectScript"
+    def synpred18_SelectScript_fragment(self, ):
+        # SelectScript.g:290:20: (p= parameter )
+        # SelectScript.g:290:20: p= parameter
+        pass 
+        self._state.following.append(self.FOLLOW_parameter_in_synpred18_SelectScript397)
         p = self.parameter()
 
         self._state.following.pop()
 
 
-    # $ANTLR end "synpred17_SelectScript"
+    # $ANTLR end "synpred18_SelectScript"
 
 
 
-    # $ANTLR start "synpred70_SelectScript"
-    def synpred70_SelectScript_fragment(self, ):
-        # SelectScript.g:436:21: (params= parameter )
-        # SelectScript.g:436:21: params= parameter
+    # $ANTLR start "synpred71_SelectScript"
+    def synpred71_SelectScript_fragment(self, ):
+        # SelectScript.g:439:21: (params= parameter )
+        # SelectScript.g:439:21: params= parameter
         pass 
-        self._state.following.append(self.FOLLOW_parameter_in_synpred70_SelectScript1663)
+        self._state.following.append(self.FOLLOW_parameter_in_synpred71_SelectScript1627)
         params = self.parameter()
 
         self._state.following.pop()
 
 
-    # $ANTLR end "synpred70_SelectScript"
+    # $ANTLR end "synpred71_SelectScript"
 
 
 
 
     # Delegated rules
 
-    def synpred70_SelectScript(self):
+    def synpred11_SelectScript(self):
         self._state.backtracking += 1
         start = self.input.mark()
         try:
-            self.synpred70_SelectScript_fragment()
+            self.synpred11_SelectScript_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred71_SelectScript(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred71_SelectScript_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred13_SelectScript(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred13_SelectScript_fragment()
+        except BacktrackingFailed:
+            success = False
+        else:
+            success = True
+        self.input.rewind(start)
+        self._state.backtracking -= 1
+        return success
+
+    def synpred12_SelectScript(self):
+        self._state.backtracking += 1
+        start = self.input.mark()
+        try:
+            self.synpred12_SelectScript_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -3080,11 +3181,11 @@ class SelectScript(TreeParser):
         self._state.backtracking -= 1
         return success
 
-    def synpred17_SelectScript(self):
+    def synpred18_SelectScript(self):
         self._state.backtracking += 1
         start = self.input.mark()
         try:
-            self.synpred17_SelectScript_fragment()
+            self.synpred18_SelectScript_fragment()
         except BacktrackingFailed:
             success = False
         else:
@@ -3196,6 +3297,128 @@ class SelectScript(TreeParser):
             nvae = NoViableAltException(self_.getDescription(), 2, _s, input)
             self_.error(nvae)
             raise nvae
+    # lookup tables for DFA #10
+
+    DFA10_eot = DFA.unpack(
+        u"\42\uffff"
+        )
+
+    DFA10_eof = DFA.unpack(
+        u"\42\uffff"
+        )
+
+    DFA10_min = DFA.unpack(
+        u"\1\3\2\uffff\2\0\35\uffff"
+        )
+
+    DFA10_max = DFA.unpack(
+        u"\1\154\2\uffff\2\0\35\uffff"
+        )
+
+    DFA10_accept = DFA.unpack(
+        u"\1\uffff\1\5\1\1\2\uffff\1\4\32\uffff\1\2\1\3"
+        )
+
+    DFA10_special = DFA.unpack(
+        u"\3\uffff\1\0\1\1\35\uffff"
+        )
+
+            
+    DFA10_transition = [
+        DFA.unpack(u"\1\1\1\3\6\5\1\uffff\1\5\11\uffff\1\5\3\uffff\2\5\1"
+        u"\uffff\1\5\1\uffff\16\5\1\uffff\1\5\33\uffff\1\4\36\uffff\1\2\2"
+        u"\uffff\1\5"),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u"\1\uffff"),
+        DFA.unpack(u"\1\uffff"),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u""),
+        DFA.unpack(u"")
+    ]
+
+    # class definition for DFA #10
+
+    class DFA10(DFA):
+        pass
+
+
+        def specialStateTransition(self_, s, input):
+            # convince pylint that my self_ magic is ok ;)
+            # pylint: disable-msg=E0213
+
+            # pretend we are a member of the recognizer
+            # thus semantic predicates can be evaluated
+            self = self_.recognizer
+
+            _s = s
+
+            if s == 0: 
+                LA10_3 = input.LA(1)
+
+                 
+                index10_3 = input.index()
+                input.rewind()
+                s = -1
+                if (self.synpred11_SelectScript()):
+                    s = 32
+
+                elif (self.synpred13_SelectScript()):
+                    s = 5
+
+                 
+                input.seek(index10_3)
+                if s >= 0:
+                    return s
+            elif s == 1: 
+                LA10_4 = input.LA(1)
+
+                 
+                index10_4 = input.index()
+                input.rewind()
+                s = -1
+                if (self.synpred12_SelectScript()):
+                    s = 33
+
+                elif (self.synpred13_SelectScript()):
+                    s = 5
+
+                 
+                input.seek(index10_4)
+                if s >= 0:
+                    return s
+
+            if self._state.backtracking >0:
+                raise BacktrackingFailed
+            nvae = NoViableAltException(self_.getDescription(), 10, _s, input)
+            self_.error(nvae)
+            raise nvae
     # lookup tables for DFA #33
 
     DFA33_eot = DFA.unpack(
@@ -3244,170 +3467,173 @@ class SelectScript(TreeParser):
 
  
 
-    FOLLOW_prog_in_eval74 = frozenset([1])
-    FOLLOW_statement_in_prog96 = frozenset([1, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_statement_select_in_statement117 = frozenset([1])
-    FOLLOW_expr_in_statement127 = frozenset([1])
-    FOLLOW_STMT_SELECT_in_statement_select156 = frozenset([2])
-    FOLLOW_select__in_statement_select160 = frozenset([59])
-    FOLLOW_from__in_statement_select164 = frozenset([3, 62, 63, 67, 73, 76, 77])
-    FOLLOW_where__in_statement_select170 = frozenset([3, 63, 67, 73, 76, 77])
-    FOLLOW_group__in_statement_select179 = frozenset([3, 63, 69, 73, 76, 77])
-    FOLLOW_having__in_statement_select184 = frozenset([3, 63, 73, 76, 77])
-    FOLLOW_order__in_statement_select194 = frozenset([3, 73, 76, 77])
-    FOLLOW_as__in_statement_select203 = frozenset([3, 76, 77])
-    FOLLOW_start__in_statement_select212 = frozenset([76, 77])
-    FOLLOW_connect__in_statement_select218 = frozenset([78])
-    FOLLOW_stop__in_statement_select222 = frozenset([3])
-    FOLLOW_SELECT_in_select_246 = frozenset([2])
-    FOLLOW_PHRASE_in_select_257 = frozenset([3, 4, 74, 105])
-    FOLLOW_function_in_select_269 = frozenset([3, 4, 74, 105])
-    FOLLOW_this__in_select_281 = frozenset([3, 4, 74, 105])
-    FOLLOW_FROM_in_from_310 = frozenset([2])
-    FOLLOW_expr_in_from_315 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_AS_in_as_339 = frozenset([2])
-    FOLLOW_AS_DICT_in_as_341 = frozenset([3])
-    FOLLOW_AS_in_as_353 = frozenset([2])
-    FOLLOW_AS_LIST_in_as_355 = frozenset([3])
-    FOLLOW_AS_in_as_367 = frozenset([2])
-    FOLLOW_AS_VALUE_in_as_369 = frozenset([3])
-    FOLLOW_AS_in_as_381 = frozenset([2])
-    FOLLOW_PHRASE_in_as_385 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_parameter_in_as_391 = frozenset([3])
-    FOLLOW_WHERE_in_where_414 = frozenset([2])
-    FOLLOW_expr_in_where_418 = frozenset([3])
-    FOLLOW_START_in_start_440 = frozenset([2])
-    FOLLOW_expr_in_start_445 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_CONNECT_in_connect_469 = frozenset([2])
-    FOLLOW_CYCLE_in_connect_479 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 83, 84, 86, 87, 108])
-    FOLLOW_UNIQUE_in_connect_508 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 84, 86, 87, 108])
-    FOLLOW_GRAPH_in_connect_536 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 86, 87, 108])
-    FOLLOW_MEMORIZE_in_connect_565 = frozenset([99])
-    FOLLOW_INTEGER_in_connect_569 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 87, 108])
-    FOLLOW_MAXIMUM_in_connect_591 = frozenset([99])
-    FOLLOW_INTEGER_in_connect_596 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_connect_619 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_STOP_in_stop_659 = frozenset([2])
-    FOLLOW_expr_in_stop_664 = frozenset([3])
-    FOLLOW_GROUP_in_group_688 = frozenset([2])
-    FOLLOW_PHRASE_in_group_697 = frozenset([3, 4, 105])
-    FOLLOW_function_in_group_708 = frozenset([3, 4, 105])
-    FOLLOW_HAVING_in_having_733 = frozenset([2])
-    FOLLOW_expr_in_having_737 = frozenset([3])
-    FOLLOW_ORDER_in_order_760 = frozenset([2])
-    FOLLOW_PHRASE_in_order_774 = frozenset([3, 4, 105])
-    FOLLOW_function_in_order_786 = frozenset([3, 4, 88, 89, 105])
-    FOLLOW_direction__in_order_790 = frozenset([3, 4, 105])
-    FOLLOW_ASC_in_direction_820 = frozenset([1])
-    FOLLOW_DESC_in_direction_828 = frozenset([1])
-    FOLLOW_assign_expr_in_expr852 = frozenset([1])
-    FOLLOW_logic_expr_in_expr866 = frozenset([1])
-    FOLLOW_compare_expr_in_expr879 = frozenset([1])
-    FOLLOW_arithmetic_expr_in_expr891 = frozenset([1])
-    FOLLOW_if_statement_in_expr902 = frozenset([1])
-    FOLLOW_atom_in_expr916 = frozenset([1])
-    FOLLOW_AGE_in_age944 = frozenset([2])
-    FOLLOW_expr_in_age949 = frozenset([3])
-    FOLLOW_IF_in_if_statement976 = frozenset([2])
-    FOLLOW_expr_in_if_statement980 = frozenset([3, 13])
-    FOLLOW_THEN_in_if_statement984 = frozenset([2])
-    FOLLOW_parameter_in_if_statement988 = frozenset([3, 14])
-    FOLLOW_ELSE_in_if_statement992 = frozenset([2])
-    FOLLOW_parameter_in_if_statement996 = frozenset([3])
-    FOLLOW_ASSIGN_in_assign_expr1025 = frozenset([2])
-    FOLLOW_PHRASE_in_assign_expr1029 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_assign_expr1033 = frozenset([3, 11])
-    FOLLOW_age_in_assign_expr1038 = frozenset([3])
-    FOLLOW_OR_in_logic_expr1059 = frozenset([2])
+    FOLLOW_prog_in_eval72 = frozenset([1])
+    FOLLOW_statement_in_prog94 = frozenset([1, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_statement_select_in_statement113 = frozenset([1])
+    FOLLOW_expr_in_statement123 = frozenset([1])
+    FOLLOW_STMT_SELECT_in_statement_select150 = frozenset([2])
+    FOLLOW_select__in_statement_select154 = frozenset([59])
+    FOLLOW_from__in_statement_select158 = frozenset([3, 62, 63, 67, 73, 76, 77])
+    FOLLOW_where__in_statement_select164 = frozenset([3, 63, 67, 73, 76, 77])
+    FOLLOW_group__in_statement_select173 = frozenset([3, 63, 69, 73, 76, 77])
+    FOLLOW_having__in_statement_select178 = frozenset([3, 63, 73, 76, 77])
+    FOLLOW_order__in_statement_select188 = frozenset([3, 73, 76, 77])
+    FOLLOW_as__in_statement_select197 = frozenset([3, 76, 77])
+    FOLLOW_start__in_statement_select206 = frozenset([76, 77])
+    FOLLOW_connect__in_statement_select212 = frozenset([78])
+    FOLLOW_stop__in_statement_select216 = frozenset([3])
+    FOLLOW_SELECT_in_select_240 = frozenset([2])
+    FOLLOW_PHRASE_in_select_250 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 105, 108])
+    FOLLOW_function_in_select_262 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 105, 108])
+    FOLLOW_this__in_select_273 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 105, 108])
+    FOLLOW_expr_in_select_286 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 105, 108])
+    FOLLOW_FROM_in_from_318 = frozenset([2])
+    FOLLOW_expr_in_from_323 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_AS_in_as_346 = frozenset([2])
+    FOLLOW_AS_DICT_in_as_348 = frozenset([3])
+    FOLLOW_AS_in_as_360 = frozenset([2])
+    FOLLOW_AS_LIST_in_as_362 = frozenset([3])
+    FOLLOW_AS_in_as_374 = frozenset([2])
+    FOLLOW_AS_VALUE_in_as_376 = frozenset([3])
+    FOLLOW_AS_in_as_387 = frozenset([2])
+    FOLLOW_PHRASE_in_as_391 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_parameter_in_as_397 = frozenset([3])
+    FOLLOW_WHERE_in_where_419 = frozenset([2])
+    FOLLOW_expr_in_where_423 = frozenset([3])
+    FOLLOW_START_in_start_444 = frozenset([2])
+    FOLLOW_expr_in_start_449 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_CONNECT_in_connect_473 = frozenset([2])
+    FOLLOW_CYCLE_in_connect_483 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 83, 86, 87, 108])
+    FOLLOW_UNIQUE_in_connect_512 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 86, 87, 108])
+    FOLLOW_MEMORIZE_in_connect_538 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 87, 99, 108])
+    FOLLOW_INTEGER_in_connect_553 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 87, 108])
+    FOLLOW_MAXIMUM_in_connect_570 = frozenset([99])
+    FOLLOW_INTEGER_in_connect_575 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_connect_595 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_STOP_in_stop_635 = frozenset([2])
+    FOLLOW_expr_in_stop_640 = frozenset([3])
+    FOLLOW_GROUP_in_group_664 = frozenset([2])
+    FOLLOW_PHRASE_in_group_672 = frozenset([3, 4, 105])
+    FOLLOW_function_in_group_683 = frozenset([3, 4, 105])
+    FOLLOW_HAVING_in_having_708 = frozenset([2])
+    FOLLOW_expr_in_having_712 = frozenset([3])
+    FOLLOW_ORDER_in_order_734 = frozenset([2])
+    FOLLOW_PHRASE_in_order_746 = frozenset([3, 4, 105])
+    FOLLOW_function_in_order_758 = frozenset([3, 4, 88, 89, 105])
+    FOLLOW_direction__in_order_762 = frozenset([3, 4, 105])
+    FOLLOW_ASC_in_direction_792 = frozenset([1])
+    FOLLOW_DESC_in_direction_800 = frozenset([1])
+    FOLLOW_assign_expr_in_expr824 = frozenset([1])
+    FOLLOW_logic_expr_in_expr837 = frozenset([1])
+    FOLLOW_compare_expr_in_expr850 = frozenset([1])
+    FOLLOW_arithmetic_expr_in_expr862 = frozenset([1])
+    FOLLOW_if_statement_in_expr873 = frozenset([1])
+    FOLLOW_atom_in_expr887 = frozenset([1])
+    FOLLOW_AGE_in_age914 = frozenset([2])
+    FOLLOW_expr_in_age919 = frozenset([3])
+    FOLLOW_IF_in_if_statement945 = frozenset([2])
+    FOLLOW_expr_in_if_statement949 = frozenset([3, 13])
+    FOLLOW_THEN_in_if_statement953 = frozenset([2])
+    FOLLOW_parameter_in_if_statement957 = frozenset([3, 14])
+    FOLLOW_ELSE_in_if_statement961 = frozenset([2])
+    FOLLOW_parameter_in_if_statement965 = frozenset([3])
+    FOLLOW_ASSIGN_in_assign_expr993 = frozenset([2])
+    FOLLOW_PHRASE_in_assign_expr997 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_assign_expr1001 = frozenset([3, 11])
+    FOLLOW_age_in_assign_expr1006 = frozenset([3])
+    FOLLOW_OR_in_logic_expr1026 = frozenset([2])
+    FOLLOW_expr_in_logic_expr1030 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_logic_expr1034 = frozenset([3])
+    FOLLOW_XOR_in_logic_expr1043 = frozenset([2])
+    FOLLOW_expr_in_logic_expr1047 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_logic_expr1051 = frozenset([3])
+    FOLLOW_AND_in_logic_expr1059 = frozenset([2])
     FOLLOW_expr_in_logic_expr1063 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
     FOLLOW_expr_in_logic_expr1067 = frozenset([3])
-    FOLLOW_XOR_in_logic_expr1076 = frozenset([2])
-    FOLLOW_expr_in_logic_expr1080 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_logic_expr1084 = frozenset([3])
-    FOLLOW_AND_in_logic_expr1093 = frozenset([2])
-    FOLLOW_expr_in_logic_expr1097 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_logic_expr1101 = frozenset([3])
-    FOLLOW_NOT_in_logic_expr1109 = frozenset([2])
-    FOLLOW_expr_in_logic_expr1113 = frozenset([3])
-    FOLLOW_IN_in_compare_expr1132 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1136 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1140 = frozenset([3])
-    FOLLOW_EQ_in_compare_expr1149 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1153 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1157 = frozenset([3])
-    FOLLOW_NE_in_compare_expr1166 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1170 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1174 = frozenset([3])
-    FOLLOW_GE_in_compare_expr1183 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1187 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1191 = frozenset([3])
-    FOLLOW_GT_in_compare_expr1200 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1204 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1208 = frozenset([3])
-    FOLLOW_LE_in_compare_expr1217 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1221 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1225 = frozenset([3])
-    FOLLOW_LT_in_compare_expr1234 = frozenset([2])
-    FOLLOW_expr_in_compare_expr1238 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_compare_expr1242 = frozenset([3])
-    FOLLOW_MUL_in_arithmetic_expr1260 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1264 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1268 = frozenset([3])
-    FOLLOW_DIV_in_arithmetic_expr1276 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1280 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1284 = frozenset([3])
-    FOLLOW_MOD_in_arithmetic_expr1292 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1296 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1300 = frozenset([3])
-    FOLLOW_SUB_in_arithmetic_expr1308 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1312 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1316 = frozenset([3])
-    FOLLOW_ADD_in_arithmetic_expr1324 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1328 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1332 = frozenset([3])
-    FOLLOW_POW_in_arithmetic_expr1340 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1344 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_expr_in_arithmetic_expr1348 = frozenset([3])
-    FOLLOW_NEG_in_arithmetic_expr1356 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1360 = frozenset([3])
-    FOLLOW_POS_in_arithmetic_expr1369 = frozenset([2])
-    FOLLOW_expr_in_arithmetic_expr1373 = frozenset([3])
-    FOLLOW_ELEMENT_in_arithmetic_expr1382 = frozenset([2])
-    FOLLOW_atom_in_arithmetic_expr1386 = frozenset([4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_parameter_in_arithmetic_expr1390 = frozenset([3])
-    FOLLOW_value_in_atom1411 = frozenset([1])
-    FOLLOW_variable_in_atom1424 = frozenset([1])
-    FOLLOW_function_in_atom1436 = frozenset([1])
-    FOLLOW_108_in_atom1444 = frozenset([4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108, 109])
-    FOLLOW_expr_in_atom1448 = frozenset([109])
-    FOLLOW_109_in_atom1450 = frozenset([1])
-    FOLLOW_statement_select_in_atom1460 = frozenset([1])
+    FOLLOW_NOT_in_logic_expr1075 = frozenset([2])
+    FOLLOW_expr_in_logic_expr1079 = frozenset([3])
+    FOLLOW_IN_in_compare_expr1097 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1101 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1105 = frozenset([3])
+    FOLLOW_EQ_in_compare_expr1114 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1118 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1122 = frozenset([3])
+    FOLLOW_NE_in_compare_expr1131 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1135 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1139 = frozenset([3])
+    FOLLOW_GE_in_compare_expr1148 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1152 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1156 = frozenset([3])
+    FOLLOW_GT_in_compare_expr1165 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1169 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1173 = frozenset([3])
+    FOLLOW_LE_in_compare_expr1182 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1186 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1190 = frozenset([3])
+    FOLLOW_LT_in_compare_expr1199 = frozenset([2])
+    FOLLOW_expr_in_compare_expr1203 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_compare_expr1207 = frozenset([3])
+    FOLLOW_MUL_in_arithmetic_expr1224 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1228 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1232 = frozenset([3])
+    FOLLOW_DIV_in_arithmetic_expr1240 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1244 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1248 = frozenset([3])
+    FOLLOW_MOD_in_arithmetic_expr1256 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1260 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1264 = frozenset([3])
+    FOLLOW_SUB_in_arithmetic_expr1272 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1276 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1280 = frozenset([3])
+    FOLLOW_ADD_in_arithmetic_expr1288 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1292 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1296 = frozenset([3])
+    FOLLOW_POW_in_arithmetic_expr1304 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1308 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_expr_in_arithmetic_expr1312 = frozenset([3])
+    FOLLOW_NEG_in_arithmetic_expr1320 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1324 = frozenset([3])
+    FOLLOW_POS_in_arithmetic_expr1333 = frozenset([2])
+    FOLLOW_expr_in_arithmetic_expr1337 = frozenset([3])
+    FOLLOW_ELEMENT_in_arithmetic_expr1346 = frozenset([2])
+    FOLLOW_atom_in_arithmetic_expr1350 = frozenset([4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_parameter_in_arithmetic_expr1354 = frozenset([3])
+    FOLLOW_value_in_atom1375 = frozenset([1])
+    FOLLOW_variable_in_atom1388 = frozenset([1])
+    FOLLOW_function_in_atom1400 = frozenset([1])
+    FOLLOW_108_in_atom1408 = frozenset([4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108, 109])
+    FOLLOW_expr_in_atom1412 = frozenset([109])
+    FOLLOW_109_in_atom1414 = frozenset([1])
+    FOLLOW_statement_select_in_atom1424 = frozenset([1])
+    FOLLOW_VAL_in_value1444 = frozenset([2])
+    FOLLOW_STRING_in_value1446 = frozenset([3])
+    FOLLOW_VAL_in_value1456 = frozenset([2])
+    FOLLOW_INTEGER_in_value1458 = frozenset([3])
+    FOLLOW_VAL_in_value1468 = frozenset([2])
+    FOLLOW_FLOAT_in_value1470 = frozenset([3])
     FOLLOW_VAL_in_value1480 = frozenset([2])
-    FOLLOW_STRING_in_value1482 = frozenset([3])
+    FOLLOW_TRUE_in_value1482 = frozenset([3])
     FOLLOW_VAL_in_value1492 = frozenset([2])
-    FOLLOW_INTEGER_in_value1494 = frozenset([3])
-    FOLLOW_VAL_in_value1504 = frozenset([2])
-    FOLLOW_FLOAT_in_value1506 = frozenset([3])
-    FOLLOW_VAL_in_value1516 = frozenset([2])
-    FOLLOW_TRUE_in_value1518 = frozenset([3])
-    FOLLOW_VAL_in_value1528 = frozenset([2])
-    FOLLOW_FALSE_in_value1530 = frozenset([3])
-    FOLLOW_this__in_value1541 = frozenset([1])
-    FOLLOW_list__in_value1551 = frozenset([1])
-    FOLLOW_THIS_in_this_1573 = frozenset([2])
-    FOLLOW_PHRASE_in_this_1576 = frozenset([3])
-    FOLLOW_LIST_in_list_1600 = frozenset([2])
-    FOLLOW_expr_in_list_1606 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_VAR_in_variable1630 = frozenset([2])
-    FOLLOW_PHRASE_in_variable1632 = frozenset([3, 11])
-    FOLLOW_age_in_variable1637 = frozenset([3])
-    FOLLOW_FCT_in_function1657 = frozenset([2])
-    FOLLOW_PHRASE_in_function1659 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_parameter_in_function1663 = frozenset([3])
-    FOLLOW_expr_in_parameter1689 = frozenset([1, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
-    FOLLOW_statement_select_in_synpred2_SelectScript117 = frozenset([1])
-    FOLLOW_parameter_in_synpred17_SelectScript391 = frozenset([1])
-    FOLLOW_parameter_in_synpred70_SelectScript1663 = frozenset([1])
+    FOLLOW_FALSE_in_value1494 = frozenset([3])
+    FOLLOW_this__in_value1505 = frozenset([1])
+    FOLLOW_list__in_value1515 = frozenset([1])
+    FOLLOW_THIS_in_this_1537 = frozenset([2])
+    FOLLOW_PHRASE_in_this_1540 = frozenset([3])
+    FOLLOW_LIST_in_list_1564 = frozenset([2])
+    FOLLOW_expr_in_list_1570 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_VAR_in_variable1594 = frozenset([2])
+    FOLLOW_PHRASE_in_variable1596 = frozenset([3, 11])
+    FOLLOW_age_in_variable1601 = frozenset([3])
+    FOLLOW_FCT_in_function1621 = frozenset([2])
+    FOLLOW_PHRASE_in_function1623 = frozenset([3, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_parameter_in_function1627 = frozenset([3])
+    FOLLOW_expr_in_parameter1653 = frozenset([1, 4, 5, 6, 7, 8, 9, 10, 12, 22, 26, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 74, 108])
+    FOLLOW_statement_select_in_synpred2_SelectScript113 = frozenset([1])
+    FOLLOW_function_in_synpred11_SelectScript262 = frozenset([1])
+    FOLLOW_this__in_synpred12_SelectScript273 = frozenset([1])
+    FOLLOW_expr_in_synpred13_SelectScript286 = frozenset([1])
+    FOLLOW_parameter_in_synpred18_SelectScript397 = frozenset([1])
+    FOLLOW_parameter_in_synpred71_SelectScript1627 = frozenset([1])
 
 
 

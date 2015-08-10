@@ -14,14 +14,14 @@ tokens {
 	VAL;
 	LIST;
 	ELEMENT;
-	
+
 	POS;
 	NEG;
-    
+
 	AGE;
-    
+
 	STMT_SELECT;
-	
+
 	THEN;
 	ELSE;
 }
@@ -154,10 +154,10 @@ statement : statement_select END!
 ;
 
 statement_select :
-	select_ from_ (where_)? ((start_)? connect_ stop_)? (group_ (having_)?)? (order_)? (as_)? ->  ^(STMT_SELECT select_ from_ (where_)? (group_ (having_)?)? (order_)? (as_)? ((start_)? connect_ stop_)?) 
+	select_ from_ (where_)? ((start_)? connect_ stop_)? (group_ (having_)?)? (order_)? (as_)? ->  ^(STMT_SELECT select_ from_ (where_)? (group_ (having_)?)? (order_)? (as_)? ((start_)? connect_ stop_)?)
 ;
 
-select_	: SELECT^ (MUL! | ((PHRASE | function | this_) (SEP! (PHRASE | function | this_) )* ))
+select_	: SELECT^ (MUL! | ((PHRASE | function | this_ | expr) (SEP! (PHRASE | function | this_ | expr) )* ))
 ;
 
 from_ : FROM^ expr (SEP! expr)*
@@ -169,7 +169,7 @@ where_ : WHERE^ expr
 start_ : START^ WITH! expr (SEP! expr)*
 ;
 
-connect_ : CONNECT^ BY! (NO! CYCLE)? (UNIQUE)? (GRAPH)? (MEMORIZE INTEGER)? (MAXIMUM INTEGER)? expr (SEP! expr)*  
+connect_ : CONNECT^ BY! (NO! CYCLE)? (UNIQUE)? (MEMORIZE (INTEGER)?)? (MAXIMUM INTEGER)? expr (SEP! expr)*
 ;
 
 stop_ : STOP^ WITH! expr
@@ -181,7 +181,7 @@ group_ : GROUP^ BY! ( PHRASE | function ) (SEP! ( PHRASE | function ) )*
 having_ : HAVING^ expr
 ;
 
-order_ : ORDER^ BY! ( PHRASE direction_ | function direction_ ) (SEP! ( PHRASE direction_ | function direction_ ) )* 
+order_ : ORDER^ BY! ( PHRASE direction_ | function direction_ ) (SEP! ( PHRASE direction_ | function direction_ ) )*
 ;
 
 direction_ : (ASC | DESC)?
@@ -190,7 +190,7 @@ direction_ : (ASC | DESC)?
 as_ : AS^ ( AS_LIST | AS_VALUE | AS_DICT | PHRASE ('('! parameter? ')'!)? )
 ;
 
-expr : assign_expr 
+expr : assign_expr
 	| logic_expr
 ;
 
@@ -226,7 +226,7 @@ arithmetic_unary :
 	|  atom
 ;
 
-atom 
+atom
 	: value
 	| variable
 	| if_statement
@@ -253,10 +253,10 @@ value : STRING 	-> ^(VAL STRING)
 	| TRUE		-> ^(VAL TRUE)
 	| FALSE		-> ^(VAL FALSE)
 	| this_
-	| list_ 
+	| list_
 ;
 
-this_ : (PHRASE DOT)? THIS  -> ^(THIS PHRASE?) 
+this_ : (PHRASE DOT)? THIS  -> ^(THIS PHRASE?)
 ;
 
 list_ :  LIST_BEGIN ( expr? (SEP expr)* ) LIST_END -> ^(LIST expr*)

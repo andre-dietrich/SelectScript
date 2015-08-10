@@ -25,7 +25,8 @@ def all_simple_paths(G, source, target, cutoff):
 
         print "level:", i
 
-        if i % 2:
+        if len(tree[1]) <= len(tree[0]):
+            modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
             leaves_ = leaves[0]
@@ -33,8 +34,9 @@ def all_simple_paths(G, source, target, cutoff):
             if G.is_directed():
                 neighbors = G.predecessors_iter
 
-            level = lambda s, t: G.node[s]["level"] <= G.node[t]["level"]
+            #level = lambda s, t: G.node[s]["level"] <= G.node[t]["level"]
         else:
+            modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
             leaves_ = leaves[1]
@@ -42,7 +44,7 @@ def all_simple_paths(G, source, target, cutoff):
             if G.is_directed():
                 neighbors = G.successors_iter
 
-            level = lambda s, t: G.node[s]["level"] >= G.node[t]["level"]
+            #level = lambda s, t: G.node[s]["level"] >= G.node[t]["level"]
 
         temp_tree = set()
         temp_leaves = set()
@@ -50,23 +52,23 @@ def all_simple_paths(G, source, target, cutoff):
         for path_s in iter(tree_source):
             for s in neighbors(path_s[-1]):
                 if s not in path_s:
-                    if level(s, path_s[-1]):
-                        if s in leaves_:
-                            for path_t in iter(tree_target):
-                                if s == path_t[-1]:
-                                    if not set(path_t).intersection(path_s):
-                                        if i % 2:
-                                            yield list(path_t) + \
-                                                [x for x in reversed(path_s)]
-                                        else:
-                                            yield list(path_s) + \
-                                                [x for x in reversed(path_t)]
+                    #if level(s, path_s[-1]):
+                    if s in leaves_:
+                        for path_t in iter(tree_target):
+                            if s == path_t[-1]:
+                                if not set(path_t).intersection(path_s):
+                                    if modus:
+                                        yield list(path_t) + \
+                                            [x for x in reversed(path_s)]
+                                    else:
+                                        yield list(path_s) + \
+                                            [x for x in reversed(path_t)]
 
-                        temp_tree.add(path_s + (s,))
-                        temp_leaves.add(s)
+                    temp_tree.add(path_s + (s,))
+                    temp_leaves.add(s)
 
-        tree[i % 2] = temp_tree
-        leaves[i % 2] = temp_leaves
+        tree[modus] = temp_tree
+        leaves[modus] = temp_leaves
 
 
 class Interpreter():
@@ -242,19 +244,25 @@ class Interpreter():
         RECURSION = prog[7]
         if RECURSION[0:3] != [[],[],[]]:
 
+            NOCYCLE  = RECURSION[3][0]
+            UNIQUE   = RECURSION[3][1]
+            MEMORIZE = RECURSION[3][2]
+            MAXIMUM  = 0 if RECURSION[3][3]==0 else self.eval(RECURSION[3][3])
+
             ## graph == MEMORIZE
-            if RECURSION[3][2] > 0:
+            if MEMORIZE > 0:
+                print MEMORIZE
                 self.graph = nx.DiGraph()
-                self.evalRecursionDeep(prog, FROM_n, list(FROM), RECURSION[3][2])
+                self.evalRecursionDeep(prog, FROM_n, list(FROM), 99999 if MEMORIZE==1 else MEMORIZE)
 
                 gen = all_simple_paths(self.graph,
                                        "source",
                                        "finish",
-                                       cutoff=RECURSION[3][2]+1)
+                                       cutoff= None if MEMORIZE==1 else MEMORIZE+1)
 
-                if RECURSION[3][3] > 0:
+                if MAXIMUM:
                     paths = []
-                    for _ in range(RECURSION[3][3]):
+                    for _ in range(MAXIMUM):
                         try:
                             paths.append(next(gen))
                         except:
@@ -271,7 +279,7 @@ class Interpreter():
 
                 return results
 
-            if RECURSION[3][1]:
+            if UNIQUE:
                 self.unique = set()
             else:
                 self.unique = None
@@ -578,6 +586,81 @@ class Interpreter():
             #if self.max_results == 0:
             #    break
 
+            if self.eval(stop_with, elem, FROM_n):
+                self.var_list = deepcopy(initial_var_list)
+
+                if self.evalWhere([elem], FROM_n, prog[2]) != []:
+                    sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
+
+                    if self.unique != None:
+                        self.unique.add(hash(str(sub)))
+                    result.append(sub)
+
+                    #if self.max_results != None:
+                    #    self.max_results -= 1
+
+            else:
+                self.var_list = deepcopy(initial_var_list)
+                sub = self.evalAs(prog[6][0], prog[6][1], prog[0], FROM_n, [elem])
+
+                if cycle != None and self.unique == None:
+                    if hash(str(sub)) in cycle:
+                        continue
+                    cycle.add(hash(str(sub)))
+
+                elif cycle == None and self.unique != None:
+                    if hash(str(sub)) in self.unique:
+                        continue
+                    self.unique.add(hash(str(sub)))
+
+                elif cycle != None and self.unique != None:
+                    if hash(str(sub)) in self.unique or hash(str(sub)) in cycle:
+                        continue
+                    self.unique.add(hash(str(sub)))
+                    cycle.add(hash(str(sub)))
+
+                if self.evalWhere([elem], FROM_n, prog[2]) != []:
+                    result+=sub
+                    #if self.max_results != None:
+                    #    self.max_results -= 1
+                    break
+                self.var_list = deepcopy(initial_var_list)
+
+                for e in connect_by:
+                    self.eval(e, elem, FROM_n)
+                sub_2 = self.evalRecursion(prog, FROM_n, FROM, deepcopy(cycle))
+                self.var_list = deepcopy(initial_var_list)
+
+                if sub_2 != []:
+                    for ss in sub_2:
+                        if not isinstance(ss, list):
+                            result.append(sub+[ss])
+                        else:
+                            result.append(sub+ss)
+
+            self.var_list = deepcopy(initial_var_list)
+
+        return result
+
+    def evalRecursionDepthFirst(self, prog, FROM_n, FROM, cycle=None):
+        #print "Start recursion"
+        start_with = deepcopy(prog[7][0])
+        connect_by = deepcopy(prog[7][1])
+        stop_with  = deepcopy(prog[7][2])
+
+        prog[7][0] = []                 # remove start with
+
+        sub_prog = deepcopy(prog)
+        sub_prog[7] = [[],[],[]]
+
+        result = []
+
+        # create inital variable configuration
+        for e in start_with:
+            self.eval(e)
+        initial_var_list = deepcopy(self.var_list)
+
+        for elem in FROM:
             if self.eval(stop_with, elem, FROM_n):
                 self.var_list = deepcopy(initial_var_list)
 

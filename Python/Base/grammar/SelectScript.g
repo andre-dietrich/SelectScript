@@ -1,4 +1,4 @@
-// Define a grammar 
+// Define a grammar
 tree grammar SelectScript;
 
 options {
@@ -28,7 +28,7 @@ fct_list = {'=' : 'assign', 'in' : 'in',
             'lt'  : 'lt',  'le'  : 'le',
             'eq'  : 'eq',  'ne'  : 'ne',
             'ge'  : 'ge',  'gt'  : 'gt' }
-            
+
 simplify_ops = {'or':  operator.or_,	'xor':operator.xor,
 		'and': operator.and_,	'not': operator.not_,
 		'eq':  operator.eq,	'ne':  operator.ne,
@@ -45,9 +45,9 @@ types = {'fct' :   0, 'var' : 1,
          'phrase': 6, 'eval': 7,
          'elem':   8, 'id':   9,
          'if'  : 10 }
-         
+
 asTypes = {'dict' :'d', 'list' :'l', 'value':'v'}
-			
+
 def _fct(self, name, params):
 	return [self.types['fct'], name, params]
 
@@ -56,31 +56,31 @@ def _var(self, var_name, age=0) :
 
 def _val(self, value) :
 	return [self.types['val'], value]
-	
+
 def _list(self, l) :
 	return [self.types['list'], l]
-	
+
 def _sel(self, s, f, w, g, h, o, a, rec) :
 	return [self.types['sel'], s, f, w, g, h, o, a, rec]
-	
+
 def _this(self, name='') :
 	return [self.types['this'], name]
-	
+
 def _phrase(self, name) :
 	return [self.types['phrase'], name]
-	
+
 def _eval(self, string):
 	return [self.types['eval'], string]
-	
+
 def _elem(self, atom, params):
 	return [self.types['elem'], atom, params]
-	
+
 def _if(self, expr, params1, params2):
     #print expr, "---",params1, "---" ,params2
     return [self.types['if'], expr, params1, params2]
-	
+
 def Simplify(self, prog) :
-	
+
 	if prog == []:
 		pass
 	# program
@@ -106,7 +106,7 @@ def Simplify(self, prog) :
 	# select
 	elif prog[0] == self.types['sel']:
 		S, F, W, G, H, O, A, R = prog[1:]
-		
+
 		S = [self.Simplify(expr) for expr in S]
 		F = [self.Simplify(expr) for expr in F]
 		W =  self.Simplify(W)
@@ -115,15 +115,15 @@ def Simplify(self, prog) :
 		if O != []:
 			O = [[self.Simplify(expr[0]), expr[1]] for expr in O]
 		A[1] = [self.Simplify(expr) for expr in A[1]]
-		
+
 		R[0] = [self.Simplify(expr) for expr in R[0]]
 		R[1] = [self.Simplify(expr) for expr in R[1]]
 		R[2] = [self.Simplify(expr) for expr in R[2]]
-		
+
 		prog = self._sel(S, F, W, G, H, O, A)
-	
+
 	return prog
-	
+
 def compile(self, source, debug=False) :
 	char_stream = antlr3.ANTLRStringStream(source)
 	lexer = SelectExprLexer(char_stream)
@@ -139,14 +139,14 @@ def compile(self, source, debug=False) :
 	self.__init__(nodes)
 	if debug:
 		return self.eval()
-	
+
 	return self.Simplify(self.eval())
 
 def prettyPrint(self, prog, depth=0):
-	
-	if prog == []: 
+
+	if prog == []:
 		return
-	
+
 	treE = "   "*depth
 
 	if isinstance(prog[0], list):
@@ -154,58 +154,58 @@ def prettyPrint(self, prog, depth=0):
 			print treE, "["
 			self.prettyPrint( stmt, depth+1 )
 			print treE, "]"
-	
+
 	elif prog[0] == self.types['fct']:
 		print treE, "[ func,", prog[1], "[ "
 		for param in prog[2]:
 			self.prettyPrint( param, depth+1 )
 		print treE, "]"
-	
+
 	elif prog[0] == self.types['val']:
 		print treE, "[ val,", prog[1], "]"
-		
+
 	elif prog[0] == self.types['this']:
 		print treE, "[ this,", prog[1], "]"
-		
+
 	elif prog[0] == self.types['var']:
 		print treE, "[ var,", prog[1], ", age, ["
 		self.prettyPrint( prog[2], depth+1 )
 		print treE, "] ]"
-		
+
 	elif prog[0] == self.types['list']:
 		print treE, "[ list, ["
 		self.prettyPrint( prog[1], depth+1 )
 		print treE, "]"
-		
+
 	elif prog[0] == self.types['phrase']:
 		print treE, "[ phrase, ", prog[1], "]"
-		
+
 	elif prog[0] == self.types['sel']:
 		print treE, "[ SELECT-statement, "
 		treE += "   "
-		
+
 		print treE, "[ select,",
 		self.prettyPrint( prog[1], depth+2 )
-		
+
 		print treE, "[ from, ",
 		self.prettyPrint( prog[2], depth+2 )
-		
+
 		if prog[3] != []:
 			print treE, "[ where, ",
 			self.prettyPrint( [prog[3]], depth+2 )
-			
+
 		if prog[4] != []:
 			print treE, "[ group by, ",
 			self.prettyPrint( prog[4], depth+2 )
-		
+
 		if prog[6] != []:
 			print treE, "[ order by, ",
 			self.prettyPrint( prog[6], depth+2 )
-			
+
 		if prog[7] != []:
 			print treE, "[ as,", prog[7][0], # "]"
 			self.prettyPrint( prog[7][1], depth+2 )
-			
+
 		if prog[8] != [[],[],[]]:
 			print treE, "[ start with,",
 			self.prettyPrint( prog[8][0], depth+2 )
@@ -215,8 +215,8 @@ def prettyPrint(self, prog, depth=0):
 			self.prettyPrint( prog[8][2], depth+2 )
 	else:
 		print ""
-}	
-	
+}
+
 
 @main {
 def main(argv, otherArg=None):
@@ -250,47 +250,48 @@ eval returns [stmt_list]:
 
 prog returns [stmt_list]
 @init{stmt_list = []}:
-	(stmt=statement {stmt_list.append( stmt )})+ 
+	(stmt=statement {stmt_list.append( stmt )})+
 ;
 
-statement returns [stmt]: 
+statement returns [stmt]:
 	s=statement_select 	{stmt = s}
 	| e=expr 		{stmt = e}
 ;
 
-statement_select returns [selection] 
+statement_select returns [selection]
 @init{ s=[]; f=[]; w=[]; g=[]; h=[]; o=[]; a=[self.asTypes['dict'],[]]; rec_start=[]; rec_connect=[[],[0,0]]; rec_stop=[]; }
-@after{ selection = self._sel(s, f, w, g, h, o, a, [rec_start, rec_connect[0], rec_stop, rec_connect[1]]); } 
+@after{ selection = self._sel(s, f, w, g, h, o, a, [rec_start, rec_connect[0], rec_stop, rec_connect[1]]); }
 :
 	^(STMT_SELECT s=select_ f=from_ ( w=where_ )? ( g=group_ (h=having_)?)? ( o=order_ )? ( a=as_ )? ((rec_start=start_)? rec_connect=connect_ rec_stop=stop_ )? )
 ;
 
 select_ returns [types]
 @init{types = []} :
-	^(SELECT 
+	^(SELECT
 		(
 		type=PHRASE 	{ types.append( self._phrase (type.getText()) ); }
-		| f= function 	{ types.append( f ); }
-		| t= this_	{ types.append( t ); }
+		| f= function { types.append( f ); }
+		| t= this_	  { types.append( t ); }
+		| e= expr     { types.append( e ); }
 		)*
 	)
 ;
 
 from_ returns [env]
-@init{ env=[]; }: 
+@init{ env=[]; }:
 	^(FROM (e=expr { env.append(e); })+)
 ;
 
-as_ returns [rep] 
+as_ returns [rep]
 @init{ p=[]; }:
 	^(AS AS_DICT)				{ rep= [ self.asTypes['dict'],  []]; }
 	| ^(AS AS_LIST)				{ rep= [ self.asTypes['list'],  []]; }
-	| ^(AS AS_VALUE)			{ rep= [ self.asTypes['value'], []]; } 
-	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= [ v.getText(),           p ]; } 
+	| ^(AS AS_VALUE)			{ rep= [ self.asTypes['value'], []]; }
+	| ^(AS v=PHRASE ( p=parameter )? )	{ rep= [ v.getText(),           p ]; }
 ;
 
 where_ returns [stack] :
-	^(WHERE e=expr) { stack=e } 
+	^(WHERE e=expr) { stack=e }
 ;
 
 start_ returns[with_]
@@ -299,13 +300,15 @@ start_ returns[with_]
 ;
 
 connect_ returns[by]
-@init{by = [[],[0,0,0,0,0]]} :
+@init{by = [[],[0,0,0,0]]} :
 	^(CONNECT
 	      (CYCLE            { by[1][0] = 1;                       }    )?
 	      (UNIQUE           { by[1][1] = 1;                       }    )?
-	      (GRAPH            { by[1][4] = 1;                       }    )?
-	      (MEMORIZE I1=INTEGER { by[1][2] = int(I1.getText()); }       )? 
-	      (MAXIMUM  I2=INTEGER { by[1][3] = int(I2.getText()); }       )?
+
+				(MEMORIZE { by[1][2] = 1; }
+					   (I1=INTEGER  { by[1][2] = int(I1.getText()); })?  )?
+
+				(MAXIMUM  I2=INTEGER { by[1][3] = int(I2.getText());    }    )?
 	      (e=expr           { by[0].append(e);                    }    )+
 	 )
 ;
@@ -317,7 +320,7 @@ stop_ returns[with_]
 
 group_ returns [by]
 @init{by = []} :
-	^(GROUP 
+	^(GROUP
 		( type=PHRASE { by.append( self._phrase ( type.getText() ) ); }
 		| f= function { by.append( f ); }
 		)+
@@ -325,13 +328,13 @@ group_ returns [by]
 ;
 
 having_ returns [stack] :
-	^(HAVING e=expr) { stack=e } 
+	^(HAVING e=expr) { stack=e }
 ;
 
 order_ returns [by]
 @init{by = []} :
-	^(ORDER 
-		( 
+	^(ORDER
+		(
 		  type=PHRASE 	{ by.append( [ self._phrase ( type.getText()), dir ]); }
 		| f= function dir=direction_ { by.append( [f, dir] ); }
 		)+
@@ -346,7 +349,7 @@ direction_ returns [dir]
 ;
 
 expr returns [val] :
-	a = assign_expr		  {val = a;} 
+	a = assign_expr		  {val = a;}
 	| l= logic_expr		  {val = l;}
 	| c= compare_expr	  {val = c;}
 	| a= arithmetic_expr  {val = a;}
@@ -354,14 +357,14 @@ expr returns [val] :
 	| a= atom		      {val = a;}
 ;
 
-age returns [a] 
+age returns [a]
 @init{ a=self._val(0); }:
-	^(AGE (t=expr { a=t; })?) 
+	^(AGE (t=expr { a=t; })?)
 ;
 
 if_statement returns [e]
 @init{ if_=self._val( True ); th=self._val( True ); el=self._val( False ); }:
-    ^(IF if_=expr (^(THEN th=parameter (^(ELSE el=parameter))?))?) { e = self._if(if_, th, el); } 
+    ^(IF if_=expr (^(THEN th=parameter (^(ELSE el=parameter))?))?) { e = self._if(if_, th, el); }
 ;
 
 
@@ -370,14 +373,14 @@ assign_expr returns [stack]
 	^(ASSIGN v=PHRASE e=expr (a=age)?) { stack = self._fct( 'assign', [ self._val(v.getText()) , e, a]); }
 ;
 
-logic_expr returns [stack] : 
+logic_expr returns [stack] :
 	^(OR e1=expr e2=expr)	{ stack = self._fct('or',  [e1, e2]); }
-	| ^(XOR e1=expr e2=expr){ stack = self._fct('xor', [e1, e2]); } 
+	| ^(XOR e1=expr e2=expr){ stack = self._fct('xor', [e1, e2]); }
 	| ^(AND e1=expr e2=expr){ stack = self._fct('and', [e1, e2]); }
 	| ^(NOT e=expr) 	{ stack = self._fct('not', [e] ); }
 ;
 
-compare_expr returns [stack]: 
+compare_expr returns [stack]:
 	^(IN e1=expr e2=expr)	{ stack = self._fct('in', [e2, e1]); }
 	| ^(EQ e1=expr e2=expr)	{ stack = self._fct('eq', [e1, e2]); }
 	| ^(NE e1=expr e2=expr) { stack = self._fct('ne', [e1, e2]); }
@@ -387,7 +390,7 @@ compare_expr returns [stack]:
 	| ^(LT e1=expr e2=expr)	{ stack = self._fct('lt', [e1, e2]); }
 ;
 
-arithmetic_expr returns [stack]: 
+arithmetic_expr returns [stack]:
 	^(MUL e1=expr e2=expr)	{ stack = self._fct('mul', [e1, e2]); }
 	|^(DIV e1=expr e2=expr)	{ stack = self._fct('div', [e1, e2]); }
 	|^(MOD e1=expr e2=expr)	{ stack = self._fct('mod', [e1, e2]); }
