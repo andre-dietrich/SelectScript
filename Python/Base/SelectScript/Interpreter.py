@@ -18,33 +18,22 @@ def all_simple_paths(G, source, target, cutoff):
     tree = [{(source,)}, {(target,)}]
     leaves = [{source}, {target}]
 
-    # used if the graph is not directed
-    neighbors = lambda node: iter(G[node])
-
     for i in range(1, cutoff+1):
 
-        print "level:", i
-
-        if len(tree[1]) <= len(tree[0]):
+        if len(tree[1]) < len(tree[0]):
             modus = 1
             tree_source = tree[1]
             tree_target = tree[0]
             leaves_ = leaves[0]
 
-            if G.is_directed():
-                neighbors = G.predecessors_iter
-
-            #level = lambda s, t: G.node[s]["level"] <= G.node[t]["level"]
+            neighbors = G.predecessors
         else:
             modus = 0
             tree_source = tree[0]
             tree_target = tree[1]
             leaves_ = leaves[1]
 
-            if G.is_directed():
-                neighbors = G.successors_iter
-
-            #level = lambda s, t: G.node[s]["level"] >= G.node[t]["level"]
+            neighbors = G.successors
 
         temp_tree = set()
         temp_leaves = set()
@@ -52,12 +41,12 @@ def all_simple_paths(G, source, target, cutoff):
         for path_s in iter(tree_source):
             for s in neighbors(path_s[-1]):
                 if s not in path_s:
-                    #if level(s, path_s[-1]):
                     if s in leaves_:
                         for path_t in iter(tree_target):
                             if s == path_t[-1]:
                                 if not set(path_t).intersection(path_s):
                                     if modus:
+
                                         yield list(path_t) + \
                                             [x for x in reversed(path_s)]
                                     else:
@@ -69,7 +58,6 @@ def all_simple_paths(G, source, target, cutoff):
 
         tree[modus] = temp_tree
         leaves[modus] = temp_leaves
-
 
 class Interpreter():
 
@@ -251,8 +239,9 @@ class Interpreter():
 
             ## graph == MEMORIZE
             if MEMORIZE > 0:
-                print MEMORIZE
+                #print MEMORIZE
                 self.graph = nx.DiGraph()
+
                 self.evalRecursionDeep(prog, FROM_n, list(FROM), 99999 if MEMORIZE==1 else MEMORIZE)
 
                 gen = all_simple_paths(self.graph,
@@ -415,11 +404,11 @@ class Interpreter():
         self.graph.add_node('finish')
         self.graph.node['finish']["select"] = None
         self.graph.node['finish']["memory"] = None
-        self.graph.node['finish']["level"]  = 99999999
+        self.graph.node['finish']["level"]  = 9999
 
         for l in range(level):
 
-            for source in self.graph.nodes():
+            for source in list(self.graph.nodes()):
 
                 l_   = self.graph.node[source]["level"]
                 mem_ = self.graph.node[source]["memory"]
