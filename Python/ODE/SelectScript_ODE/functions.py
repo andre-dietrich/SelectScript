@@ -15,11 +15,11 @@ def Sode_posZ(geom): return Sode_position(geom, 2, 3)[0]
 def Sode_rotation(geom):
     if isinstance(geom, (GeomObject, Body)):
         return list(geom.getRotation())
-    
+
 def Sode_quaternion(geom):
     if isinstance(geom, (GeomObject, Body)):
         return list(geom.getQuaternion())
-    
+
 def Sode_quantum(val):
     if isinstance(val, list):
         q = 0
@@ -27,7 +27,7 @@ def Sode_quantum(val):
             q += v**2.0
         return q**0.5
     return val
-    
+
 def Sode_identifer(geom, space):
     if isinstance(geom, GeomObject):
         for i,elem in enumerate(space):
@@ -38,13 +38,13 @@ def Sode_identifer(geom, space):
 def Sode_aabb(geom):
     if isinstance(geom, GeomObject):
         return list(geom.getAABB())
-    
+
 def Sode_obj(entity): return entity
 
 def Sode_isEnabled(geom):
     if isinstance(geom, (GeomObject, Body)):
         return list(geom.isEnabled())
-    
+
 def Sode_isSpace(geom):
     if isinstance(geom, GeomObject):
         return list(geom.isSpace())
@@ -66,13 +66,13 @@ def Sode_force(obj, b=0, e=3):
         return list(obj.getBody().getForce())[b:e]
     elif isinstance(obj, Body):
         return list(obj.getForce())[b:e]
-    
+
 def Sode_LinearVel(obj, b=0, e=3):
     if isinstance(obj, GeomObject):
         return list(obj.getBody().getLinearVel())[b:e]
     elif isinstance(obj, Body):
         return list(obj.getLinearVel())[b:e]
-    
+
 def Sode_velocity(obj):
     return Sode_quantum(Sode_LinearVel(obj))
 
@@ -96,7 +96,7 @@ def Sode_collision(geom1, geom2):
             if collide(geom1, geom2) != []:
                 return True
     return False
-    
+
 def Sode_unique(list_):
     return list(set(list_))
 
@@ -105,7 +105,7 @@ def Sode_distance(pos1, pos2):
         pos1 = Sode_position(pos1)
     if isinstance(pos2, (GeomObject, Body)):
         pos2 = Sode_position(pos2)
-        
+
     return ((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2 + (pos1[2] - pos2[2])**2)**0.5
 
 def Sode_hasBody(obj):
@@ -114,31 +114,31 @@ def Sode_hasBody(obj):
     elif isinstance(obj, GeomObject):
         if obj.getBody() != None:
             return True
-    
+
     return False
 
 def Sode_mass(obj):
-    
+
     if Sode_hasBody(obj):
         if isinstance(obj, Body):
-            m = obj.getMass()  
+            m = obj.getMass()
         else:
             m = obj.getBody().getMass()
-            
+
         s = m.__str__()
         p1 = s.find("Mass=")
         if p1 != -1:
-            
+
             p2 = s[p1+5:].find('\n')
-            
+
             return float(s[p1+5:p2+5])
-        
+
     return None
 
 def Sode_volume(obj):
     if Sode_isBox(obj):
         (a,b,c) = obj.getLengths()
-        return a*b*c 
+        return a*b*c
     elif Sode_isSphere(obj):
         r = obj.getRadius()
         return (4./3.) * 3.14159265359 * r**3
@@ -148,4 +148,3 @@ def Sode_volume(obj):
     elif Sode_isCylinder(obj):
         (r, l) = obj.getParams()
         return 3.14159265359 * r**2 * l
-    

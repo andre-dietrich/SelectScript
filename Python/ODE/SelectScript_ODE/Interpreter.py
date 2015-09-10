@@ -67,7 +67,7 @@ class Interpreter(SelectScript.Interpreter):
         if isinstance(obj, ode.SimpleSpace):
             return self.getSpaceGenerator(obj)
         else:
-            return SelectScript_Interpreter.getListFrom(self, obj)
+            return SelectScript.Interpreter.getListFrom(self, obj)
 
     def getSpaceGenerator(self, obj):
         for i in range(obj.getNumGeoms()):
@@ -78,37 +78,37 @@ class Interpreter(SelectScript.Interpreter):
 
     def setTime(self, curr_time):
         self.current_time = curr_time
-        
+
     def evalAs(self, AS, PARAMS, SELECT, FROM_n, RESULTS):
         if AS == "sound":
             results = self.evalAS_list(PARAMS, SELECT, FROM_n, RESULTS)
             return self.evalAs_sound(PARAMS, results)
-        
+
         elif AS == "plane":
             SELECT.append( [0, 'to', [[0, 'pos', [[5, '']]], [3, '__pos']]] ) # to(pos(this),'__pos')
             results = self.evalAS_dict([], SELECT, FROM_n, RESULTS)
             return self.evalAs_plane(PARAMS, results)
-        
+
         return SelectScript.Interpreter.evalAs(self, AS, PARAMS, SELECT, FROM_n, RESULTS)
-    
+
     def evalAs_sound(self, PARAMS, RESULTS):
         pygame.init()
         effect = pygame.mixer.Sound('beep.wav')
-        
+
         count = len(RESULTS)
-        
+
         for _ in range(RESULTS.count(None)):
             RESULTS.remove(None)
-        
+
         if isinstance(RESULTS, list):
             value = sum(RESULTS)
         else:
             value = RESULTS
-        
+
         if count > 0:
             effect.set_volume(value)
             effect.play(count)
-        
+
         return []
 
     def evalAs_plane(self, PARAMS, RESULTS):
@@ -116,15 +116,15 @@ class Interpreter(SelectScript.Interpreter):
         start = PARAMS[1]         # [x, y]
         dim   = PARAMS[2]         # [width, height, resolution]
         blur  = False             # like gaussian filter
-        
+
         if len(PARAMS) == 4:
             if PARAMS[3] > 1:
                 blur = PARAMS[3]
                 blur_matrix = np.matrix([[(1.+blur-abs(i)-abs(j)) for j in range(-blur+1, blur, 1) ] for i in range(-blur+1, blur, 1)])
                 blur_matrix = blur_matrix/blur_matrix.sum()
-        
+
         result = np.zeros((dim[0], dim[1]))
-        
+
         _pos = lambda o: o[0:2]
         if isinstance(plane, str):
             if plane.find('y') and plane.find('z'):
@@ -133,10 +133,10 @@ class Interpreter(SelectScript.Interpreter):
                 _pos = lambda o: [o[0], o[2]]
             else:  # xy
                 _pos = lambda o: o[0:2]
-        
+
         for val in RESULTS:
             position = _pos(val['__pos'])
-            
+
             if start[0] <= position[0] < start[0] + dim[0]*dim[2]:
                 if start[1] <= position[1] < start[1] + dim[1]*dim[2]:
                     sum_values = 0
@@ -148,18 +148,18 @@ class Interpreter(SelectScript.Interpreter):
                             sum_values += sum(val[k])
                         elif isinstance(val[k], (int, float)):
                             sum_values += val[k]
-                    
+
                     x = int((position[0]-start[0])/dim[2])
                     y = int((position[1]-start[1])/dim[2])
-                    
+
                     if blur != False:
-                        
+
                         filtered = blur_matrix * sum_values
                         for x_ in range(x-blur, x+blur, 1):
                             for y_ in range(y-blur, y+blur, 1):
-                                if 0 <= x_ < dim[0] and 0 <= y_ < dim[1]: 
+                                if 0 <= x_ < dim[0] and 0 <= y_ < dim[1]:
                                     result[x_,y_] += filtered[x-blur-x_, y-blur-y_]
                     else:
                         result[x,y] += sum_values
-            
+
         return result
