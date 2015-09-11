@@ -148,6 +148,7 @@ class Interpreter(SelectScript.Interpreter):
                 if not newEnv.Remove( newEnv.GetSensor(elem.GetName()) ):
                     elem.Configure(Sensor.ConfigureCommand.PowerOff)
                     elem.Configure(Sensor.ConfigureCommand.RenderDataOff)
+
         # remove robots
         for elem in newEnv.GetRobots():
             if not elem.GetName() in ids:
@@ -168,6 +169,9 @@ class Interpreter(SelectScript.Interpreter):
 
         pos, size = self._calcSize(RESULTS, grid_size)
 
+        for s in RESULTS.GetSensors():
+            print s.Configure(Sensor.ConfigureCommand.PowerCheck)
+
         ogMap = RaveCreateModule(RESULTS, 'occupancygridmap')
         ogMap.SendCommand('SetTranslation %f %f %f' % (pos[0], pos[1], z_pos))
         ogMap.SendCommand('SetSize %i %i %f' %(size[0]+1, size[1]+1, grid_size) )
@@ -186,12 +190,13 @@ class Interpreter(SelectScript.Interpreter):
             height    = PARAMS[2]
 
         pos, size = self._calcSize(RESULTS, grid_size)
-        #print RESULTS.GetSensors()
-        ogMap = RaveCreateModule(RESULTS, 'sensorcubemap')
+
+        ogMap = RaveCreateModule(RESULTS, 'sensorgridmap')
         print 'SetTranslation %f %f %f' % (pos[0], pos[1], z_pos)
-        print 'SetSize %i %f %i %f 1 %f' % (size[0]+1, grid_size, size[1]+1, grid_size, height)
+        print 'SetSize %i %i %f' % (size[0]+1, size[1]+1, grid_size)
         ogMap.SendCommand('SetTranslation %f %f %f' % (pos[0], pos[1], z_pos))
-        ogMap.SendCommand('SetSize %i %f %i %f 1 %f' % (size[0]+1, grid_size, size[1]+1, grid_size, height) )
+        #ogMap.SendCommand('SetSize %i %f %i %f 1 %f' % (size[0]+1, grid_size, size[1]+1, grid_size, height) )
+        ogMap.SendCommand('SetSize %i %i %f' % (size[0]+1, size[1]+1, grid_size) )
         render = ogMap.SendCommand('Scan')
 
         return np.fromstring(render, dtype=int, count=-1, sep=' ').reshape(int(size[0]+1), int(size[1]+1))
