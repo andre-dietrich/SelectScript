@@ -12,6 +12,8 @@
 | Slides      | 1. http://eos.cs.ovgu.de/wp-content/uploads/2015/06/ICRA2015-presentation-slides.pdf     |
 |             | 2. to appear ...                                                                         |
 
+## Overview
+
 This is the SelectScript base, which offers only a language stub. It can be
 used and extended to generate any kind of interface to any other discrete
 simulation environment.
