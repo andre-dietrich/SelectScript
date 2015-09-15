@@ -11,6 +11,7 @@
 |             | http://arxiv.org/pdf/1508.04159v1.pdf                                                    |
 | Slides      | 1. http://eos.cs.ovgu.de/wp-content/uploads/2015/06/ICRA2015-presentation-slides.pdf     |
 |             | 2. to appear ...                                                                         |
+| Misc        | https://pythonhosted.org/SelectScript_OpenRAVE                                           |
 
 ## Overview
 
