@@ -1,3 +1,6 @@
+# Moved to:
+# https://gitlab.com/OvGU-ESS/SelectScript
+
 #SelectScript
 
 SelectScript a querying language intended to serve as a general and generic interface to
