@@ -1,6 +1,6 @@
 # SelectScript
 
-| Author      | André Dietrich & Sebastian Zug                                                           |
+| Author      | André Dietrich                                                                           |
 | ----------- | ---------------------------------------------------------------------------------------- |
 | Source      | `git clone` https://gitlab.com/andre-dietrich/SelectScript.git                           |
 | Email       | <mailto:andre.dietrich@ovgu.de>                                                          |
