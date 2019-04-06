@@ -1,10 +1,9 @@
 # SelectScript
 
-| | |
+| Author      | André Dietrich & Sebastian Zug                                                           |
 | ----------- | ---------------------------------------------------------------------------------------- |
-| Authors     | André Dietrich & Sebastian Zug                                                           |
-| Source      | `git clone` https://gitlab.com/OvGU-ESS/SelectScript.git                                 |
-| Email       | <mailto:dietrich@ivs.cs.uni-magdeburg.de> & <mailto:zug@ivs.cs.uni-magdeburg.de>         |
+| Source      | `git clone` https://gitlab.com/andre-dietrich/SelectScript.git                           |
+| Email       | <mailto:andre.dietrich@ovgu.de>                                                          |
 | Publication | 1. SelectScript: A query language for robotic world models and simulations               |
 |             | http://eos.cs.ovgu.de/wp-content/uploads/2015/06/SelectScript-A-Query-Language-for-Robotic-World-Models-and-Simulations.pdf |
 |             | 2. Reasoning in complex environments with the SelectScript declarative language          |
@@ -21,8 +20,8 @@ simulation environment.
 
 Currently available interfaces are:
 
-1. [SelectScript_ODE](https://gitlab.com/OvGU-ESS/SelectScript_ODE.git)
-2. [SelectScript_OpenRAVE](https://gitlab.com/OvGU-ESS/SelectScript_OpenRAVE.git)
+1. [SelectScript_ODE](https://gitlab.com/andre-dietricht/SelectScript_ODE.git)
+2. [SelectScript_OpenRAVE](https://gitlab.com/andre-dietrich/SelectScript_OpenRAVE.git)
 
 Check their implementation, to see, how simple it is to derive a new dialect.
 
